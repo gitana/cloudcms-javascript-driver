@@ -1,0 +1,15 @@
+node_modules
+.idea
+*.iml
+
+
+jsmf
+*jsmf*
+*/jsmf*
+test/jsmf
+test/jsmf/*
+jsmf1.js
+jsmf2.js
+
+wip
+wip/*
