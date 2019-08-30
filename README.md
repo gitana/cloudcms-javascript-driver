@@ -34,7 +34,7 @@ const apiKeys = {
 
 (async function() {
 
-    var session = await cloudcms.connect();
+    var session = await cloudcms.connect(apiKeys);
 
     // services
     var branchService = session.branchService("f49e621853c33f501377", "master");
@@ -59,7 +59,7 @@ const apiKeys = {
     "password": ""    
 };
 
-cloudcms.connect().then(function(session) {
+cloudcms.connect(apiKeys).then(function(session) {
 
     // services
     var branchService = session.branchService("f49e621853c33f501377", "master");
@@ -86,7 +86,7 @@ const apiKeys = {
     "password": ""    
 };
 
-cloudcms.connect(function(err, session) {
+cloudcms.connect(apiKeys, function(err, session) {
 
     // services
     var branchService = session.branchService("f49e621853c33f501377", "master");
@@ -99,4 +99,32 @@ cloudcms.connect(function(err, session) {
     });
 
 });
+```
+
+## API Keys
+
+You can either pass in your API Keys object to the `connect()` method or you can have the driver pick up the
+API keys from the following files in the local directory:
+
+- `gitana.json`
+- `cloudcms.json`
+
+For example, the following code will simply read from disk:
+
+```
+const cloudcms = require("cloudcms");
+
+(async function() {
+
+    var session = await cloudcms.connect();
+
+    // services
+    var branchService = session.branchService("f49e621853c33f501377", "master");
+
+    // invoke API
+    var node = await branchService.readNode(session, "nodeId");
+    
+    // result
+    console.log("Found node:" + node.title);
+})();
 ```
