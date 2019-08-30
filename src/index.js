@@ -11,8 +11,6 @@ var MemoryStorage = require("./storage/memory");
 
 var Session = require("./session");
 
-var API = require("./api/api");
-
 var Helper = require("./helper");
 
 var isString = Helper.isString;
@@ -57,18 +55,46 @@ exports.connect = function(connectConfig, callback)
         connectConfig = {};
     }
 
-    var config = Helper.mergeConfigs(DEFAULT_CONFIG, LOADED_CONFIG, connectConfig);
+    var fn = function(connectConfig)
+    {
+        return function(done) {
 
-    _connect(config, function(err, session) {
+            var config = Helper.mergeConfigs(DEFAULT_CONFIG, LOADED_CONFIG, connectConfig);
 
-        if (err) {
-            return callback(err);
+            _connect(config, function(err, session) {
+
+                if (err) {
+                    return done(err);
+                }
+
+                done(null, session);
+            });
+
         }
+    }(connectConfig);
 
-        var api = new API();
+    // support "callback" if supplied
+    if (callback)
+    {
+        return fn(function(err, session) {
+            callback(err, session);
+        });
+    }
 
-        callback(null, session, api);
+    // otherwise use a promise
+    var promise = new Promise((resolve, reject) => {
+
+        fn(function(err, session) {
+            if (err) {
+                return reject(err);
+            }
+
+            resolve(session);
+        });
+
     });
+
+    return promise;
 };
 
 var _connect = function(config, callback)

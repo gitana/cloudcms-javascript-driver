@@ -3,156 +3,178 @@ var request = require("request");
 
 var Helper = require("../helper");
 
+var doRequest = function(options, callback)
+{
+    var stats = {};
+    stats.startTime = Helper.now();
+
+    request(options, function(err, response, body) {
+        stats.endTime = Helper.now();
+        stats.executionTime = stats.endTime - stats.startTime;
+
+        // console.log("[" + options.method + " " + options.url + "](" + stats.executionTime + " ms)");
+
+        callback(err, response, body, stats);
+    });
+};
+
 class RequestDriver extends Driver
 {
     constructor(config, credentials, storage)
     {
         super(config, credentials, storage);
-    }
 
-    get(uri, qs)
-    {
-        var promise = new Promise((resolve, reject) => {
+        // @abstract
+        this.buildGetHandler = function(uri, qs)
+        {
+            var self = this;
 
-            var options = {
-                "method": "GET",
-                "url": uri,
-                "headers": {},
-                "qs": {}
-            };
+            return function(done)
+            {
+                var options = {
+                    "method": "GET",
+                    "url": uri,
+                    "headers": {},
+                    "qs": {}
+                };
 
-            if (qs) {
-                for (var k in qs) {
-                    options.qs[k] = qs[k];
+                if (qs) {
+                    for (var k in qs) {
+                        options.qs[k] = qs[k];
+                    }
                 }
+
+                var signedOptions = self.incoming(options);
+
+                doRequest(signedOptions, function(err, response, body, stats) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    if (response.statusCode === 404)
+                    {
+                        return done();
+                    }
+                    else if (response.statusCode >= 200 && response.statusCode <= 204)
+                    {
+                        return done(null, Helper.parseJson(body));
+                    }
+
+                    return done(self.outgoing(body));
+                });
             }
+        };
 
-            var signedOptions = this.incoming(options);
+        // @abstract
+        this.buildPostHandler = function(uri, qs, payload)
+        {
+            var self = this;
 
-            request(signedOptions, function(err, response, body) {
+            return function(done)
+            {
+                var options = {
+                    "method": "POST",
+                    "url": uri,
+                    "headers": {},
+                    "qs": {}
+                };
 
-                if (err) {
-                    return reject(err);
+                if (qs) {
+                    for (var k in qs) {
+                        options.qs[k] = qs[k];
+                    }
                 }
 
-                resolve(Helper.parseJson(body));
-            });
-        });
-
-        return promise;
-    }
-
-    post(uri, qs, payload)
-    {
-        var promise = new Promise((resolve, reject) => {
-
-            var options = {
-                "method": "POST",
-                "url": uri,
-                "headers": {},
-                "qs": {}
-            };
-
-            if (qs) {
-                for (var k in qs) {
-                    options.qs[k] = qs[k];
+                if (payload) {
+                    options.headers["Content-Type"] = "application/json";
+                    options.body = JSON.stringify(payload);
                 }
+
+                var signedOptions = self.incoming(options);
+
+                doRequest(signedOptions, function(err, response, body, stats) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    done(null, self.outgoing(body));
+                });
             }
+        };
 
-            if (payload) {
-                options.headers["Content-Type"] = "application/json";
-                options.body = JSON.stringify(payload);
+        // @abstract
+        this.buildPutHandler = function(uri, qs, payload)
+        {
+            var self = this;
+
+            return function(done)
+            {
+                var options = {
+                    "method": "PUT",
+                    "url": uri,
+                    "headers": {},
+                    "qs": {}
+                };
+
+                if (qs) {
+                    for (var k in qs) {
+                        options.qs[k] = qs[k];
+                    }
+                }
+
+                if (payload) {
+                    options.headers["Content-Type"] = "application/json";
+                    options.body = JSON.stringify(payload);
+                }
+
+                var signedOptions = self.incoming(options);
+
+                doRequest(signedOptions, function(err, response, body, stats) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    done(null, self.outgoing(body));
+                });
             }
+        };
 
-            var signedOptions = this.incoming(options);
+        // @abstract
+        this.buildDeleteHandler = function(uri, qs)
+        {
+            var self = this;
 
-            request(signedOptions, function(err, response, body) {
+            return function(done)
+            {
+                var options = {
+                    "method": "DELETE",
+                    "url": uri,
+                    "headers": {},
+                    "qs": {}
+                };
 
-                if (err) {
-                    return reject(err);
+                if (qs) {
+                    for (var k in qs) {
+                        options.qs[k] = qs[k];
+                    }
                 }
 
-                resolve(Helper.parseJson(body));
-            });
-        });
+                var signedOptions = self.incoming(options);
 
-        return promise;
-    }
+                doRequest(signedOptions, function(err, response, body, stats) {
 
-    put(uri, qs, payload)
-    {
-        var promise = new Promise((resolve, reject) => {
+                    if (err) {
+                        return done(err);
+                    }
 
-            var options = {
-                "method": "PUT",
-                "url": uri,
-                "headers": {},
-                "qs": {}
-            };
+                    done(null, self.outgoing(body));
+                });
 
-            if (qs) {
-                for (var k in qs) {
-                    options.qs[k] = qs[k];
-                }
             }
-
-            if (payload) {
-                options.headers["Content-Type"] = "application/json";
-                options.body = JSON.stringify(payload);
-            }
-
-            var signedOptions = this.incoming(options);
-
-            request(signedOptions, function(err, response, body) {
-
-                if (err) {
-                    return reject(err);
-                }
-
-                resolve(Helper.parseJson(body));
-            });
-        });
-
-        return promise;
-    }
-
-    del(uri, params)
-    {
-        /*
-        var promise = new Promise((resolve, reject) => {
-
-            var options = {
-                "method": "DELETE",
-                "url": uri,
-                "headers": {},
-                "qs": {}
-            };
-
-            if (qs) {
-                for (var k in qs) {
-                    options.qs[k] = qs[k];
-                }
-            }
-
-            var signedOptions = this.incoming(options);
-
-            request(signedOptions, function(err, response, body) {
-
-                if (err) {
-                    return reject(err);
-                }
-
-                resolve(Helper.parseJson(body));
-            });
-        });
-
-        return promise;
-        */
-    }
-
-    multipartPost(uri, parts)
-    {
-
+        };
     }
 }
 

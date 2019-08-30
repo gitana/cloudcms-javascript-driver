@@ -181,3 +181,31 @@ var parseJson = exports.parseJson = function(text)
 {
     return JSON.parse("" + text);
 };
+
+var acquireId = exports.acquireId = function(objOrId)
+{
+    if (objOrId)
+    {
+        if (isString(objOrId))
+        {
+            return objOrId;
+        }
+
+        if (objOrId._doc)
+        {
+            return objOrId._doc;
+        }
+
+        if (objOrId.id)
+        {
+            return objOrId.id;
+        }
+    }
+
+    return null;
+};
+
+var now = exports.now = function()
+{
+    return new Date().getTime();
+};

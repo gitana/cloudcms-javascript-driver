@@ -10,32 +10,93 @@ npm install --save cloudcms
 
 ## Usage
 
+This methods in this driver support the following patterns of usage:
+
+1. Async / Await
+2. Promises
+3. Callbacks
+
+You're free to mix and match between these approaches as you see fit.
+
+Here are examples of each:
+
+### Async / Await
+
 ```
-var apiKeys = {
+const cloudcms = require("cloudcms");
+
+const apiKeys = {
     "clientKey": "",
     "clientSecret": "",
     "username": "",
     "password": ""    
 };
 
-var cloudcms = require("cloudcms");
-cloudcms.connect(apiKeys, function(err, session, api) {
+(async function() {
 
-    if (err) {
-        return console.log("Failed to connect", err);
-    }
-    
-    var platform = api.platform();
-    var repository = platform.repository("repoId");
-    var branch = repository.branch("branchId");
+    var session = await cloudcms.connect();
 
-    execute(session, branch);    
-});
+    // services
+    var branchService = session.branchService("f49e621853c33f501377", "master");
 
-var execute = async function(session, branch) {
+    // invoke API
+    var node = await branchService.readNode(session, "nodeId");
     
-    var node = await branch.readNode(session, "nodeId");
-    
+    // result
     console.log("Found node:" + node.title);
+})();
+```
+
+### Promises
+
+```
+const cloudcms = require("cloudcms");
+
+const apiKeys = {
+    "clientKey": "",
+    "clientSecret": "",
+    "username": "",
+    "password": ""    
+};
+
+cloudcms.connect().then(function(session) {
+
+    // services
+    var branchService = session.branchService("f49e621853c33f501377", "master");
+
+    // invoke API   
+    branchService.readNode(session, "nodeId").then(function(node) {
+    
+        // result
+        console.log("Found node:" + node.title);    
+    });
+
+});
+```
+
+### Callbacks
+
+```
+const cloudcms = require("cloudcms");
+
+const apiKeys = {
+    "clientKey": "",
+    "clientSecret": "",
+    "username": "",
+    "password": ""    
+};
+
+cloudcms.connect(function(err, session) {
+
+    // services
+    var branchService = session.branchService("f49e621853c33f501377", "master");
+
+    // invoke API   
+    branchService.readNode(session, "nodeId", function(err, node) {
+    
+        // result
+        console.log("Found node:" + node.title);    
+    });
+
 });
 ```
