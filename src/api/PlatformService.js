@@ -10,9 +10,9 @@ class PlatformService extends AbstractService
 
     // SERVICES
 
-    repositoryService(repositoryId)
+    repositoryService(repositoryOrRepositoryId)
     {
-        return new RepositoryService(this.session, repositoryId);
+        return new RepositoryService(this.session, this.acquireId(repositoryOrRepositoryId));
     }
 
     // METHODS

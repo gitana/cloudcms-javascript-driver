@@ -38,8 +38,10 @@ class RequestDriver extends Driver
                     "qs": {}
                 };
 
-                if (qs) {
-                    for (var k in qs) {
+                if (qs)
+                {
+                    for (var k in qs)
+                    {
                         options.qs[k] = qs[k];
                     }
                 }
@@ -80,13 +82,16 @@ class RequestDriver extends Driver
                     "qs": {}
                 };
 
-                if (qs) {
-                    for (var k in qs) {
+                if (qs)
+                {
+                    for (var k in qs)
+                    {
                         options.qs[k] = qs[k];
                     }
                 }
 
-                if (payload) {
+                if (payload)
+                {
                     options.headers["Content-Type"] = "application/json";
                     options.body = JSON.stringify(payload);
                 }
@@ -118,13 +123,16 @@ class RequestDriver extends Driver
                     "qs": {}
                 };
 
-                if (qs) {
-                    for (var k in qs) {
+                if (qs)
+                {
+                    for (var k in qs)
+                    {
                         options.qs[k] = qs[k];
                     }
                 }
 
-                if (payload) {
+                if (payload)
+                {
                     options.headers["Content-Type"] = "application/json";
                     options.body = JSON.stringify(payload);
                 }
@@ -143,7 +151,7 @@ class RequestDriver extends Driver
         };
 
         // @abstract
-        this.buildDeleteHandler = function(uri, qs)
+        this.buildDelHandler = function(uri, qs)
         {
             var self = this;
 
@@ -156,8 +164,10 @@ class RequestDriver extends Driver
                     "qs": {}
                 };
 
-                if (qs) {
-                    for (var k in qs) {
+                if (qs)
+                {
+                    for (var k in qs)
+                    {
                         options.qs[k] = qs[k];
                     }
                 }

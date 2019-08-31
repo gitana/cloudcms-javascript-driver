@@ -8,12 +8,26 @@ class Session
         this.config = config;
         this.driver = driver;
         this.storage = storage;
+
+        this.defaults = {
+            "qs": {}
+        };
+
+        this.populateDefaultQs = function(qs)
+        {
+            for (var k in this.defaults.qs)
+            {
+                qs[k] = this.defaults.qs[k];
+            }
+        };
     }
 
     // proxies
 
     get(uri, qs, callback)
     {
+        this.populateDefaultQs(qs);
+
         //var driver = this.driver;
 
         /*
@@ -35,21 +49,28 @@ class Session
 
     post(uri, qs, payload, callback)
     {
+        this.populateDefaultQs(qs);
+
         return this.driver.post(uri, qs, payload, callback);
     }
 
     put(uri, qs, payload, callback)
     {
+        this.populateDefaultQs(qs);
+
         return this.driver.put(uri, qs, payload, callback);
     }
 
     del(uri, qs, callback)
     {
+        this.populateDefaultQs(qs);
+
         return this.driver.del(uri, qs, callback);
     }
 
     multipartPost(uri, parts, callback)
     {
+        // TODO
         return this.driver.multipartPost(uri, parts, callback);
     }
 

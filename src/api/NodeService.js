@@ -120,7 +120,7 @@ class NodeService extends AbstractService
 
     del(callback)
     {
-        return this.session.del("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + this.nodeId, callback);
+        return this.session.del("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + this.nodeId, {}, callback);
     }
 
 }

@@ -12,9 +12,9 @@ class RepositoryService extends AbstractService
 
     // SERVICES
 
-    branchService(branchId)
+    branchService(branchOrBranchId)
     {
-        return new BranchService(this.session, this.repositoryId, branchId);
+        return new BranchService(this.session, this.repositoryId, this.acquireId(branchOrBranchId));
     }
 
     // METHODS

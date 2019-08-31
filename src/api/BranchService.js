@@ -13,9 +13,9 @@ class BranchService extends AbstractService
 
     // SERVICES
 
-    nodeService(nodeId)
+    nodeService(nodeOrNodeId)
     {
-        return new NodeService(this.session, this.repositoryId, this.branchId, nodeId);
+        return new NodeService(this.session, this.repositoryId, this.branchId, this.acquireId(nodeOrNodeId));
     }
 
     // METHODS
@@ -28,7 +28,7 @@ class BranchService extends AbstractService
      */
     readNode(nodeId, callback)
     {
-        return this.session.get("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + nodeId, callback);
+        return this.session.get("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + nodeId, {}, callback);
     }
 
     /**
