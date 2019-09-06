@@ -185,6 +185,47 @@ class RequestDriver extends Driver
 
             }
         };
+
+        // @abstract
+        this.buildPatchHandler = function(uri, qs, payload)
+        {
+            var self = this;
+
+            return function(done)
+            {
+                var options = {
+                    "method": "PATCH",
+                    "url": uri,
+                    "headers": {},
+                    "qs": {}
+                };
+
+                if (qs)
+                {
+                    for (var k in qs)
+                    {
+                        options.qs[k] = qs[k];
+                    }
+                }
+
+                if (payload)
+                {
+                    options.headers["Content-Type"] = "application/json";
+                    options.body = JSON.stringify(payload);
+                }
+
+                var signedOptions = self.incoming(options);
+
+                doRequest(signedOptions, function(err, response, body, stats) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    done(null, self.outgoing(body));
+                });
+            }
+        };
     }
 }
 

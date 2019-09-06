@@ -8,6 +8,11 @@ class RepositoryService extends AbstractService
         super(session);
 
         this.repositoryId = repositoryId;
+
+        this.cleanBeforeWrite = function(obj)
+        {
+            // TODO
+        }
     }
 
     // SERVICES
@@ -32,6 +37,18 @@ class RepositoryService extends AbstractService
     {
         return this.session.post("/repositories/" + this.repositoryId + "/branches/query", pagination, query, callback);
     };
+
+    del(callback)
+    {
+        return this.session.del("/repositories/" + this.repositoryId, {}, callback);
+    }
+
+    update(obj, callback)
+    {
+        this.cleanBeforeWrite(obj);
+
+        this.session.put("/repositories/" + this.repositoryId, {}, obj, callback);
+    }
 
 }
 

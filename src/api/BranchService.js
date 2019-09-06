@@ -43,6 +43,11 @@ class BranchService extends AbstractService
     {
         return this.session.post("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/query", pagination, query, callback);
     }
+
+    createNode(obj, options, callback)
+    {
+        return this.session.post("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes", {}, obj, callback);
+    }
 }
 
 module.exports = BranchService;

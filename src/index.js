@@ -28,7 +28,19 @@ if (!LOADED_CONFIG) {
     }
 }
 if (!LOADED_CONFIG) {
+    var configFilePath = path.resolve(path.join(".", "gitana-test.json"));
+    if (fs.existsSync(configFilePath)) {
+        LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
+    }
+}
+if (!LOADED_CONFIG) {
     var configFilePath = path.resolve(path.join(".", "cloudcms.json"));
+    if (fs.existsSync(configFilePath)) {
+        LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
+    }
+}
+if (!LOADED_CONFIG) {
+    var configFilePath = path.resolve(path.join(".", "cloudcms-test.json"));
     if (fs.existsSync(configFilePath)) {
         LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
     }
@@ -188,5 +200,7 @@ var _authenticate = function(config, callback)
         }(token);
 
         callback(null, credentials);
+    }).catch(function(err) {
+        callback(err);
     });
 };

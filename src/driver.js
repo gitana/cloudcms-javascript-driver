@@ -64,6 +64,16 @@ class Driver
                 // TODO
             }
         };
+
+        // @abstract
+        this.buildPatchHandler = function(uri, qs, payload)
+        {
+            return function(done)
+            {
+                // TODO
+            }
+        };
+
     }
 
     /**
@@ -201,6 +211,41 @@ class Driver
 
         return promise;
     }
+
+    /**
+     * @extension_point
+     *
+     * @param uri
+     * @param qs
+     * @param payload
+     */
+    patch(uri, qs, payload, callback)
+    {
+        var fn = this.buildPatchHandler(uri, qs, payload);
+
+        // support for callback approach
+        if (callback && Helper.isFunction(callback))
+        {
+            return fn(function(err, result) {
+                callback(err, result);
+            });
+        }
+
+        var promise = new Promise((resolve, reject) => {
+
+            fn(function(err, result) {
+
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(result);
+            });
+        });
+
+        return promise;
+    }
+
 
     /**
      * requestObject

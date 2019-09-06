@@ -68,6 +68,13 @@ class Session
         return this.driver.del(uri, qs, callback);
     }
 
+    patch(uri, ps, payload, callback)
+    {
+        this.populateDefaultQs(qs);
+
+        return this.driver.patch(uri, qs, payload, callback);
+    }
+
     multipartPost(uri, parts, callback)
     {
         // TODO

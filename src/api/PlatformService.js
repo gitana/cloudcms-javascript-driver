@@ -22,12 +22,24 @@ class PlatformService extends AbstractService
      *
      * @param query
      * @param pagination
-     * @returns {*}
+     * @returns response
      */
     queryRepositories(query, pagination, callback)
     {
         return this.session.post("/repositories/query", pagination, query, callback);
     };
+
+    /**
+     * Create a repository.
+     *
+     * @param obj
+     * @param callback
+     * @returns object
+     */
+    createRepository(obj, callback)
+    {
+        return this.session.post("/repositories", {}, obj, callback);
+    }
 
 }
 

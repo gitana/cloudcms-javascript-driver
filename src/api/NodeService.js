@@ -9,6 +9,12 @@ class NodeService extends AbstractService
         this.repositoryId = repositoryId;
         this.branchId = branchId;
         this.nodeId = nodeId;
+
+        this.cleanBeforeWrite = function(obj)
+        {
+            delete obj._is_association;
+            delete obj._statistics;
+        }
     }
 
     queryRelatives(associationTypeQName, associationDirection, query, pagination, callback)
@@ -121,6 +127,28 @@ class NodeService extends AbstractService
     del(callback)
     {
         return this.session.del("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + this.nodeId, {}, callback);
+    }
+
+    update(obj, callback)
+    {
+        this.cleanBeforeWrite(obj);
+
+        this.session.put("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + this.nodeId, {}, obj, callback);
+    }
+
+    patch(obj, callback)
+    {
+        this.session.patch("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + this.nodeId, {}, obj, callback);
+    }
+
+    addFeature(featureId, config, callback)
+    {
+        this.session.post("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + this.nodeId + "/features/" + featureId, {}, config, callback);
+    }
+
+    removeFeature(featureId, callback)
+    {
+        this.session.del("/repositories/" + this.repositoryId + "/branches/" + this.branchId + "/nodes/" + this.nodeId + "/features/" + featureId, {}, callback);
     }
 
 }
