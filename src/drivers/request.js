@@ -86,14 +86,22 @@ class RequestDriver extends Driver
                 {
                     for (var k in qs)
                     {
-                        options.qs[k] = qs[k];
+                        var v = qs[k];
+
+                        if (Helper.isObject(v))
+                        {
+                            v = JSON.stringify(v);
+                        }
+
+                        options.qs[k] = v;
                     }
                 }
 
                 if (payload)
                 {
                     options.headers["Content-Type"] = "application/json";
-                    options.body = JSON.stringify(payload);
+                    //options.body = JSON.stringify(payload);
+                    options.json = payload;
                 }
 
                 var signedOptions = self.incoming(options);

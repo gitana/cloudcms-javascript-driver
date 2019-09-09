@@ -32,17 +32,18 @@ const apiKeys = {
     "password": ""    
 };
 
+var repositoryId = "f49e621853c33f501377";
+var branchId = "master";
+var nodeId = "821c40ab613d9b5bcbbc656b62229332";
+
 (async function() {
 
     var session = await cloudcms.connect(apiKeys);
-
-    // services
-    var branchService = session.branchService("f49e621853c33f501377", "master");
-
-    // invoke API
-    var node = await branchService.readNode(session, "nodeId");
+        
+    // read node
+    var node = await session.readNode(repositoryId, branchId, nodeId);
     
-    // result
+    // log result
     console.log("Found node:" + node.title);
 })();
 ```
@@ -59,15 +60,15 @@ const apiKeys = {
     "password": ""    
 };
 
+var repositoryId = "f49e621853c33f501377";
+var branchId = "master";
+
 cloudcms.connect(apiKeys).then(function(session) {
 
-    // services
-    var branchService = session.branchService("f49e621853c33f501377", "master");
-
-    // invoke API   
-    branchService.readNode(session, "nodeId").then(function(node) {
+    // read node   
+    session.readNode(repositoryId, branchId, nodeId).then(function(node) {
     
-        // result
+        // log result
         console.log("Found node:" + node.title);    
     });
 
@@ -86,15 +87,15 @@ const apiKeys = {
     "password": ""    
 };
 
+var repositoryId = "f49e621853c33f501377";
+var branchId = "master";
+
 cloudcms.connect(apiKeys, function(err, session) {
 
-    // services
-    var branchService = session.branchService("f49e621853c33f501377", "master");
-
-    // invoke API   
-    branchService.readNode(session, "nodeId", function(err, node) {
+    // read node   
+    session.readNode(repositoryId, branchId, nodeId, function(err, node) {
     
-        // result
+        // log result
         console.log("Found node:" + node.title);    
     });
 
@@ -114,17 +115,34 @@ For example, the following code will simply read from disk:
 ```
 const cloudcms = require("cloudcms");
 
+var repositoryId = "f49e621853c33f501377";
+var branchId = "master";
+var nodeId = "821c40ab613d9b5bcbbc656b62229332";
+
 (async function() {
 
     var session = await cloudcms.connect();
-
-    // services
-    var branchService = session.branchService("f49e621853c33f501377", "master");
-
-    // invoke API
-    var node = await branchService.readNode(session, "nodeId");
+        
+    // read node
+    var node = await session.readNode(repositoryId, branchId, nodeId);
     
-    // result
+    // log result
     console.log("Found node:" + node.title);
 })();
+```
+
+## Tests
+
+This library uses Mocha and Chai for testing.
+
+To run all tests:
+
+```
+npm test
+```
+
+To run a single test (`node`):
+
+```
+npm test -- --grep node
 ```

@@ -1,5 +1,4 @@
-var PlatformService = require("./api/PlatformService");
-var RepositoryService = require("./api/RepositoryService");
+var Helper = require("./helper");
 
 class Session
 {
@@ -13,6 +12,62 @@ class Session
             "qs": {}
         };
 
+        // helper method
+        this.acquireId = function(objOrId)
+        {
+            var id = Helper.acquireId(objOrId);
+            if (!id) {
+                throw new Error("Cannot acquire _doc for: " + objOrId);
+            }
+
+            return id;
+        };
+
+        this.acquireIds = function(collection)
+        {
+            var array = [];
+
+            if (Helper.isString(collection))
+            {
+                var parts = collection.split(",");
+                for (var i = 0; i < parts.length; i++)
+                {
+                    array.push(parts[i].trim());
+                }
+            }
+            else if (Helper.isArray(collection))
+            {
+                for (var i = 0; i < collection.length; i++)
+                {
+                    var x = collection[i];
+
+                    if (Helper.isString(x))
+                    {
+                        array.push(x);
+                    }
+                    else if (Helper.isObject(x))
+                    {
+                        array.push(this.acquireId(x));
+                    }
+                }
+            }
+            else if (Helper.isObject(collection))
+            {
+                // assume it is a map (key -> value)
+
+                for (var k in collection)
+                {
+                    var v = collection[k];
+                    if (v)
+                    {
+                        array.push(this.acquireId(v));
+                    }
+                }
+            }
+
+            return array;
+        };
+
         this.populateDefaultQs = function(qs)
         {
             for (var k in this.defaults.qs)
@@ -20,88 +75,654 @@ class Session
                 qs[k] = this.defaults.qs[k];
             }
         };
-    }
 
-    // proxies
+        this.extractOptionalCallback = function(_arguments)
+        {
+            var args = Array.prototype.slice.call(_arguments);
 
-    get(uri, qs, callback)
-    {
-        this.populateDefaultQs(qs);
+            if (args.length > 0)
+            {
+                var candidate = args[args.length - 1];
+                if (Helper.isFunction(candidate))
+                {
+                    return candidate;
+                }
+            }
 
-        //var driver = this.driver;
+            return null;
+        };
 
-        /*
-        var outerPromise = new Promise(function(resolve, reject) {
-            var innerPromise = driver.get(uri, qs);
-            innerPromise.then(function(response) {
+        this.get = function(uri, qs, callback)
+        {
+            this.populateDefaultQs(qs);
 
-                //console.log("INNER PROMISE RESOLVE!");
+            //var driver = this.driver;
 
-                resolve(response);
+            /*
+            var outerPromise = new Promise(function(resolve, reject) {
+                var innerPromise = driver.get(uri, qs);
+                innerPromise.then(function(response) {
+
+                    //console.log("INNER PROMISE RESOLVE!");
+
+                    resolve(response);
+                });
             });
+
+            return outerPromise;
+            */
+
+            return this.driver.get(uri, qs, callback);
+        };
+
+        this.post = function(uri, qs, payload, callback)
+        {
+            this.populateDefaultQs(qs);
+
+            return this.driver.post(uri, qs, payload, callback);
+        };
+
+        this.put = function(uri, qs, payload, callback)
+        {
+            this.populateDefaultQs(qs);
+
+            return this.driver.put(uri, qs, payload, callback);
+        };
+
+        this.del = function(uri, qs, callback)
+        {
+            this.populateDefaultQs(qs);
+
+            return this.driver.del(uri, qs, callback);
+        };
+
+        this.patch = function(uri, ps, payload, callback)
+        {
+            this.populateDefaultQs(qs);
+
+            return this.driver.patch(uri, qs, payload, callback);
+        };
+
+        this.multipartPost = function(uri, parts, callback)
+        {
+            // TODO
+            return this.driver.multipartPost(uri, parts, callback);
+        };
+    }
+
+    // HELPER FUNCTIONS
+
+    /**
+     * Sleeps for the given amount of time.  Returns a promise.
+     * Supports callbacks like all other methods.
+     *
+     * @param t
+     * @param v
+     * @returns {Promise<any>}
+     */
+    sleep(ms)
+    {
+        var me = this;
+
+        var callback = this.extractOptionalCallback(arguments);
+
+        if (callback)
+        {
+            return setTimeout(function() {
+                callback.bind(me)();
+            }, ms);
+        }
+
+        return new Promise(function(resolve) {
+            setTimeout(function() {
+                resolve.bind(me)();
+            }, ms)
         });
-
-        return outerPromise;
-        */
-
-        return this.driver.get(uri, qs, callback);
     }
 
-    post(uri, qs, payload, callback)
+
+    // REPOSITORY
+
+    /**
+     * Create a repository.
+     *
+     * @param obj
+     * @returns object
+     */
+    createRepository(obj)
     {
-        this.populateDefaultQs(qs);
+        var callback = this.extractOptionalCallback(arguments);
 
-        return this.driver.post(uri, qs, payload, callback);
+        return this.post("/repositories", {}, obj, callback);
     }
 
-    put(uri, qs, payload, callback)
+    /**
+     * Queries for repositories.
+     *
+     * @param query
+     * @param pagination
+     * @returns response
+     */
+    queryRepositories(query, pagination)
     {
-        this.populateDefaultQs(qs);
+        var callback = this.extractOptionalCallback(arguments);
 
-        return this.driver.put(uri, qs, payload, callback);
-    }
+        return this.post("/repositories/query", pagination, query, callback);
+    };
 
-    del(uri, qs, callback)
+
+
+    // BRANCH
+
+    /**
+     * Queries for branches.
+     *
+     * @param repository
+     * @param query
+     * @param pagination
+     *
+     * @returns {*}
+     */
+    queryBranches(repository, query, pagination)
     {
-        this.populateDefaultQs(qs);
+        var repositoryId = this.acquireId(repository);
+        var callback = this.extractOptionalCallback(arguments);
 
-        return this.driver.del(uri, qs, callback);
-    }
+        return this.post("/repositories/" + repositoryId + "/branches/query", pagination, query, callback);
+    };
 
-    patch(uri, ps, payload, callback)
+    /**
+     * Deletes a branch.
+     *
+     * @param repository
+     * @param obj
+     * @returns {*}
+     */
+    deleteBranch(repository, obj)
     {
-        this.populateDefaultQs(qs);
+        var repositoryId = this.acquireId(repository);
+        var callback = this.extractOptionalCallback(arguments);
 
-        return this.driver.patch(uri, qs, payload, callback);
+        return this.del("/repositories/" + repositoryId, {}, callback);
     }
 
-    multipartPost(uri, parts, callback)
+    /**
+     * Updates a branch.
+     *
+     * @param repository
+     * @param obj
+     */
+    updateBranch(repository, obj)
     {
-        // TODO
-        return this.driver.multipartPost(uri, parts, callback);
+        var repositoryId = this.acquireId(repository);
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.put("/repositories/" + repositoryId, {}, obj, callback);
     }
 
-    // services
 
-    platformService()
+
+    // NODE
+
+    /**
+     * Reads a node.
+     *
+     * @param repository
+     * @param branch
+     * @param nodeId
+     * @returns {*}
+     */
+    readNode(repository, branch, nodeId, path)
     {
-        return new PlatformService(this);
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+        if (path) {
+            qs["path"] = path;
+        }
+
+        return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, qs, callback);
     }
 
-    repositoryService(repositoryId)
+    /**
+     * Queries for nodes.
+     *
+     * @param repository
+     * @param branch
+     * @param query
+     * @param pagination
+     * @returns {*}
+     */
+    queryNodes(repository, branch, query, pagination)
     {
-        return new RepositoryService(this, repositoryId);
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var callback = this.extractOptionalCallback(arguments);
+
+        if (pagination.fields) {
+            query["_fields"] = pagination.fields;
+            delete pagination.fields;
+        }
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/query", pagination, query, callback);
     }
 
-    branchService(repositoryId, branchId)
+    /**
+     * Creates a node.
+     *
+     * @param repository
+     * @param branch
+     * @param obj
+     * @param options
+     * @returns {*}
+     */
+    createNode(repository, branch, obj, options)
     {
-        return this.repositoryService(repositoryId).branchService(branchId);
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+
+        if (options)
+        {
+            if (options["rootNodeId"]) {
+                qs["rootNodeId"] = options["rootNodeId"]
+            }
+            if (options["parentFolderPath"]) {
+                qs["parentFolderPath"] = options["parentFolderPath"]
+            }
+            if (options["filePath"]) {
+                qs["filePath"] = options["filePath"]
+            }
+            if (options["fileName"]) {
+                qs["fileName"] = options["fileName"]
+            }
+            if (options["associationTypeString"]) {
+                qs["associationTypeString"] = options["associationTypeString"]
+            }
+
+            // some others for compatibility
+            if (options["filename"]) {
+                qs["fileName"] = options["filename"]
+            }
+            if (options["filepath"]) {
+                qs["fileName"] = options["filepath"]
+            }
+            if (options["parentPath"]) {
+                qs["parentFolderPath"] = options["parentPath"]
+            }
+        }
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes", qs, obj, callback);
     }
 
-    nodeService(repositoryId, branchId, nodeId)
+    queryNodeRelatives(repository, branch, node, associationTypeQName, associationDirection, query, pagination)
     {
-        return this.branchService(repositoryId, branchId).nodeService(nodeId);
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+
+        if (pagination)
+        {
+            for (var k in pagination)
+            {
+                qs[k] = pagination[k];
+            }
+        }
+
+        qs.type = associationTypeQName;
+        qs.direction = associationDirection;
+
+        if (!query) {
+            query = {};
+        }
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/relatives/query", qs, query, callback);
+    };
+
+    queryNodeChildren(repository, branch, node, query, pagination)
+    {
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.queryNodeRelatives(repository, branch, node, "a:child", "OUTGOING", query, pagination, callback);
+    };
+
+    listNodeAssociations(repository, branch, node, associationType, associationDirection, pagination)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+
+        if (pagination)
+        {
+            for (var k in pagination)
+            {
+                qs[k] = pagination[k];
+            }
+        }
+
+        if (associationType)
+        {
+            qs.type = associationType;
+        }
+
+        if (associationDirection)
+        {
+            qs.direction = associationDirection;
+        }
+
+        return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/associations", qs, callback);
+    };
+
+    listOutgoingAssociations(repository, branch, node, associationType, pagination)
+    {
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.listNodeAssociations(repository, branch, node, associationType, "OUTGOING", pagination, callback);
+    };
+
+    listIncomingAssociations(repository, branch, node, associationType, pagination)
+    {
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.listNodeAssociations(repository, branch, node, associationType, "INCOMING", pagination, callback);
+    };
+
+    associate(repository, branch, node, otherNode, associationType, associationDirectionality)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var otherNodeId = this.acquireId(otherNode);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+        qs.node = otherNodeId;
+
+        if (associationType)
+        {
+            qs.type = associationType;
+        }
+
+        if (associationDirectionality)
+        {
+            qs.directionality = associationDirectionality;
+        }
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/associate", qs, {}, callback);
     }
+
+    unassociate(repository, branch, node, otherNode, associationType, associationDirectionality)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var otherNodeId = this.acquireId(otherNode);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+        qs.node = otherNodeId;
+
+        if (associationType)
+        {
+            qs.type = associationType;
+        }
+
+        if (associationDirectionality)
+        {
+            qs.directionality = associationDirectionality;
+        }
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/unassociate", qs, {}, callback);
+    }
+
+    associateChild(repository, branch, node, childNode)
+    {
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.associate(repository, branch, node, childNode, "a:child", "DIRECTED", callback);
+    }
+
+    unassociateChild(repository, branch, node, childNode)
+    {
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.unassociate(repository, branch, node, childNode, "a:child", "DIRECTED", callback);
+    }
+
+    deleteNode(repository, branch, node)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.del("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, callback);
+    }
+
+    deleteNodes(repository, branch, nodes)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var payload = {};
+        payload._docs = this.acquireIds(nodes);
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/delete", {}, payload, callback);
+    }
+
+    updateNode(repository, branch, node)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var obj = this.cleanNodeBeforeWrite(node);
+
+        return this.put("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, obj, callback);
+    }
+
+    patchNode(repository, branch, node, patchObject)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.patch("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, patchObject, callback);
+    }
+
+    addNodeFeature(repository, branch, node, featureId, config)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/features/" + featureId, {}, config, callback);
+    }
+
+    removeNodeFeature(repository, branch, node, featureId)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.del("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/features/" + featureId, {}, callback);
+    }
+
+    refreshNode(repository, branch, node)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/refresh", {}, callback);
+    }
+
+    /*
+    moveNodesTo(repository, branch, sourceNodes, targetNode, targetPath)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+
+        var payload = {};
+
+        var sourceNodeIds = [];
+        for (var i = 0; i < sourceNodes.length; i++)
+        {
+            var sourceNodeId = this.acquireId(sourceNodes[i]);
+            sourceNodeIds.push(sourceNodeId);
+        }
+        payload.sourceNodeIds = sourceNodeIds;
+
+        payload.targetNodeId = this.acquireId(targetNode);
+
+        if (targetPath)
+        {
+            payload.targetPath = targetPath;
+        }
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/move/start", qs, payload, callback);
+    }
+    */
+
+    /**
+     * @param repository
+     * @param branch
+     * @param node
+     * @param config { "leafPath": "<leafPath>", "basePath": "<basePath>", "containers": true, "depth": integer, "properties": true|false, "query": {}, "search": {} }
+     * @returns {*}
+     */
+    nodeTree(repository, branch, node, config)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+
+        if (!config)
+        {
+            config = {};
+        }
+
+        // "leaf"
+        if (config.leafPath)
+        {
+            qs["leaf"] = config.leafPath;
+        }
+        else if (config.leaf)
+        {
+            qs["leaf"] = config.leaf;
+        }
+
+        // "base"
+        if (config.basePath)
+        {
+            qs["base"] = config.basePath;
+        }
+        else if (config.base)
+        {
+            qs["base"] = config.base;
+        }
+
+        // "containers"
+        if (config.containers)
+        {
+            qs["containers"] = true;
+        }
+
+        // "properties"
+        if (config.properties)
+        {
+            qs["properties"] = true;
+        }
+
+        // "object"
+        if (config.object)
+        {
+            qs["object"] = true;
+        }
+
+        // "depth"
+        qs.depth = 1;
+        if (config.depth)
+        {
+            qs["depth"] = config.depth;
+        }
+
+        // payload
+        var payload = {};
+        if (config.query) {
+            payload.query = config.query;
+        }
+
+        if(config.search) {
+            payload.search = config.search;
+        }
+
+        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/tree", qs, payload, callback);
+    };
+
+    /**
+     * Resolves the path for the node relative to the root directory.
+     *
+     * @param repository
+     * @param branch
+     * @param node
+     * @returns {*}
+     */
+    resolveNodePath(repository, branch, node)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        var qs = {};
+        //qs.rootNodeId = "821c40ab613d9b5bcbbc656b62229301";
+        qs.rootNodeId = "r:root";
+
+        return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/path", qs, callback);
+    };
+
+    /**
+     * Resolves all of the paths for the node.
+     * Hands back a map keyed by root identifier.
+     *
+     * @param repository
+     * @param branch
+     * @param node
+     * @returns {*}
+     */
+    resolveNodePaths(repository, branch, node)
+    {
+        var repositoryId = this.acquireId(repository);
+        var branchId = this.acquireId(branch);
+        var nodeId = this.acquireId(node);
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/paths", {}, callback);
+    };
+
 };
 
 module.exports = Session;

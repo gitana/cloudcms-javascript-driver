@@ -1,38 +1,25 @@
 var CloudCMS = require("../../src/index");
 var assert = require('chai').assert;
 
-describe('repository_crudq', function() {
-    it('should run CRUD + Query using a repository without error', async function() {
+describe('repository_1', function() {
+    it('should run repository test without error', async function() {
 
         var session = await CloudCMS.connect();
 
-        var title = "repo-" + new Date().getTime();
+        var repository = await session.createRepository();
 
-        var repository1 = await session.platformService().createRepository({
-            "title": title
-        });
-        assert.exists(repository1);
+        var branches = await session.queryBranches(repository);
+        for (var i = 0; i < branches.rows.length; i++)
+        {
+            var branch = branches.rows[i];
 
-        var repositoryId = repository1._doc;
+            var nodes = await session.queryNodes(repository, branch, {}, {});
+            for (var j = 0; j < nodes.rows.length; j++)
+            {
+                var node = nodes.rows[j];
 
-        // update
-        var repository2 = await session.repositoryService(repositoryId).update(repository1);
-        assert.exists(repository2);
-
-        // query and verify there is 1 matching repository
-        var response1 = await session.platformService().queryRepositories({
-            "_doc": repositoryId
-        });
-        assert.equal(response1.rows.length, 1);
-
-        // delete the repository
-        await session.repositoryService(repositoryId).del();
-
-        // query and verify there are 0 matching repositories
-        var response2 = await session.platformService().queryRepositories({
-            "_doc": repositoryId
-        });
-        assert.equal(response2.rows.length, 0);
-
+                console.log("Repository: " + repository._doc + ", Branch: " + branch._doc + ", Node: " + node._doc);
+            }
+        }
     });
 });

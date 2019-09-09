@@ -14,6 +14,11 @@ class Driver
             if (requestObject["url"].indexOf("http://") === 0 || requestObject["url"].indexOf("https://") === 0) {
                 // ok
             } else {
+                if (requestObject["url"].startsWith("/"))
+                {
+                    requestObject["url"] = requestObject["url"].substring(1);
+                }
+
                 requestObject["url"] = [this.config.baseURL, requestObject["url"]].join("/");
             }
 
@@ -26,7 +31,21 @@ class Driver
 
         this.outgoing = function(responseBody)
         {
-            return Helper.parseJson("" + responseBody);
+            var outgoingBody = responseBody;
+
+            if (Helper.isString(responseBody))
+            {
+                try
+                {
+                    outgoingBody = Helper.parseJson("" + responseBody);
+                }
+                catch (e)
+                {
+                    // not JSON
+                }
+            }
+
+            return outgoingBody;
         };
 
         // @abstract

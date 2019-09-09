@@ -5,6 +5,16 @@ var isString = exports.isString = function(thing)
     return (typeof(thing) === "string");
 };
 
+var isObject = exports.isObject = function(thing)
+{
+    return (thing !== null && typeof thing === 'object');
+};
+
+var isArray = exports.isArray = function(thing)
+{
+    return Array.isArray(thing);
+};
+
 var isFunction = exports.isFunction = function(thing)
 {
     return (typeof(thing) === "function");
