@@ -237,4 +237,8 @@ class RequestDriver extends Driver
     }
 }
 
+// register
+var Extensions = require("../extensions");
+Extensions.driver("request", RequestDriver);
+
 module.exports = RequestDriver;

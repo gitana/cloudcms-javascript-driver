@@ -1,5 +1,6 @@
 var Helper = require("./helper");
 
+// define base class
 class Session
 {
     constructor(config, driver, storage)
@@ -70,10 +71,16 @@ class Session
 
         this.populateDefaultQs = function(qs)
         {
+            if (!qs) {
+                qs = {};
+            }
+
             for (var k in this.defaults.qs)
             {
                 qs[k] = this.defaults.qs[k];
             }
+
+            return qs;
         };
 
         this.extractOptionalCallback = function(_arguments)
@@ -94,7 +101,7 @@ class Session
 
         this.get = function(uri, qs, callback)
         {
-            this.populateDefaultQs(qs);
+            qs = this.populateDefaultQs(qs);
 
             //var driver = this.driver;
 
@@ -117,28 +124,28 @@ class Session
 
         this.post = function(uri, qs, payload, callback)
         {
-            this.populateDefaultQs(qs);
+            qs = this.populateDefaultQs(qs);
 
             return this.driver.post(uri, qs, payload, callback);
         };
 
         this.put = function(uri, qs, payload, callback)
         {
-            this.populateDefaultQs(qs);
+            qs = this.populateDefaultQs(qs);
 
             return this.driver.put(uri, qs, payload, callback);
         };
 
         this.del = function(uri, qs, callback)
         {
-            this.populateDefaultQs(qs);
+            qs = this.populateDefaultQs(qs);
 
             return this.driver.del(uri, qs, callback);
         };
 
-        this.patch = function(uri, ps, payload, callback)
+        this.patch = function(uri, qs, payload, callback)
         {
-            this.populateDefaultQs(qs);
+            qs = this.populateDefaultQs(qs);
 
             return this.driver.patch(uri, qs, payload, callback);
         };
@@ -180,6 +187,31 @@ class Session
         });
     }
 
+    stringify(obj, pretty)
+    {
+        if (pretty) {
+            return JSON.stringify(obj, null, 2)
+        }
+
+        return JSON.stringify(obj);
+    }
+
+    parse(text)
+    {
+        return JSON.parse(text);
+    }
+
+    /*
+    // WORKFLOW
+
+    queryWorkflows(query, pagination)
+    {
+        var callback = this.extractOptionalCallback(arguments);
+
+        return this.post("/workflow/instances/query", pagination, query, callback);
+    }
+    */
+
 
     // REPOSITORY
 
@@ -189,12 +221,14 @@ class Session
      * @param obj
      * @returns object
      */
+    /*
     createRepository(obj)
     {
         var callback = this.extractOptionalCallback(arguments);
 
         return this.post("/repositories", {}, obj, callback);
     }
+    */
 
     /**
      * Queries for repositories.
@@ -203,12 +237,14 @@ class Session
      * @param pagination
      * @returns response
      */
+    /*
     queryRepositories(query, pagination)
     {
         var callback = this.extractOptionalCallback(arguments);
 
         return this.post("/repositories/query", pagination, query, callback);
     };
+    */
 
 
 
@@ -223,6 +259,7 @@ class Session
      *
      * @returns {*}
      */
+    /*
     queryBranches(repository, query, pagination)
     {
         var repositoryId = this.acquireId(repository);
@@ -230,6 +267,7 @@ class Session
 
         return this.post("/repositories/" + repositoryId + "/branches/query", pagination, query, callback);
     };
+    */
 
     /**
      * Deletes a branch.
@@ -238,6 +276,7 @@ class Session
      * @param obj
      * @returns {*}
      */
+    /*
     deleteBranch(repository, obj)
     {
         var repositoryId = this.acquireId(repository);
@@ -245,6 +284,7 @@ class Session
 
         return this.del("/repositories/" + repositoryId, {}, callback);
     }
+    */
 
     /**
      * Updates a branch.
@@ -252,6 +292,7 @@ class Session
      * @param repository
      * @param obj
      */
+    /*
     updateBranch(repository, obj)
     {
         var repositoryId = this.acquireId(repository);
@@ -259,6 +300,7 @@ class Session
 
         return this.put("/repositories/" + repositoryId, {}, obj, callback);
     }
+    */
 
 
 
@@ -272,19 +314,19 @@ class Session
      * @param nodeId
      * @returns {*}
      */
-    readNode(repository, branch, nodeId, path)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var callback = this.extractOptionalCallback(arguments);
-
-        var qs = {};
-        if (path) {
-            qs["path"] = path;
-        }
-
-        return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, qs, callback);
-    }
+    // readNode(repository, branch, nodeId, path)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var qs = {};
+    //     if (path) {
+    //         qs["path"] = path;
+    //     }
+    //
+    //     return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, qs, callback);
+    // }
 
     /**
      * Queries for nodes.
@@ -295,19 +337,22 @@ class Session
      * @param pagination
      * @returns {*}
      */
-    queryNodes(repository, branch, query, pagination)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var callback = this.extractOptionalCallback(arguments);
-
-        if (pagination.fields) {
-            query["_fields"] = pagination.fields;
-            delete pagination.fields;
-        }
-
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/query", pagination, query, callback);
-    }
+    // queryNodes(repository, branch, query, pagination)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     if (pagination)
+    //     {
+    //         if (pagination.fields) {
+    //             query["_fields"] = pagination.fields;
+    //             delete pagination.fields;
+    //         }
+    //     }
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/query", pagination, query, callback);
+    // }
 
     /**
      * Creates a node.
@@ -318,260 +363,260 @@ class Session
      * @param options
      * @returns {*}
      */
-    createNode(repository, branch, obj, options)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var callback = this.extractOptionalCallback(arguments);
+    // createNode(repository, branch, obj, options)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var qs = {};
+    //
+    //     if (options)
+    //     {
+    //         if (options["rootNodeId"]) {
+    //             qs["rootNodeId"] = options["rootNodeId"]
+    //         }
+    //         if (options["parentFolderPath"]) {
+    //             qs["parentFolderPath"] = options["parentFolderPath"]
+    //         }
+    //         if (options["filePath"]) {
+    //             qs["filePath"] = options["filePath"]
+    //         }
+    //         if (options["fileName"]) {
+    //             qs["fileName"] = options["fileName"]
+    //         }
+    //         if (options["associationTypeString"]) {
+    //             qs["associationTypeString"] = options["associationTypeString"]
+    //         }
+    //
+    //         // some others for compatibility
+    //         if (options["filename"]) {
+    //             qs["fileName"] = options["filename"]
+    //         }
+    //         if (options["filepath"]) {
+    //             qs["fileName"] = options["filepath"]
+    //         }
+    //         if (options["parentPath"]) {
+    //             qs["parentFolderPath"] = options["parentPath"]
+    //         }
+    //     }
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes", qs, obj, callback);
+    // }
 
-        var qs = {};
+    // queryNodeRelatives(repository, branch, node, associationTypeQName, associationDirection, query, pagination)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var qs = {};
+    //
+    //     if (pagination)
+    //     {
+    //         for (var k in pagination)
+    //         {
+    //             qs[k] = pagination[k];
+    //         }
+    //     }
+    //
+    //     qs.type = associationTypeQName;
+    //     qs.direction = associationDirection;
+    //
+    //     if (!query) {
+    //         query = {};
+    //     }
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/relatives/query", qs, query, callback);
+    // };
 
-        if (options)
-        {
-            if (options["rootNodeId"]) {
-                qs["rootNodeId"] = options["rootNodeId"]
-            }
-            if (options["parentFolderPath"]) {
-                qs["parentFolderPath"] = options["parentFolderPath"]
-            }
-            if (options["filePath"]) {
-                qs["filePath"] = options["filePath"]
-            }
-            if (options["fileName"]) {
-                qs["fileName"] = options["fileName"]
-            }
-            if (options["associationTypeString"]) {
-                qs["associationTypeString"] = options["associationTypeString"]
-            }
+    // queryNodeChildren(repository, branch, node, query, pagination)
+    // {
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.queryNodeRelatives(repository, branch, node, "a:child", "OUTGOING", query, pagination, callback);
+    // };
 
-            // some others for compatibility
-            if (options["filename"]) {
-                qs["fileName"] = options["filename"]
-            }
-            if (options["filepath"]) {
-                qs["fileName"] = options["filepath"]
-            }
-            if (options["parentPath"]) {
-                qs["parentFolderPath"] = options["parentPath"]
-            }
-        }
+    // listNodeAssociations(repository, branch, node, associationType, associationDirection, pagination)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var qs = {};
+    //
+    //     if (pagination)
+    //     {
+    //         for (var k in pagination)
+    //         {
+    //             qs[k] = pagination[k];
+    //         }
+    //     }
+    //
+    //     if (associationType)
+    //     {
+    //         qs.type = associationType;
+    //     }
+    //
+    //     if (associationDirection)
+    //     {
+    //         qs.direction = associationDirection;
+    //     }
+    //
+    //     return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/associations", qs, callback);
+    // };
 
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes", qs, obj, callback);
-    }
+    // listOutgoingAssociations(repository, branch, node, associationType, pagination)
+    // {
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.listNodeAssociations(repository, branch, node, associationType, "OUTGOING", pagination, callback);
+    // };
 
-    queryNodeRelatives(repository, branch, node, associationTypeQName, associationDirection, query, pagination)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
+    // listIncomingAssociations(repository, branch, node, associationType, pagination)
+    // {
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.listNodeAssociations(repository, branch, node, associationType, "INCOMING", pagination, callback);
+    // };
 
-        var qs = {};
+    // associate(repository, branch, node, otherNode, associationType, associationDirectionality)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var otherNodeId = this.acquireId(otherNode);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var qs = {};
+    //     qs.node = otherNodeId;
+    //
+    //     if (associationType)
+    //     {
+    //         qs.type = associationType;
+    //     }
+    //
+    //     if (associationDirectionality)
+    //     {
+    //         qs.directionality = associationDirectionality;
+    //     }
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/associate", qs, {}, callback);
+    // }
 
-        if (pagination)
-        {
-            for (var k in pagination)
-            {
-                qs[k] = pagination[k];
-            }
-        }
+    // unassociate(repository, branch, node, otherNode, associationType, associationDirectionality)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var otherNodeId = this.acquireId(otherNode);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var qs = {};
+    //     qs.node = otherNodeId;
+    //
+    //     if (associationType)
+    //     {
+    //         qs.type = associationType;
+    //     }
+    //
+    //     if (associationDirectionality)
+    //     {
+    //         qs.directionality = associationDirectionality;
+    //     }
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/unassociate", qs, {}, callback);
+    // }
 
-        qs.type = associationTypeQName;
-        qs.direction = associationDirection;
+    // associateChild(repository, branch, node, childNode)
+    // {
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.associate(repository, branch, node, childNode, "a:child", "DIRECTED", callback);
+    // }
 
-        if (!query) {
-            query = {};
-        }
+    // unassociateChild(repository, branch, node, childNode)
+    // {
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.unassociate(repository, branch, node, childNode, "a:child", "DIRECTED", callback);
+    // }
 
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/relatives/query", qs, query, callback);
-    };
+    // deleteNode(repository, branch, node)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.del("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, callback);
+    // }
 
-    queryNodeChildren(repository, branch, node, query, pagination)
-    {
-        var callback = this.extractOptionalCallback(arguments);
+    // deleteNodes(repository, branch, nodes)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var payload = {};
+    //     payload._docs = this.acquireIds(nodes);
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/delete", {}, payload, callback);
+    // }
 
-        return this.queryNodeRelatives(repository, branch, node, "a:child", "OUTGOING", query, pagination, callback);
-    };
+    // updateNode(repository, branch, node)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var obj = this.cleanNodeBeforeWrite(node);
+    //
+    //     return this.put("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, obj, callback);
+    // }
 
-    listNodeAssociations(repository, branch, node, associationType, associationDirection, pagination)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
+    // patchNode(repository, branch, node, patchObject)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.patch("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, patchObject, callback);
+    // }
 
-        var qs = {};
+    // addNodeFeature(repository, branch, node, featureId, config)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/features/" + featureId, {}, config, callback);
+    // }
 
-        if (pagination)
-        {
-            for (var k in pagination)
-            {
-                qs[k] = pagination[k];
-            }
-        }
+    // removeNodeFeature(repository, branch, node, featureId)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.del("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/features/" + featureId, {}, callback);
+    // }
 
-        if (associationType)
-        {
-            qs.type = associationType;
-        }
-
-        if (associationDirection)
-        {
-            qs.direction = associationDirection;
-        }
-
-        return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/associations", qs, callback);
-    };
-
-    listOutgoingAssociations(repository, branch, node, associationType, pagination)
-    {
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.listNodeAssociations(repository, branch, node, associationType, "OUTGOING", pagination, callback);
-    };
-
-    listIncomingAssociations(repository, branch, node, associationType, pagination)
-    {
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.listNodeAssociations(repository, branch, node, associationType, "INCOMING", pagination, callback);
-    };
-
-    associate(repository, branch, node, otherNode, associationType, associationDirectionality)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var otherNodeId = this.acquireId(otherNode);
-        var callback = this.extractOptionalCallback(arguments);
-
-        var qs = {};
-        qs.node = otherNodeId;
-
-        if (associationType)
-        {
-            qs.type = associationType;
-        }
-
-        if (associationDirectionality)
-        {
-            qs.directionality = associationDirectionality;
-        }
-
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/associate", qs, {}, callback);
-    }
-
-    unassociate(repository, branch, node, otherNode, associationType, associationDirectionality)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var otherNodeId = this.acquireId(otherNode);
-        var callback = this.extractOptionalCallback(arguments);
-
-        var qs = {};
-        qs.node = otherNodeId;
-
-        if (associationType)
-        {
-            qs.type = associationType;
-        }
-
-        if (associationDirectionality)
-        {
-            qs.directionality = associationDirectionality;
-        }
-
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/unassociate", qs, {}, callback);
-    }
-
-    associateChild(repository, branch, node, childNode)
-    {
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.associate(repository, branch, node, childNode, "a:child", "DIRECTED", callback);
-    }
-
-    unassociateChild(repository, branch, node, childNode)
-    {
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.unassociate(repository, branch, node, childNode, "a:child", "DIRECTED", callback);
-    }
-
-    deleteNode(repository, branch, node)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.del("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, callback);
-    }
-
-    deleteNodes(repository, branch, nodes)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var callback = this.extractOptionalCallback(arguments);
-
-        var payload = {};
-        payload._docs = this.acquireIds(nodes);
-
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/delete", {}, payload, callback);
-    }
-
-    updateNode(repository, branch, node)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        var obj = this.cleanNodeBeforeWrite(node);
-
-        return this.put("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, obj, callback);
-    }
-
-    patchNode(repository, branch, node, patchObject)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.patch("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, patchObject, callback);
-    }
-
-    addNodeFeature(repository, branch, node, featureId, config)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/features/" + featureId, {}, config, callback);
-    }
-
-    removeNodeFeature(repository, branch, node, featureId)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.del("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/features/" + featureId, {}, callback);
-    }
-
-    refreshNode(repository, branch, node)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/refresh", {}, callback);
-    }
+    // refreshNode(repository, branch, node)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/refresh", {}, callback);
+    // }
 
     /*
     moveNodesTo(repository, branch, sourceNodes, targetNode, targetPath)
@@ -610,77 +655,77 @@ class Session
      * @param config { "leafPath": "<leafPath>", "basePath": "<basePath>", "containers": true, "depth": integer, "properties": true|false, "query": {}, "search": {} }
      * @returns {*}
      */
-    nodeTree(repository, branch, node, config)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        var qs = {};
-
-        if (!config)
-        {
-            config = {};
-        }
-
-        // "leaf"
-        if (config.leafPath)
-        {
-            qs["leaf"] = config.leafPath;
-        }
-        else if (config.leaf)
-        {
-            qs["leaf"] = config.leaf;
-        }
-
-        // "base"
-        if (config.basePath)
-        {
-            qs["base"] = config.basePath;
-        }
-        else if (config.base)
-        {
-            qs["base"] = config.base;
-        }
-
-        // "containers"
-        if (config.containers)
-        {
-            qs["containers"] = true;
-        }
-
-        // "properties"
-        if (config.properties)
-        {
-            qs["properties"] = true;
-        }
-
-        // "object"
-        if (config.object)
-        {
-            qs["object"] = true;
-        }
-
-        // "depth"
-        qs.depth = 1;
-        if (config.depth)
-        {
-            qs["depth"] = config.depth;
-        }
-
-        // payload
-        var payload = {};
-        if (config.query) {
-            payload.query = config.query;
-        }
-
-        if(config.search) {
-            payload.search = config.search;
-        }
-
-        return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/tree", qs, payload, callback);
-    };
+    // nodeTree(repository, branch, node, config)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var qs = {};
+    //
+    //     if (!config)
+    //     {
+    //         config = {};
+    //     }
+    //
+    //     // "leaf"
+    //     if (config.leafPath)
+    //     {
+    //         qs["leaf"] = config.leafPath;
+    //     }
+    //     else if (config.leaf)
+    //     {
+    //         qs["leaf"] = config.leaf;
+    //     }
+    //
+    //     // "base"
+    //     if (config.basePath)
+    //     {
+    //         qs["base"] = config.basePath;
+    //     }
+    //     else if (config.base)
+    //     {
+    //         qs["base"] = config.base;
+    //     }
+    //
+    //     // "containers"
+    //     if (config.containers)
+    //     {
+    //         qs["containers"] = true;
+    //     }
+    //
+    //     // "properties"
+    //     if (config.properties)
+    //     {
+    //         qs["properties"] = true;
+    //     }
+    //
+    //     // "object"
+    //     if (config.object)
+    //     {
+    //         qs["object"] = true;
+    //     }
+    //
+    //     // "depth"
+    //     qs.depth = 1;
+    //     if (config.depth)
+    //     {
+    //         qs["depth"] = config.depth;
+    //     }
+    //
+    //     // payload
+    //     var payload = {};
+    //     if (config.query) {
+    //         payload.query = config.query;
+    //     }
+    //
+    //     if(config.search) {
+    //         payload.search = config.search;
+    //     }
+    //
+    //     return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/tree", qs, payload, callback);
+    // };
 
     /**
      * Resolves the path for the node relative to the root directory.
@@ -690,19 +735,19 @@ class Session
      * @param node
      * @returns {*}
      */
-    resolveNodePath(repository, branch, node)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        var qs = {};
-        //qs.rootNodeId = "821c40ab613d9b5bcbbc656b62229301";
-        qs.rootNodeId = "r:root";
-
-        return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/path", qs, callback);
-    };
+    // resolveNodePath(repository, branch, node)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     var qs = {};
+    //     //qs.rootNodeId = "821c40ab613d9b5bcbbc656b62229301";
+    //     qs.rootNodeId = "r:root";
+    //
+    //     return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/path", qs, callback);
+    // };
 
     /**
      * Resolves all of the paths for the node.
@@ -713,15 +758,15 @@ class Session
      * @param node
      * @returns {*}
      */
-    resolveNodePaths(repository, branch, node)
-    {
-        var repositoryId = this.acquireId(repository);
-        var branchId = this.acquireId(branch);
-        var nodeId = this.acquireId(node);
-        var callback = this.extractOptionalCallback(arguments);
-
-        return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/paths", {}, callback);
-    };
+    // resolveNodePaths(repository, branch, node)
+    // {
+    //     var repositoryId = this.acquireId(repository);
+    //     var branchId = this.acquireId(branch);
+    //     var nodeId = this.acquireId(node);
+    //     var callback = this.extractOptionalCallback(arguments);
+    //
+    //     return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/paths", {}, callback);
+    // };
 
 };
 

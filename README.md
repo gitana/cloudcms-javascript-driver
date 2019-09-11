@@ -131,6 +131,52 @@ var nodeId = "821c40ab613d9b5bcbbc656b62229332";
 })();
 ```
 
+## Extending Session Methods
+
+To add new Session methods, register a new session extension:
+
+```
+var Extensions = require("cloudcms/extensions");
+
+var extendFn = function(Session, Helper)
+{
+    class c extends Session {
+
+        constructor(config, driver, storage)
+        {
+            super(config, driver, storage)
+        }
+
+        /**
+         * Creates an article.
+         *
+         * @param repository
+         * @param branch
+         * @param obj
+         */
+        createArticle(repository, branch, obj)
+        {
+            var callback = this.extractOptionalCallback(arguments);
+        
+            if (!obj) {
+                obj = {};
+            }
+            
+            obj._type = "my:article";
+            
+            return this.createNode(repository, branch, obj, callback);
+        }
+    }
+
+    return c;
+};
+
+Extensions.session("custom", extendFn);
+```
+
+This extends the `session` object with a new method called `createArticle`.
+
+
 ## Tests
 
 This library uses Mocha and Chai for testing.

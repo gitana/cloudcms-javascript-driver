@@ -1,17 +1,77 @@
 const fs = require("fs");
 const path = require("path");
 
-// drivers
-var RequestDriver = require("./drivers/request");
-
-// storage
-var MemoryStorage = require("./storage/memory");
-
-
-
-var Session = require("./session");
-
 var Helper = require("./helper");
+
+// extensions object
+var extensions = require("./extensions");
+
+// build the session that we hand back
+var Session = require("./session");
+module.exports = Session;
+
+var _infoLog = function(text)
+{
+    console.info(text);
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//
+// SESSION
+//
+////////////////////////////////////////////////////////////////////////////////////////
+
+// default session methods
+require("./methods/workflow");
+require("./methods/repository");
+require("./methods/branch");
+require("./methods/node");
+
+// process any session extension functions
+var sessionExtensions = extensions.session();
+for (var i = 0; i < sessionExtensions.length; i++)
+{
+    var extension = sessionExtensions[i];
+    if (extension.fn)
+    {
+        if (extension.name) {
+            _infoLog("Added session extension: " + extension.name);
+        }
+
+        Session = extension.fn.call(this, Session, Helper);
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//
+// DRIVERS
+//
+////////////////////////////////////////////////////////////////////////////////////////
+
+// default drivers
+require("./drivers/request");
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//
+// STORAGE
+//
+////////////////////////////////////////////////////////////////////////////////////////
+
+// default drivers
+require("./storage/memory");
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////
+//
+// get on with it...
+//
 
 var isString = Helper.isString;
 var isFunction = Helper.isFunction;
@@ -57,6 +117,12 @@ exports.defaults = {};
 exports.defaults.qs = {};
 exports.defaults.qs.full = true;
 exports.defaults.qs.metadata = true;
+exports.defaults.driver = {};
+exports.defaults.storage = {};
+exports.defaults.storage.type = "memory";
+exports.defaults.driver = {};
+exports.defaults.driver.type = "request";
+
 
 // connect method
 exports.connect = function(connectConfig, callback)
@@ -117,16 +183,43 @@ var _connect = function(config, callback)
             return callback(err);
         }
 
-        // configure driver storage
-        // TODO: allow for different implementations
-        var storage = new MemoryStorage();
+        // configuration
+        var storageName = exports.defaults.storage.type;
+        if (!storageName)
+        {
+            storageName = "memory";
+        }
 
-        // instantiate driver
-        // TODO: allow for different implementations
-        var driver = new RequestDriver(config, credentials, storage);
+        var driverName = exports.defaults.driver.type;
+        if (!driverName)
+        {
+            driverName = "request";
+        }
 
+        var storageClass = extensions.storage(storageName);
+        if (!storageClass)
+        {
+            throw new Error("Cannot find storage class for name: " + storageName);
+        }
+        _infoLog("Using storage: " + storageName);
+
+        var driverClass = extensions.driver(driverName);
+        if (!driverClass)
+        {
+            throw new Error("Cannot find driver class for name: " + driverName);
+        }
+        _infoLog("Using driver: " + driverName);
+
+        // build storage
+        var storage = new storageClass(config);
+
+        // build driver
+        var driver = new driverClass(config, credentials, storage);
+
+        // wrap it all up into a session
         var session = new Session(config, driver, storage);
 
+        // hand it back
         callback(null, session);
     });
 

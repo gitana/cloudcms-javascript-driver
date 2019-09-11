@@ -1,3 +1,5 @@
+var Extensions = require("../extensions");
+
 class MemoryStorage
 {
     constructor(config)
@@ -23,5 +25,8 @@ class MemoryStorage
         this.memory[key] = value;
     }
 }
+
+// register
+Extensions.storage("memory", MemoryStorage);
 
 module.exports = MemoryStorage;
