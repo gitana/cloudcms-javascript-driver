@@ -219,3 +219,44 @@ var now = exports.now = function()
 {
     return new Date().getTime();
 };
+
+var extractOptionalCallback = exports.extractOptionalCallback = function(_arguments)
+{
+    var args = Array.prototype.slice.call(_arguments);
+
+    if (args.length > 0)
+    {
+        var candidate = args[args.length - 1];
+        if (isFunction(candidate))
+        {
+            return candidate;
+        }
+    }
+
+    return null;
+};
+
+var sessionFunction = exports.sessionFunction = function(_arguments, fn)
+{
+    var self = this;
+
+    var callback = extractOptionalCallback(_arguments);
+
+    if (callback)
+    {
+        return fn.call(self, function(err, val) {
+            callback.call(self, err, val);
+        });
+    }
+
+    return new Promise(function(resolve, reject) {
+        fn.call(self, function(err, val) {
+            if (err) {
+                return reject.call(self, err);
+            }
+
+            resolve.call(self, val);
+        });
+    });
+
+}

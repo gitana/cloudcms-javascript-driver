@@ -1,14 +1,7 @@
-var Extensions = require("../extensions");
-
-var extendFn = function(Session, Helper)
+module.exports = function(Session)
 {
-    class c extends Session {
-
-        constructor(config, driver, storage)
-        {
-            super(config, driver, storage)
-        }
-
+    class RepositorySession extends Session
+    {
         /**
          * Create a repository.
          *
@@ -38,7 +31,5 @@ var extendFn = function(Session, Helper)
 
     }
 
-    return c;
+    return RepositorySession;
 };
-
-Extensions.session("repository", extendFn, { "core": true });

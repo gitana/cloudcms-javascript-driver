@@ -1,7 +1,7 @@
-var Helper = require("./helper");
+var Helper = require("../../helper");
 
 // define base class
-class Session
+class DefaultSession
 {
     constructor(config, driver, storage)
     {
@@ -201,7 +201,20 @@ class Session
         return JSON.parse(text);
     }
 
-    // ALL OTHER METHODS ARE PULLED IN VIA EXTENSIONS
+    // ALL OTHER METHODS ARE PULLED IN BELOW
 };
 
-module.exports = Session;
+var modulePaths = [
+    "./methods/branch",
+    "./methods/domain",
+    "./methods/node",
+    "./methods/principal",
+    "./methods/repository",
+    "./methods/workflow"
+];
+for (var i = 0; i < modulePaths.length; i++)
+{
+    DefaultSession = require(modulePaths[i])(DefaultSession)
+}
+
+module.exports = DefaultSession;

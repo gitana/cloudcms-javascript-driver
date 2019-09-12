@@ -1,7 +1,7 @@
 var CloudCMS = require("../../src/index");
 var assert = require('chai').assert;
 
-describe('sleep_await', function() {
+describe('sleep1', function() {
     it('should sleep using async/await without error', async function() {
 
         var session = await CloudCMS.connect();

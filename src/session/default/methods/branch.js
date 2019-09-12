@@ -1,14 +1,7 @@
-var Extensions = require("../extensions");
-
-var extendFn = function(Session, Helper)
+module.exports = function(Session)
 {
-    class c extends Session {
-
-        constructor(config, driver, storage)
-        {
-            super(config, driver, storage)
-        }
-
+    class BranchSession extends Session
+    {
         /**
          * Queries for branches.
          *
@@ -56,7 +49,5 @@ var extendFn = function(Session, Helper)
         }
     }
 
-    return c;
+    return BranchSession;
 };
-
-Extensions.session("branch", extendFn, { "core": true });

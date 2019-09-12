@@ -1,6 +1,4 @@
-var Extensions = require("../extensions");
-
-class MemoryStorage
+class CustomStorage
 {
     constructor(config)
     {
@@ -11,22 +9,22 @@ class MemoryStorage
 
     delete(key)
     {
+        console.log("DELETE: " + key);
         delete this.memory[key];
     }
 
     read(key)
     {
+        console.log("READ: " + key);
         return this.memory[key];
 
     }
 
     write(key, value)
     {
+        console.log("WRITE: " + key + " = " + value);
         this.memory[key] = value;
     }
 }
 
-// register
-Extensions.storage("memory", MemoryStorage);
-
-module.exports = MemoryStorage;
+module.exports = CustomStorage;

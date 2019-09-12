@@ -1,7 +1,7 @@
 var CloudCMS = require("../../src/index");
 var assert = require('chai').assert;
 
-describe('connect_promise_error', function() {
+describe('connect31', function() {
     it('should fail to connect using a Promise and handle the error', function(done) {
 
         var f = function(callback)

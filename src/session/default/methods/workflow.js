@@ -1,14 +1,7 @@
-var Extensions = require("../extensions");
-
-var extendFn = function(Session, Helper)
+module.exports = function(Session)
 {
-    class c extends Session {
-
-        constructor(config, driver, storage)
-        {
-            super(config, driver, storage)
-        }
-
+    class WorkflowSession extends Session
+    {
         readWorkflow(workflowId)
         {
             var callback = this.extractOptionalCallback(arguments);
@@ -29,10 +22,7 @@ var extendFn = function(Session, Helper)
 
             return this.post("/workflow/tasks/query", pagination, query, callback);
         }
-
     }
 
-    return c;
+    return WorkflowSession;
 };
-
-Extensions.session("workflow", extendFn, { "core": true });

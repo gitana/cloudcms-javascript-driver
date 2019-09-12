@@ -1,7 +1,7 @@
-var Driver = require("../driver");
+var Driver = require("../../driver");
 var request = require("request");
 
-var Helper = require("../helper");
+var Helper = require("../../helper");
 
 var doRequest = function(options, callback)
 {
@@ -236,9 +236,5 @@ class RequestDriver extends Driver
         };
     }
 }
-
-// register
-var Extensions = require("../extensions");
-Extensions.driver("request", RequestDriver);
 
 module.exports = RequestDriver;

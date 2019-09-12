@@ -1,7 +1,7 @@
 var CloudCMS = require("../../src/index");
 var assert = require('chai').assert;
 
-describe('node_1', function() {
+describe('node10', function() {
     it('should run node test without error', async function() {
 
         var session = await CloudCMS.connect();

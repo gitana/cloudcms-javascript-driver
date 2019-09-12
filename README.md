@@ -134,51 +134,97 @@ var nodeId = "821c40ab613d9b5bcbbc656b62229332";
 })();
 ```
 
-## Extending Session Methods
+## Custom Session
 
-To add new Session methods, register a new session extension:
+You can supply your own session implementations to add your own methods.
+
+Define your session class:
 
 ```
-var Extensions = require("cloudcms/extensions");
+var DefaultSession = require("cloudcms/session/default/session");
 
-var extendFn = function(Session, Helper)
+class CustomSession extends DefaultSession
 {
-    class c extends Session {
-
-        constructor(config, driver, storage)
-        {
-            super(config, driver, storage)
+    /**
+     * Creates an article.
+     *
+     * @param repository
+     * @param branch
+     * @param obj
+     */
+    createArticle(repository, branch, obj)
+    {
+        var callback = this.extractOptionalCallback(arguments);
+    
+        if (!obj) {
+            obj = {};
         }
-
-        /**
-         * Creates an article.
-         *
-         * @param repository
-         * @param branch
-         * @param obj
-         */
-        createArticle(repository, branch, obj)
-        {
-            var callback = this.extractOptionalCallback(arguments);
         
-            if (!obj) {
-                obj = {};
-            }
-            
-            obj._type = "my:article";
-            
-            return this.createNode(repository, branch, obj, callback);
-        }
+        obj._type = "my:article";
+        
+        // call through to the createNode method on the default session
+        return this.createNode(repository, branch, obj, callback);
     }
+}
 
-    return c;
-};
-
-Extensions.session("custom", extendFn);
+module.exports = CustomSession;
 ```
 
 This extends the `session` object with a new method called `createArticle`.
 
+And then do the following to use it:
+
+```
+const cloudcms = require("cloudcms");
+
+(async function() {
+
+    var customSession = require("custom-session");
+    cloudcms.session(customSession);
+
+    var session = await cloudcms.connect();
+    
+    var article = await session.createArticle(repository, branch, { "title": "Hello World" });
+
+})();
+```
+
+If you want to add a new asynchronous method that adhere to the session's async support for callbacks, Promises and/or
+await/async, you can use the `Helper.sessionFunction` method like this:
+
+```
+var DefaultSession = require("cloudcms/session/default/session");
+var Helper = require("cloudcms/helper");
+
+class CustomSession extends DefaultSession
+{
+    test()
+    {
+        // use the Helper.sessionFunction method to support Promise, callback or async/await
+        // put your work into the finish method
+        return Helper.sessionFunction.call(this, arguments, function(finish) {
+            return setTimeout(function() {
+                finish(null, 101);
+            }, 250);
+        });
+    }
+}
+
+module.exports = CustomSession;
+```
+
+
+## Custom Storage
+
+TODO: how to configure Memory vs Redis
+
+## Custom Driver
+
+TODO: how to configure a custom driver (XHR, etc)
+
+## Custom Cache
+
+TODO: how to configure custom caching for JSON responses
 
 ## Tests
 

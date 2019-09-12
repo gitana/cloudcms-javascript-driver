@@ -1,14 +1,7 @@
-var Extensions = require("../extensions");
-
-var extendFn = function(Session, Helper)
+module.exports = function(Session)
 {
-    class c extends Session {
-
-        constructor(config, driver, storage)
-        {
-            super(config, driver, storage)
-        }
-
+    class NodeSession extends Session
+    {
         /**
          * Reads a node.
          *
@@ -470,10 +463,7 @@ var extendFn = function(Session, Helper)
 
             return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/paths", {}, callback);
         };
-
     }
 
-    return c;
+    return NodeSession;
 };
-
-Extensions.session("node", extendFn, { "core": true });

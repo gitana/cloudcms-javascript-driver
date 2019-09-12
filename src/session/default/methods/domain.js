@@ -1,14 +1,7 @@
-var Extensions = require("../extensions");
-
-var extendFn = function(Session, Helper)
+module.exports = function(Session)
 {
-    class c extends Session {
-
-        constructor(config, driver, storage)
-        {
-            super(config, driver, storage)
-        }
-
+    class DomainSession extends Session
+    {
         /**
          * Create a domain.
          *
@@ -48,10 +41,7 @@ var extendFn = function(Session, Helper)
 
             return this.get("/domains/" + domainId, {}, callback);
         }
-
     }
 
-    return c;
+    return DomainSession;
 };
-
-Extensions.session("domain", extendFn, { "core": true });
