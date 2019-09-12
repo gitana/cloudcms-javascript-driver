@@ -27,6 +27,8 @@ require("./methods/workflow");
 require("./methods/repository");
 require("./methods/branch");
 require("./methods/node");
+require("./methods/domain");
+require("./methods/principal");
 
 // process any session extension functions
 var sessionExtensions = extensions.session();
