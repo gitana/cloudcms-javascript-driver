@@ -463,6 +463,36 @@ module.exports = function(Session)
 
             return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/paths", {}, callback);
         };
+        
+        /**
+         * Traverses around the node and returns any nodes found to be connected on the graph.
+         *
+         * Example config:
+         *
+         * {
+         *    "associations": {
+         *       "a:child": "MUTUAL",
+         *       "a:knows": "INCOMING",
+         *       "a:related": "OUTGOING"
+         *    },
+         *    "depth": 1,
+         *    "types": [ "custom:type1", "custom:type2" ]
+         * }
+         *
+         * @param repository
+         * @param branch
+         * @param node
+         * @param config
+         * @returns {*}
+         */
+        traverseNode(repository, branch, node, config) {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/traverse", {}, {traverse: config}, callback);
+        };
     }
 
     return NodeSession;
