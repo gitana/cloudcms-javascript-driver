@@ -60,7 +60,14 @@ class RequestDriver extends Driver
                     }
                     else if (response.statusCode >= 200 && response.statusCode <= 204)
                     {
-                        return done(null, Helper.parseJson(body));
+                        if (response.headers['content-type'].toLowerCase().includes('text/plain'))
+                        {
+                            return done(null, body);
+                        }
+                        else
+                        {
+                            return done(null, Helper.parseJson(body));
+                        }
                     }
 
                     return done(self.outgoing(body));

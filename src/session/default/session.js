@@ -207,6 +207,7 @@ class DefaultSession
 var modulePaths = [
     "./methods/branch",
     "./methods/domain",
+    "./methods/graphql",
     "./methods/node",
     "./methods/principal",
     "./methods/repository",

@@ -26,12 +26,13 @@ module.exports = function(Session)
          * @param obj
          * @returns {*}
          */
-        deleteBranch(repository, obj)
+        deleteBranch(repository, branch)
         {
             var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.del("/repositories/" + repositoryId, {}, callback);
+            return this.del("/repositories/" + repositoryId + "/branches/" + branchId, {}, callback);
         }
 
         /**
@@ -40,12 +41,13 @@ module.exports = function(Session)
          * @param repository
          * @param obj
          */
-        updateBranch(repository, obj)
+        updateBranch(repository, branch, obj)
         {
             var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.put("/repositories/" + repositoryId, {}, obj, callback);
+            return this.put("/repositories/" + repositoryId + "/branches/" + branchId, {}, obj, callback);
         }
     }
 
