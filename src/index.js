@@ -93,29 +93,37 @@ var _authenticate = function(config, callback)
     }
     */
 
-    var ClientOAuth2 = require("client-oauth2");
-    var auth = new ClientOAuth2(authConfig);
-
-    auth.owner.getToken(config.username, config.password).then(function(token) {
-
+    var buildCredentials = function(token)
+    {
         var accessToken = token.accessToken; // cd452036-dea1-4775-84b6-88dd374f1c13
         var tokenType = token.tokenType; // bearer
         var refreshToken = token.refreshToken; // 1c66821e-cf16-4002-ab9a-9ff7ebefc10b
         var expires = token.expires; // Thu Aug 29 2019 13:50:45 GMT-0400 (EDT)
 
+        return {
+            "accessToken": accessToken,
+            "refreshToken": refreshToken,
+            "tokenType": tokenType,
+            "expires": expires,
+            "sign": function(reqObj) {
+                return token.sign(reqObj);
+            },
+            "refresh": function(callback) {
+                token.refresh().then(function(token) {
+                    var newCredentials = buildCredentials(token);
+                    // TODO: we need to attach the credentials back to the session
+                });
+            }
+        };
+    };
+
+    var ClientOAuth2 = require("client-oauth2");
+    var auth = new ClientOAuth2(authConfig);
+
+    auth.owner.getToken(config.username, config.password).then(function(token) {
+
         var credentials = function(token) {
-            return {
-                "accessToken": accessToken,
-                "refreshToken": refreshToken,
-                "tokenType": tokenType,
-                "expires": expires,
-                "sign": function(reqObj) {
-                    return token.sign(reqObj);
-                },
-                "refresh": function() {
-                    return token.refresh();
-                }
-            };
+            return buildCredentials(token);
         }(token);
 
         callback(null, credentials);
