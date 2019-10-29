@@ -17,7 +17,8 @@ class DefaultSession
         this.acquireId = function(objOrId)
         {
             var id = Helper.acquireId(objOrId);
-            if (!id) {
+            if (!id)
+            {
                 throw new Error("Cannot acquire _doc for: " + objOrId);
             }
 
@@ -101,29 +102,17 @@ class DefaultSession
 
         this.get = function(uri, qs, callback)
         {
+            var self = this;
+
             qs = this.populateDefaultQs(qs);
-
-            //var driver = this.driver;
-
-            /*
-            var outerPromise = new Promise(function(resolve, reject) {
-                var innerPromise = driver.get(uri, qs);
-                innerPromise.then(function(response) {
-
-                    //console.log("INNER PROMISE RESOLVE!");
-
-                    resolve(response);
-                });
-            });
-
-            return outerPromise;
-            */
 
             return this.driver.get(uri, qs, callback);
         };
 
         this.post = function(uri, qs, payload, callback)
         {
+            var self = this;
+
             qs = this.populateDefaultQs(qs);
 
             return this.driver.post(uri, qs, payload, callback);
@@ -131,6 +120,8 @@ class DefaultSession
 
         this.put = function(uri, qs, payload, callback)
         {
+            var self = this;
+
             qs = this.populateDefaultQs(qs);
 
             return this.driver.put(uri, qs, payload, callback);
@@ -138,6 +129,8 @@ class DefaultSession
 
         this.del = function(uri, qs, callback)
         {
+            var self = this;
+
             qs = this.populateDefaultQs(qs);
 
             return this.driver.del(uri, qs, callback);
@@ -145,6 +138,8 @@ class DefaultSession
 
         this.patch = function(uri, qs, payload, callback)
         {
+            var self = this;
+
             qs = this.populateDefaultQs(qs);
 
             return this.driver.patch(uri, qs, payload, callback);
@@ -152,7 +147,8 @@ class DefaultSession
 
         this.multipartPost = function(uri, parts, callback)
         {
-            // TODO
+            var self = this;
+
             return this.driver.multipartPost(uri, parts, callback);
         };
     }
@@ -199,6 +195,77 @@ class DefaultSession
     parse(text)
     {
         return JSON.parse(text);
+    }
+
+    refresh(callback)
+    {
+        var driver = this.driver;
+
+        var fn = function(done) {
+            driver.credentials.refresh(function(err, newCredentials) {
+                if (err) {
+                    return done(err);
+                }
+
+                driver.credentials = newCredentials;
+
+                done(err);
+            });
+        };
+
+        // support for callback approach
+        if (callback && Helper.isFunction(callback))
+        {
+            return fn(function(err) {
+                callback(err);
+            });
+        }
+
+        return new Promise(function(resolve, reject) {
+            fn(function(err) {
+
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve();
+            });
+        });
+    }
+
+    disconnect(callback)
+    {
+        var driver = this.driver;
+
+        var fn = function(done) {
+            driver.disconnect(function(err) {
+                done(err);
+            });
+        };
+
+        // support for callback approach
+        if (callback && Helper.isFunction(callback))
+        {
+            return fn(function(err) {
+                callback(err);
+            });
+        }
+
+        return new Promise(function(resolve, reject) {
+            fn(function(err) {
+
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve();
+            });
+        });
+    }
+
+    reauthenticate(reauthenticateFn)
+    {
+        this.driver.reauthenticate(reauthenticateFn);
     }
 
     // ALL OTHER METHODS ARE PULLED IN BELOW

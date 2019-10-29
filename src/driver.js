@@ -1,5 +1,7 @@
 var Helper = require("./helper");
 
+var ONE_HOUR_MS = 1000 * 60 * 60 * 24;
+
 class Driver
 {
     constructor(config, credentials, storage)
@@ -8,12 +10,19 @@ class Driver
         this.credentials = credentials;
         this.storage = storage;
 
+        this._reauthenticateFn = null;
+
         this.incoming = function(requestObject)
         {
+            var self = this;
+
             // make sure the URL isn't relative
-            if (requestObject["url"].indexOf("http://") === 0 || requestObject["url"].indexOf("https://") === 0) {
+            if (requestObject["url"].indexOf("http://") === 0 || requestObject["url"].indexOf("https://") === 0)
+            {
                 // ok
-            } else {
+            }
+            else
+            {
                 if (requestObject["url"].startsWith("/"))
                 {
                     requestObject["url"] = requestObject["url"].substring(1);
@@ -23,7 +32,7 @@ class Driver
             }
 
             // sign the request
-            requestObject = credentials.sign(requestObject);
+            requestObject = self.credentials.sign(requestObject);
 
             // hand it back
             return requestObject;
@@ -46,6 +55,95 @@ class Driver
             }
 
             return outgoingBody;
+        };
+
+        this.isInvalidAccessToken = function(err, response, body)
+        {
+            var self = this;
+
+            // {"error":"invalid_token","error_description":"Invalid access token: 06ef574a-d177-4ba9-ac4b-5a57555a3a8d"}
+            if (response.statusCode === 401)
+            {
+                var json = self.outgoing(body);
+                return (json.error === "invalid_token");
+            }
+
+            return false;
+        };
+
+        this.handleRefreshAccessToken = function(err, response, body, done)
+        {
+            var self = this;
+
+            // use the refresh token to acquire a new access token
+            return self.credentials.refresh(function(err, newCredentials) {
+
+                if (err) {
+                    return self.handleRefreshFailure(function() {
+                        done(err);
+                    });
+                }
+
+                self.credentials = newCredentials;
+
+                return done(null, self.outgoing(body), null);
+            });
+        };
+
+        this.ensureTokenState = function(callback)
+        {
+            var self = this;
+
+            var expirationMs = self.credentials.expiresMs;
+            var now = new Date().getTime();
+
+            var timeUntilExpirationMs = expirationMs - now;
+            if (timeUntilExpirationMs < ONE_HOUR_MS)
+            {
+                // refresh right away
+                self.credentials.refresh(function(err, newCredentials) {
+
+                    if (err) {
+                        return self.handleRefreshFailure(function() {
+                            callback(err);
+                        });
+                    }
+
+                    self.credentials = newCredentials;
+
+                    callback();
+                });
+            }
+            else
+            {
+                callback();
+            }
+        };
+
+        this.handleRefreshFailure = function(callback)
+        {
+            var self = this;
+
+            if (!self._reauthenticateFn) {
+                return callback();
+            }
+
+            // wipe down credentials
+            self.credentials = null;
+
+            // reauthenticate
+            console.log("Reauthenticating");
+            self._reauthenticateFn.call(self, function (err, newSession) {
+
+                if (err) {
+                    return callback(err);
+                }
+
+                // assign new credentials
+                self.credentials = newSession.driver.credentials;
+
+                callback();
+            });
         };
 
         // @abstract
@@ -275,6 +373,23 @@ class Driver
     multipartPost(uri, parts, callback)
     {
         // TODO
+    }
+
+    /**
+     * Assigns a reauthentication function.
+     *
+     * @param reauthenticateFn
+     */
+    reauthenticate(reauthenticateFn)
+    {
+        this._reauthenticateFn = reauthenticateFn;
+    }
+
+    disconnect(callback)
+    {
+        this.post("/auth/expire", {}, {}, function(err) {
+            callback(err);
+        });
     }
 }
 

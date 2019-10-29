@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+var moment = require("moment");
 
 var Helper = require("./helper");
 
@@ -99,19 +100,27 @@ var _authenticate = function(config, callback)
         var tokenType = token.tokenType; // bearer
         var refreshToken = token.refreshToken; // 1c66821e-cf16-4002-ab9a-9ff7ebefc10b
         var expires = token.expires; // Thu Aug 29 2019 13:50:45 GMT-0400 (EDT)
+        var expiresMs = moment(token.expires).valueOf();
+
+        console.log("Built credentials - accessToken=" + token.accessToken + ", refreshToken=" + token.refreshToken);
 
         return {
             "accessToken": accessToken,
             "refreshToken": refreshToken,
             "tokenType": tokenType,
             "expires": expires,
+            "expiresMs": expiresMs,
             "sign": function(reqObj) {
                 return token.sign(reqObj);
             },
             "refresh": function(callback) {
+                //console.log("Refreshing credentials");
                 token.refresh().then(function(token) {
                     var newCredentials = buildCredentials(token);
-                    // TODO: we need to attach the credentials back to the session
+                    callback(null, newCredentials);
+                }, function(err) {
+                    console.log("Failed to refresh credentials: " + JSON.stringify(err));
+                    callback(new Error(JSON.stringify(err)));
                 });
             }
         };

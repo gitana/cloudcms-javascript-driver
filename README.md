@@ -226,6 +226,48 @@ TODO: how to configure a custom driver (XHR, etc)
 
 TODO: how to configure custom caching for JSON responses
 
+## Session
+
+When a session connects, it maintains an Access Token and a Refresh Token.  The Access Token is passed as a bearer
+token via the `Authorization` header.  If the Access Token expires, the Refresh Token is used to acquire a new
+Access Token.
+
+### Automatic Reauthentication
+
+If the Refresh Token expires, you will need to re-authenticate.
+
+You can set this up to happen automatically by using the `reauthenticate` method, like this:
+
+```
+session = await cloudcms.connect();
+
+session.reauthenticate(function(done) {
+
+    // re-connect and use the done() function to pass back the new session
+    cloudcms.connect(function(err, newSession) {
+        done(err, newSession);
+    });
+});
+```
+
+### Manually refresh the Access Token
+
+You can manually refresh the access token (using your Refresh Token) like this:
+
+```
+await session.refresh();
+```
+
+### Expire the Access / Refresh Token
+
+You can also manually expire the issued Access and Refresh Token, like this:
+
+```
+await session.disconnect();
+```
+
+### Automatic Reauthentication
+
 ## Tests
 
 This library uses Mocha and Chai for testing.

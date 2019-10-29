@@ -31,46 +31,61 @@ class RequestDriver extends Driver
 
             return function(done)
             {
-                var options = {
-                    "method": "GET",
-                    "url": uri,
-                    "headers": {},
-                    "qs": {}
-                };
-
-                if (qs)
-                {
-                    for (var k in qs)
-                    {
-                        options.qs[k] = qs[k];
-                    }
-                }
-
-                var signedOptions = self.incoming(options);
-
-                doRequest(signedOptions, function(err, response, body, stats) {
+                // ensures that access token is valid - if not, a refresh token request is made to get a new one
+                self.ensureTokenState(function(err) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    if (response.statusCode === 404)
+                    var options = {
+                        "method": "GET",
+                        "url": uri,
+                        "headers": {},
+                        "qs": {}
+                    };
+
+                    if (qs)
                     {
-                        return done();
-                    }
-                    else if (response.statusCode >= 200 && response.statusCode <= 204)
-                    {
-                        if (response.headers['content-type'].toLowerCase().includes('text/plain'))
+                        for (var k in qs)
                         {
-                            return done(null, body);
-                        }
-                        else
-                        {
-                            return done(null, Helper.parseJson(body));
+                            options.qs[k] = qs[k];
                         }
                     }
 
-                    return done(self.outgoing(body));
+                    var signedOptions = self.incoming(options);
+
+                    doRequest(signedOptions, function(err, response, body, stats) {
+
+                        if (err) {
+                            return done(err);
+                        }
+
+                        if (self.isInvalidAccessToken(err, response, body))
+                        {
+                            return self.handleRefreshAccessToken.call(self, err, response, body, done);
+                        }
+
+                        if (response.statusCode === 404)
+                        {
+                            return done();
+                        }
+                        else if (response.statusCode >= 200 && response.statusCode <= 204)
+                        {
+                            if (response.headers['content-type'].toLowerCase().includes('text/plain'))
+                            {
+                                return done(null, body);
+                            }
+                            else
+                            {
+                                return done(null, Helper.parseJson(body));
+                            }
+                        }
+
+                        return done({
+                            "code": response.statusCode
+                        });
+                    });
                 });
             }
         };
@@ -82,44 +97,57 @@ class RequestDriver extends Driver
 
             return function(done)
             {
-                var options = {
-                    "method": "POST",
-                    "url": uri,
-                    "headers": {},
-                    "qs": {}
-                };
-
-                if (qs)
-                {
-                    for (var k in qs)
-                    {
-                        var v = qs[k];
-
-                        if (Helper.isObject(v))
-                        {
-                            v = JSON.stringify(v);
-                        }
-
-                        options.qs[k] = v;
-                    }
-                }
-
-                if (payload)
-                {
-                    options.headers["Content-Type"] = "application/json";
-                    //options.body = JSON.stringify(payload);
-                    options.json = payload;
-                }
-
-                var signedOptions = self.incoming(options);
-
-                doRequest(signedOptions, function(err, response, body, stats) {
+                // ensures that access token is valid - if not, a refresh token request is made to get a new one
+                self.ensureTokenState(function(err) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    done(null, self.outgoing(body));
+                    var options = {
+                        "method": "POST",
+                        "url": uri,
+                        "headers": {},
+                        "qs": {}
+                    };
+
+                    if (qs)
+                    {
+                        for (var k in qs)
+                        {
+                            var v = qs[k];
+
+                            if (Helper.isObject(v))
+                            {
+                                v = JSON.stringify(v);
+                            }
+
+                            options.qs[k] = v;
+                        }
+                    }
+
+                    if (payload)
+                    {
+                        options.headers["Content-Type"] = "application/json";
+                        //options.body = JSON.stringify(payload);
+                        options.json = payload;
+                    }
+
+                    var signedOptions = self.incoming(options);
+
+                    doRequest(signedOptions, function(err, response, body, stats) {
+
+                        if (err) {
+                            return done(err);
+                        }
+
+                        if (self.isInvalidAccessToken(err, response, body))
+                        {
+                            return self.handleRefreshAccessToken.call(self, err, response, body, done);
+                        }
+
+                        done(null, self.outgoing(body));
+                    });
                 });
             }
         };
@@ -131,36 +159,49 @@ class RequestDriver extends Driver
 
             return function(done)
             {
-                var options = {
-                    "method": "PUT",
-                    "url": uri,
-                    "headers": {},
-                    "qs": {}
-                };
-
-                if (qs)
-                {
-                    for (var k in qs)
-                    {
-                        options.qs[k] = qs[k];
-                    }
-                }
-
-                if (payload)
-                {
-                    options.headers["Content-Type"] = "application/json";
-                    options.body = JSON.stringify(payload);
-                }
-
-                var signedOptions = self.incoming(options);
-
-                doRequest(signedOptions, function(err, response, body, stats) {
+                // ensures that access token is valid - if not, a refresh token request is made to get a new one
+                self.ensureTokenState(function(err) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    done(null, self.outgoing(body));
+                    var options = {
+                        "method": "PUT",
+                        "url": uri,
+                        "headers": {},
+                        "qs": {}
+                    };
+
+                    if (qs)
+                    {
+                        for (var k in qs)
+                        {
+                            options.qs[k] = qs[k];
+                        }
+                    }
+
+                    if (payload)
+                    {
+                        options.headers["Content-Type"] = "application/json";
+                        options.body = JSON.stringify(payload);
+                    }
+
+                    var signedOptions = self.incoming(options);
+
+                    doRequest(signedOptions, function(err, response, body, stats) {
+
+                        if (err) {
+                            return done(err);
+                        }
+
+                        if (self.isInvalidAccessToken(err, response, body))
+                        {
+                            return self.handleRefreshAccessToken.call(self, err, response, body, done);
+                        }
+
+                        done(null, self.outgoing(body));
+                    });
                 });
             }
         };
@@ -172,32 +213,44 @@ class RequestDriver extends Driver
 
             return function(done)
             {
-                var options = {
-                    "method": "DELETE",
-                    "url": uri,
-                    "headers": {},
-                    "qs": {}
-                };
-
-                if (qs)
-                {
-                    for (var k in qs)
-                    {
-                        options.qs[k] = qs[k];
-                    }
-                }
-
-                var signedOptions = self.incoming(options);
-
-                doRequest(signedOptions, function(err, response, body, stats) {
+                // ensures that access token is valid - if not, a refresh token request is made to get a new one
+                self.ensureTokenState(function(err) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    done(null, self.outgoing(body));
-                });
+                    var options = {
+                        "method": "DELETE",
+                        "url": uri,
+                        "headers": {},
+                        "qs": {}
+                    };
 
+                    if (qs)
+                    {
+                        for (var k in qs)
+                        {
+                            options.qs[k] = qs[k];
+                        }
+                    }
+
+                    var signedOptions = self.incoming(options);
+
+                    doRequest(signedOptions, function(err, response, body, stats) {
+
+                        if (err) {
+                            return done(err);
+                        }
+
+                        if (self.isInvalidAccessToken(err, response, body))
+                        {
+                            return self.handleRefreshAccessToken.call(self, err, response, body, done);
+                        }
+
+                        done(null, self.outgoing(body));
+                    });
+                });
             }
         };
 
@@ -208,36 +261,49 @@ class RequestDriver extends Driver
 
             return function(done)
             {
-                var options = {
-                    "method": "PATCH",
-                    "url": uri,
-                    "headers": {},
-                    "qs": {}
-                };
-
-                if (qs)
-                {
-                    for (var k in qs)
-                    {
-                        options.qs[k] = qs[k];
-                    }
-                }
-
-                if (payload)
-                {
-                    options.headers["Content-Type"] = "application/json";
-                    options.body = JSON.stringify(payload);
-                }
-
-                var signedOptions = self.incoming(options);
-
-                doRequest(signedOptions, function(err, response, body, stats) {
+                // ensures that access token is valid - if not, a refresh token request is made to get a new one
+                self.ensureTokenState(function(err) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    done(null, self.outgoing(body));
+                    var options = {
+                        "method": "PATCH",
+                        "url": uri,
+                        "headers": {},
+                        "qs": {}
+                    };
+
+                    if (qs)
+                    {
+                        for (var k in qs)
+                        {
+                            options.qs[k] = qs[k];
+                        }
+                    }
+
+                    if (payload)
+                    {
+                        options.headers["Content-Type"] = "application/json";
+                        options.body = JSON.stringify(payload);
+                    }
+
+                    var signedOptions = self.incoming(options);
+
+                    doRequest(signedOptions, function(err, response, body, stats) {
+
+                        if (err) {
+                            return done(err);
+                        }
+
+                        if (self.isInvalidAccessToken(err, response, body))
+                        {
+                            return self.handleRefreshAccessToken.call(self, err, response, body, done);
+                        }
+
+                        done(null, self.outgoing(body));
+                    });
                 });
             }
         };
