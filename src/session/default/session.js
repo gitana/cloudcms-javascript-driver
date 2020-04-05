@@ -278,7 +278,10 @@ var modulePaths = [
     "./methods/node",
     "./methods/principal",
     "./methods/repository",
-    "./methods/workflow"
+    "./methods/workflow",
+    "./methods/application",
+    "./methods/project",
+    "./methods/stack"
 ];
 for (var i = 0; i < modulePaths.length; i++)
 {

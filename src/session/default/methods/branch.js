@@ -16,7 +16,67 @@ module.exports = function(Session)
             var repositoryId = this.acquireId(repository);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.post("/repositories/" + repositoryId + "/branches/query", pagination, query, callback);
+            return this.post("/repositories/" + repositoryId + "/branches", pagination, query, callback);
+        };
+
+        /**
+         * Read a branch.
+         *
+         * @param repository
+         * @param branch
+         *
+         * @returns {*}
+         */
+        readBranches(repository, branch)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.get("/repositories/" + repositoryId + "/branches/" + branchId, {}, callback);
+        };
+
+        /**
+         * Create a branch.
+         *
+         * @param repository
+         * @param branch
+         * @param changesetId
+         * @param branchObject
+         *
+         * @returns {*}
+         */
+        createBranch(repository, branch, changesetId, obj={})
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var qs = {
+                changeset: changesetId,
+                branch: branchId
+            };
+
+            return this.post("/repositories/" + repositoryId + "/branches", qs, obj, callback);
+        };
+
+        /**
+         * List branches.
+         *
+         * @param repository
+         *
+         * @returns {*}
+         */
+        listBranches(repository)
+        {
+            var repositoryId = this.acquireId(repository);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var qs = {
+                full: true
+            };
+
+            return this.get("/repositories/" + repositoryId + "/branches", qs, callback);
         };
 
         /**
