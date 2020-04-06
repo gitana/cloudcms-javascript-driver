@@ -27,7 +27,7 @@ module.exports = function(Session)
          *
          * @returns {*}
          */
-        readBranches(repository, branch)
+        readBranch(repository, branch)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);

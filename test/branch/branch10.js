@@ -17,14 +17,14 @@ describe('branch_1', function() {
         }
 
         // read master branch
-        var master = await session.readBranches(repository, "master");
+        var master = await session.readBranch(repository, "master");
 
         // create branch
         var newBranch = await session.createBranch(repository, master, master.tip, {title: "new branch 1"});
         console.log("Repository: " + repository._doc + ", Branch: " + newBranch._doc + ", Title: " + newBranch.title);
 
         // read non master branch
-        newBranch = await session.readBranches(repository, newBranch);
+        newBranch = await session.readBranch(repository, newBranch);
         console.log("Repository: " + repository._doc + ", Branch: " + newBranch._doc + ", Title: " + newBranch.title);
 
     });
