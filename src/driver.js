@@ -1,6 +1,6 @@
 var Helper = require("./helper");
 
-var ONE_HOUR_MS = 1000 * 60 * 60 * 24;
+var ONE_HOUR_MS = 1000 * 60 * 60;
 
 class Driver
 {
