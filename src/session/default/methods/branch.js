@@ -16,7 +16,7 @@ module.exports = function(Session)
             var repositoryId = this.acquireId(repository);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.post("/repositories/" + repositoryId + "/branches", pagination, query, callback);
+            return this.post("/repositories/" + repositoryId + "/branches/query", pagination, query, callback);
         };
 
         /**

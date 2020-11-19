@@ -1,5 +1,7 @@
 module.exports = function(Session)
 {
+    var Helper = require("../../../helper");
+
     class NodeSession extends Session
     {
         /**
@@ -49,6 +51,51 @@ module.exports = function(Session)
 
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/query", pagination, query, callback);
         }
+
+        /**
+         * Queries/Searches for nodes.
+         *
+         * @param repository
+         * @param branch
+         * @param query
+         * @param pagination
+         * @returns {*}
+         */
+        searchNodes(repository, branch, search, pagination)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            if (Helper.isString(search))
+            {
+                search = {
+                    "search": search
+                };
+            }
+            
+
+            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/search", pagination, search, callback);
+        }
+        
+        /**
+         * Queries/Searches for nodes.
+         *
+         * @param repository
+         * @param branch
+         * @param query
+         * @param pagination
+         * @returns {*}
+         */
+        findNodes(repository, branch, config, pagination)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/find", pagination, config, callback);
+        }
+        
 
         /**
          * Creates a node.

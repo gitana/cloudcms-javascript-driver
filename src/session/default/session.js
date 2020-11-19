@@ -10,7 +10,9 @@ class DefaultSession
         this.storage = storage;
 
         this.defaults = {
-            "qs": {}
+            "qs": {
+                "full": true
+            }
         };
 
         // helper method

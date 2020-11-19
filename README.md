@@ -275,11 +275,11 @@ This library uses Mocha and Chai for testing.
 To run all tests:
 
 ```
-npm test
+npm run alltests
 ```
 
 To run a single test (`node`):
 
 ```
-npm test -- --grep node
+npm run test node
 ```

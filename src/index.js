@@ -23,7 +23,7 @@ var _connect = function(config, _storageClass, _driverClass, _sessionClass, call
 
         if (!_driverClass)
         {
-            _driverClass = require("./drivers/request/driver");
+            _driverClass = require("./drivers/axios/driver");
         }
 
         if (!_storageClass)
