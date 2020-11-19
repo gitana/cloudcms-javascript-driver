@@ -23,7 +23,6 @@ class AxiosDriver extends Driver
                 })
                 .catch(function(_err) {
                     err = _err;
-                    console.log(err);
                 })
                 .then(function() {
                     // Always executed
