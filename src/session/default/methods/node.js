@@ -1,6 +1,7 @@
 module.exports = function(Session)
 {
     var Helper = require("../../../helper");
+    var FormData = require("form-data");
 
     class NodeSession extends Session
     {
@@ -540,6 +541,65 @@ module.exports = function(Session)
 
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/traverse", {}, {traverse: config}, callback);
         };
+
+        uploadAttachment(repository, branch, node, attachmentId, file, mimeType, filename) {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            if (!attachmentId) {
+                attachmentId = "default";
+            }
+
+            var uri = "/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/attachments/" + attachmentId;
+
+            if (filename === null)
+            {
+                filename = attachmentId;
+            }
+
+            var formData = new FormData();
+            formData.append(attachmentId, file, {contentType: mimeType, filename: filename});
+
+            return this.multipartPost(uri, {}, formData, callback);
+        };
+
+        downloadAttachment(repository, branch, node, attachmentId) {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            if (!attachmentId) {
+                attachmentId = "default";
+            }
+
+            return this.download("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/attachments/" + attachmentId, {}, callback);
+        };
+
+        listAttachments(repository, branch, node) {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/attachments", {}, callback);
+        };
+
+        deleteAttachment(repository, branch, node, attachmentId) {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            if (!attachmentId)
+            {
+                attachmentId = "default";
+            }
+
+            return this.del("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/attachments/" + attachmentId, {}, callback);
+        }
     }
 
     return NodeSession;

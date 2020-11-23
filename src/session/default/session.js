@@ -153,6 +153,15 @@ class DefaultSession
 
             return this.driver.multipartPost(uri, parts, callback);
         };
+
+        this.download = function(uri, qs, callback)
+        {
+            var self = this;
+
+            qs = this.populateDefaultQs(qs);
+
+            return this.driver.download(uri, qs, callback);
+        };
     }
 
     // HELPER FUNCTIONS

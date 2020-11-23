@@ -370,9 +370,66 @@ class Driver
      * @param uri
      * @param parts
      */
-    multipartPost(uri, parts, callback)
+    multipartPost(uri, qs, formData, callback)
     {
-        // TODO
+        var fn = this.buildMultipartPostHandler(uri, qs, formData);
+
+        // support for callback approach
+        if (callback && Helper.isFunction(callback))
+        {
+            return fn(function(err, result) {
+                callback(err, result);
+            });
+        }
+
+        var promise = new Promise((resolve, reject) => {
+
+            fn(function(err, result) {
+
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(result);
+            });
+        });
+
+        return promise;
+    }
+
+    /**
+     * @extension_point
+     *
+     *
+     *
+     * @param uri
+     * @param qs
+     */
+    download(uri, qs, callback)
+    {
+        var fn = this.buildDownloadHandler(uri, qs);
+
+        // support for callback approach
+        if (callback && Helper.isFunction(callback))
+        {
+            return fn(function(err, result) {
+                callback(err, result);
+            });
+        }
+
+        var promise = new Promise((resolve, reject) => {
+
+            fn(function(err, result) {
+
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(result);
+            });
+        });
+
+        return promise;
     }
 
     /**
