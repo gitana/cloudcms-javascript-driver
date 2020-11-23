@@ -370,9 +370,9 @@ class Driver
      * @param uri
      * @param parts
      */
-    multipartPost(uri, qs, formData, callback)
+    multipartPost(uri, formData, callback)
     {
-        var fn = this.buildMultipartPostHandler(uri, qs, formData);
+        var fn = this.buildMultipartPostHandler(uri, formData);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))

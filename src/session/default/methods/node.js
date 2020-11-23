@@ -562,7 +562,7 @@ module.exports = function(Session)
             var formData = new FormData();
             formData.append(attachmentId, file, {contentType: mimeType, filename: filename});
 
-            return this.multipartPost(uri, {}, formData, callback);
+            return this.multipartPost(uri, formData, callback);
         };
 
         downloadAttachment(repository, branch, node, attachmentId) {

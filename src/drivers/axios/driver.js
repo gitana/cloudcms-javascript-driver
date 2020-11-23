@@ -326,7 +326,7 @@ class AxiosDriver extends Driver
             }
         };
 
-        this.buildMultipartPostHandler = function(uri, params, formData)
+        this.buildMultipartPostHandler = function(uri, formData)
         {
             var self = this;
 
