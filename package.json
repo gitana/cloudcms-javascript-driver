@@ -22,15 +22,15 @@
   "main": "src/index.js",
   "devDependencies": {
     "browserify": "^17.0.0",
-    "chai": "^4.2.0",
-    "mocha": "^6.2.0"
+    "chai": "^4.3.4",
+    "mocha": "^6.2.3"
   },
   "dependencies": {
-    "axios": "^0.21.0",
-    "client-oauth2": "^4.2.3",
+    "axios": "^0.21.1",
+    "client-oauth2": "^4.3.3",
     "form-data": "^3.0.0",
-    "moment": "^2.24.0",
-    "request": "^2.88.0"
+    "moment": "^2.29.1",
+    "request": "^2.88.2"
   },
   "scripts": {
     "alltests": "./node_modules/mocha/bin/mocha --recursive --timeout 120000",

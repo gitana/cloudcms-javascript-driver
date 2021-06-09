@@ -18,3 +18,5 @@ gitana.json
 gitana-test.json
 cloudcms.json
 cloudcms-test.json
+
+.DS_Store
