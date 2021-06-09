@@ -191,6 +191,15 @@ class Driver
             }
         };
 
+        // @abstract
+        this.buildMultipartPostHandler = function(uri, qs, payload)
+        {
+            return function(done)
+            {
+                //
+            }
+        }
+
     }
 
     /**
@@ -370,9 +379,9 @@ class Driver
      * @param uri
      * @param parts
      */
-    multipartPost(uri, formData, callback)
+    multipartPost(uri, qs, parts, callback)
     {
-        var fn = this.buildMultipartPostHandler(uri, formData);
+        var fn = this.buildMultipartPostHandler(uri, qs, parts);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))

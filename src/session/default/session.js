@@ -147,11 +147,11 @@ class DefaultSession
             return this.driver.patch(uri, qs, payload, callback);
         };
 
-        this.multipartPost = function(uri, formData, callback)
+        this.multipartPost = function(uri, qs, formData, callback)
         {
             var self = this;
 
-            return this.driver.multipartPost(uri, formData, callback);
+            return this.driver.multipartPost(uri, qs, formData, callback);
         };
 
         this.download = function(uri, qs, callback)

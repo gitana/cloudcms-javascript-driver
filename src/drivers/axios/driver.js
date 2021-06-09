@@ -273,7 +273,7 @@ class AxiosDriver extends Driver
         };
 
         // @abstract
-        this.buildPatchHandler = function(uri, qs, payload)
+        this.buildPatchHandler = function(uri, params, payload)
         {
             var self = this;
 
@@ -326,7 +326,7 @@ class AxiosDriver extends Driver
             }
         };
 
-        this.buildMultipartPostHandler = function(uri, formData)
+        this.buildMultipartPostHandler = function(uri, params, payload)
         {
             var self = this;
 
@@ -339,7 +339,7 @@ class AxiosDriver extends Driver
                         return done(err);
                     }
 
-                    var formHeaders = formData.getHeaders();
+                    var formHeaders = payload.getHeaders();
 
                     var options = {
                         "method": "POST",
@@ -366,9 +366,9 @@ class AxiosDriver extends Driver
                         }
                     }
 
-                    if (formData)
+                    if (payload)
                     {
-                        options.data = formData;
+                        options.data = payload;
                     }
 
                     var signedOptions = self.incoming(options);
