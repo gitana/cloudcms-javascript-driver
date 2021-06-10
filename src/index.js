@@ -102,7 +102,7 @@ var _authenticate = function(config, callback)
         var expires = token.expires; // Thu Aug 29 2019 13:50:45 GMT-0400 (EDT)
         var expiresMs = moment(token.expires).valueOf();
 
-        console.log("Built credentials - accessToken=" + token.accessToken + ", refreshToken=" + token.refreshToken);
+        // console.log("Built credentials - accessToken=" + token.accessToken + ", refreshToken=" + token.refreshToken);
 
         return {
             "accessToken": accessToken,
