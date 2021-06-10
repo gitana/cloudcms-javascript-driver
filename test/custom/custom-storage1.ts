@@ -1,12 +1,12 @@
-var CloudCMS = require("../../src/index");
+import * as CloudCMS from "../..";
+import { CustomStorage } from './custom-storage';
 var assert = require('chai').assert;
 
 describe('custom_storage_1', function() {
     it('should run using custom storage / await without error', async function() {
 
         // custom storage
-        var customStorage = require("./custom-storage");
-        CloudCMS.storage(customStorage);
+        CloudCMS.storage(CustomStorage);
 
         // connect
         var session = await CloudCMS.connect();

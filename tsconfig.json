@@ -5,15 +5,19 @@
         "experimentalDecorators": true,
         "strictPropertyInitialization": false,
         "isolatedModules": false,
-        "strict": false,
+        "strict": true,
         "noImplicitAny": false,
         "typeRoots" : [
           "../node_modules/@types"
-        ]
+        ],
+        "lib": [
+            "ES2015",
+            "dom"
+        ],
+        "types": ["node", "chai", "mocha"],
+        "outDir": ".output"
     },
     "include": [
-        "./**/*.ts",
-        "./**/*.js"
-    ],
-    "exclude": []
+        "./**/*.ts"
+    ]
 }

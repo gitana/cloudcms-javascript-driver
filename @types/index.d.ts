@@ -1,12 +1,13 @@
+export declare function session(sessionClass: ObjectConstructor): void;
+export declare function driver(driverClass: ObjectConstructor): void;
+export declare function storage(storageClass: ObjectConstructor): void;
+export declare function connect(connectConfig?: DriverConfig, callback?: ResultCb<DefaultSession>): Promise<DefaultSession>;
+export declare function connect(callback?: ResultCb<DefaultSession>): Promise<DefaultSession>;
+export declare function connect<T extends Session>(connectConfig: DriverConfig, callback?: ResultCb<T>): Promise<T>;
+export declare function connect<T extends Session>(callback?: ResultCb<T>): Promise<T>;
 
-export declare function session(sessionClass: any): void;
-export declare function driver(driverClass: any): void;
-export declare function storage(storageClass: any): void;
-export declare function connect<T extends Session>(connectConfig: DriverConfig, callback?: ResultCb): Promise<T>;
-export declare function connect(connectConfig: DriverConfig, callback?: ResultCb): Promise<DefaultSession>;
 
-
-export declare type ResultCb = (err: Error, Result: Object) => void;
+export declare type ResultCb<T=Object> = (err: Error, result: T) => void;
 
 export declare interface DriverConfig {
     clientKey: string,
@@ -59,6 +60,13 @@ export declare interface Driver {
 export declare interface Session {
     config: DriverConfig,
     driver: Driver
+
+    sleep(ms: Number, callback?: ResultCb): Promise<void>;
+    stringify(obj: Object, pretty: boolean): string;
+    parse(text: string): Object;
+    refresh(callback?: (err: Error) => void): Promise<void>;
+    disconnect(callback?: (err: Error) => void): Promise<void>;
+    reauthenticate(reauthenticateFn: Function): void;
 }
 
 export declare interface ApplicationSession extends Session {
@@ -66,7 +74,7 @@ export declare interface ApplicationSession extends Session {
 }
 
 export declare interface RepositorySession extends Session {
-    createRepository(obj: Object): Promise<PlatformObject>;
+    createRepository(obj?: Object): Promise<PlatformObject>;
     queryRepositories(query?: Object, pagination?: Object): Promise<ResultMap<PlatformObject>>
 }
 
@@ -80,7 +88,7 @@ export declare interface BranchSession extends Session {
 }
 
 export declare interface DomainSession extends Session {
-    createDomain(obj: Object): Promise<PlatformObject>;
+    createDomain(obj?: Object): Promise<PlatformObject>;
     queryDomains(query?: Object, pagination?: Object): Promise<ResultMap<PlatformObject>>;
     readDomain(domainId: string): Promise<PlatformObject>;
 }
@@ -115,7 +123,7 @@ export declare interface NodeSession extends Session {
     queryNodes(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Object): Promise<ResultMap<Node>>;
     searchNodes(repository: TypedID|string, branch: TypedID|string, search: Object|string, pagination?: Object): Promise<ResultMap<Node>>;
     findNodes(repository: TypedID|string, branch: TypedID|string, config: Object, pagination?: Object): Promise<ResultMap<Node>>;
-    createNode(repository: TypedID|string, branch: TypedID|string, obj: Object, options?: Object): Promise<Node>;
+    createNode(repository: TypedID|string, branch: TypedID|string, obj?: Object, options?: Object): Promise<Node>;
     queryNodeRelatives(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Object): Promise<ResultMap<Node>>;
     queryNodeChildren(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, query: Object, pagination?: Object): Promise<ResultMap<Node>>;
     listNodeAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, associationDirection?: string, pagination?: Object): Promise<ResultMap<Association>>;
@@ -163,7 +171,7 @@ export declare interface WorkflowSession extends Session {
 }
 
 
-export declare type DefaultSession = ApplicationSession & RepositorySession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession;
+export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession;
 
 
 
