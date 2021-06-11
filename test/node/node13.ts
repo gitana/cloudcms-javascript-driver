@@ -1,4 +1,4 @@
-var CloudCMS = require("../../src/index");
+import * as CloudCMS from "../..";
 var assert = require('chai').assert;
 
 describe('node14', function() {
@@ -28,7 +28,7 @@ describe('node14', function() {
 
 var sleep = function(ms)
 {
-    return new Promise(function(resolve, reject) {
+    return new Promise<void>(function(resolve, reject) {
 
         setTimeout(function() {
             resolve();

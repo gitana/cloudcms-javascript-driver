@@ -118,6 +118,14 @@ export declare interface Attachment {
     objectId: string
 }
 
+export declare interface TraversalResult {
+    node: string,
+    config: Object,
+    node_count: Number,
+    nodes: {[id: string]: Node}
+    associations: {[id: string]: Association}
+}
+
 export declare interface NodeSession extends Session {
     readNode(repository: TypedID|string, branch: TypedID|string, nodeId: string, path?: string): Promise<Node>;
     queryNodes(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Object): Promise<ResultMap<Node>>;
@@ -143,7 +151,7 @@ export declare interface NodeSession extends Session {
     nodeTree(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config?: Object): Promise<Object>;
     resolveNodePath(repository: TypedID|string, branch: TypedID|string, node: TypedID|string): Promise<{path: string}>;
     resolveNodePaths(repository: TypedID|string, branch: TypedID|string, node: TypedID|string): Promise<{[id: string]: string}>;
-    traverseNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config: Object): Promise<Object>;
+    traverseNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config: Object): Promise<TraversalResult>;
     uploadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, file: File, mimeType: string, filename?: string): Promise<void>;
     downloadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string): Promise<NodeJS.ReadStream>;
     listAttachments(repository: TypedID|string, branch: TypedID|string, node: TypedID|string): Promise<ResultMap<Attachment>>;

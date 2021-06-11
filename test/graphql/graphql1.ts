@@ -1,4 +1,4 @@
-var CloudCMS = require("../../src/index");
+import * as CloudCMS from "../..";
 var assert = require('chai').assert;
 
 describe('graphql_1', function() {
@@ -53,8 +53,12 @@ describe('graphql_1', function() {
 
         var result = await session.graphqlQuery(repository, branch, query);
         assert.isTrue("data" in result);
-        assert.isTrue("custom_books" in result.data)
-        assert.equal(2, result.data["custom_books"].length)
-        assert.equal(2, Object.keys(result.data["custom_books"][0]).length);
+        if (result.data)
+        {
+            assert.isTrue("custom_books" in result.data)
+            assert.equal(2, result.data["custom_books"].length)
+            assert.equal(2, Object.keys(result.data["custom_books"][0]).length);
+        }
+        
     });
 });
