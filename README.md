@@ -50,7 +50,7 @@ var nodeId = "821c40ab613d9b5bcbbc656b62229332";
 
 ### Promises
 
-```
+```javascript
 const cloudcms = require("cloudcms");
 
 const apiKeys = {
@@ -77,7 +77,7 @@ cloudcms.connect(apiKeys).then(function(session) {
 
 ### Callbacks
 
-```
+```javascript
 const cloudcms = require("cloudcms");
 
 const apiKeys = {
@@ -112,7 +112,7 @@ API keys from the following files in the local directory:
 
 For example, the following code will simply read from disk:
 
-```
+```javascript
 const cloudcms = require("cloudcms");
 
 var repositoryId = "f49e621853c33f501377";
@@ -137,7 +137,7 @@ You can supply your own session implementations to add your own methods.
 
 Define your session class:
 
-```
+```javascript
 var DefaultSession = require("cloudcms/session/default/session");
 
 class CustomSession extends DefaultSession
@@ -171,7 +171,7 @@ This extends the `session` object with a new method called `createArticle`.
 
 And then do the following to use it:
 
-```
+```javascript
 const cloudcms = require("cloudcms");
 
 (async function() {
@@ -189,7 +189,7 @@ const cloudcms = require("cloudcms");
 If you want to add a new asynchronous method that adhere to the session's async support for callbacks, Promises and/or
 await/async, you can use the `Helper.sessionFunction` method like this:
 
-```
+```javascript
 var DefaultSession = require("cloudcms/session/default/session");
 var Helper = require("cloudcms/helper");
 
@@ -235,7 +235,7 @@ If the Refresh Token expires, you will need to re-authenticate.
 
 You can set this up to happen automatically by using the `reauthenticate` method, like this:
 
-```
+```javascript
 session = await cloudcms.connect();
 
 session.reauthenticate(function(done) {
@@ -263,7 +263,35 @@ You can also manually expire the issued Access and Refresh Token, like this:
 await session.disconnect();
 ```
 
-### Automatic Reauthentication
+### TypeScript
+
+The `cloudcms-javascript-driver` includes a TypeScript type interface to improve your editing experience and allow better integration in your TypeScript apps.
+Here's a quick example usage:
+
+```typescript
+import { DriverConfig, DefaultSession, PlatformObject, Rows } from 'cloudcms';
+import * as CloudCMS from 'cloudcms';
+
+async function myRequest(): Promise<void> {
+    var config: DriverConfig = {
+        // ...
+    };
+
+    var session: DefaultSession = await CloudCMS.connect(config);
+
+    var repositoryId = "myRepo";
+    var branchId = "master";
+
+    var nodes: Rows<Node> = await session.queryNodes(repositoryId, branchId, { "author": "Kurt Vonnegut" });
+    nodes.rows.forEach((obj) => {
+        console.log(obj._doc);
+    })
+}
+
+myRequest();
+
+
+```
 
 ## Tests
 
