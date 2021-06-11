@@ -110,84 +110,84 @@ export declare interface Session {
 }
 
 export declare interface ApplicationSession extends Session {
-    reportApplication(application: (TypedID | string)): Promise<PlatformObject>;
+    readApplication(application: (TypedID | string), callback?: ResultCb): Promise<PlatformObject>;
 }
 
 export declare interface RepositorySession extends Session {
-    createRepository(obj?: Object): Promise<PlatformObject>;
-    queryRepositories(query?: Object, pagination?: Object): Promise<Rows<PlatformObject>>
+    createRepository(obj?: Object, callback?: ResultCb): Promise<PlatformObject>;
+    queryRepositories(query?: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<PlatformObject>>
 }
 
 export declare interface BranchSession extends Session {
-    queryBranches(repository: TypedID|string, query?: Object, pagination?: Object): Promise<Rows<RepositoryObject>>;
-    readBranch(repository: TypedID|string, branch: TypedID|string): Promise<RepositoryObject>;
-    createBranch(repository: TypedID|string, branch: TypedID|string, changesetId?: string, obj?: Object): Promise<RepositoryObject>;
-    listBranches(repository: TypedID|string): Promise<Rows<RepositoryObject>>;
-    deleteBranch(repository: TypedID|string, branch: TypedID|string): Promise<void>;
-    updateBranch(repository: TypedID|string, branch: TypedID|string, obj: Object): Promise<RepositoryObject>;
+    queryBranches(repository: TypedID|string, query?: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<RepositoryObject>>;
+    readBranch(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb): Promise<RepositoryObject>;
+    createBranch(repository: TypedID|string, branch: TypedID|string, changesetId?: string, obj?: Object, callback?: ResultCb): Promise<RepositoryObject>;
+    listBranches(repository: TypedID|string, callback?: ResultCb): Promise<Rows<RepositoryObject>>;
+    deleteBranch(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb): Promise<void>;
+    updateBranch(repository: TypedID|string, branch: TypedID|string, obj: Object, callback?: ResultCb): Promise<RepositoryObject>;
 }
 
 export declare interface DomainSession extends Session {
-    createDomain(obj?: Object): Promise<PlatformObject>;
-    queryDomains(query?: Object, pagination?: Object): Promise<Rows<PlatformObject>>;
-    readDomain(domainId: string): Promise<PlatformObject>;
+    createDomain(obj?: Object, callback?: ResultCb): Promise<PlatformObject>;
+    queryDomains(query?: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<PlatformObject>>;
+    readDomain(domainId: string, callback?: ResultCb): Promise<PlatformObject>;
 }
 
 export declare interface GraphQLSession extends Session {
-    graphqlQuery(repository: TypedID|string, branch: TypedID|string, query: string, operationName?: string, variables?: Object): Promise<GraphQLResult>;
-    graphqlSchema(repository: TypedID|string, branch: TypedID|string): Promise<string>;
+    graphqlQuery(repository: TypedID|string, branch: TypedID|string, query: string, operationName?: string, variables?: Object, callback?: ResultCb): Promise<GraphQLResult>;
+    graphqlSchema(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb): Promise<string>;
 }
 
 export declare interface NodeSession extends Session {
-    readNode(repository: TypedID|string, branch: TypedID|string, nodeId: string, path?: string): Promise<Node>;
-    queryNodes(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Object): Promise<Rows<Node>>;
-    searchNodes(repository: TypedID|string, branch: TypedID|string, search: Object|string, pagination?: Object): Promise<Rows<Node>>;
-    findNodes(repository: TypedID|string, branch: TypedID|string, config: Object, pagination?: Object): Promise<Rows<Node>>;
-    createNode(repository: TypedID|string, branch: TypedID|string, obj?: Object, options?: Object): Promise<Node>;
-    queryNodeRelatives(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Object): Promise<Rows<Node>>;
-    queryNodeChildren(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, query: Object, pagination?: Object): Promise<Rows<Node>>;
-    listNodeAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, associationDirection?: string, pagination?: Object): Promise<Rows<Association>>;
-    listOutgoingAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, pagination?: Object): Promise<Rows<Association>>;
-    listIncomingAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, pagination?: Object): Promise<Rows<Association>>;
-    associate(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, otherNode: TypedID|string, associationType?: string, associationDirectionality?: string): Promise<Association>;
-    unassociate(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, otherNode: TypedID|string, associationType?: string, associationDirectionality?: string): Promise<void>;
-    associateChild(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, childNode: TypedID|string): Promise<Association>;
-    unassociateChild(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, childNode: TypedID|string): Promise<void>;
-    deleteNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string): Promise<void>;
-    deleteNodes(repository: TypedID|string, branch: TypedID|string, nodes: string|Array<string>|Array<TypedID>): Promise<void>;
-    updateNode(repository: TypedID|string, branch: TypedID|string, node: Node): Promise<Node>;
-    patchNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, patchObject: Object): Promise<Node>;
-    addNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string, config?: Object): Promise<void>;
-    removeNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string): Promise<void>;
-    refreshNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string): Promise<void>;
-    nodeTree(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config?: Object): Promise<Object>;
-    resolveNodePath(repository: TypedID|string, branch: TypedID|string, node: TypedID|string): Promise<{path: string}>;
-    resolveNodePaths(repository: TypedID|string, branch: TypedID|string, node: TypedID|string): Promise<{[id: string]: string}>;
-    traverseNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config: Object): Promise<TraversalResult>;
-    uploadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, file: File, mimeType: string, filename?: string): Promise<void>;
-    downloadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string): Promise<NodeJS.ReadStream>;
-    listAttachments(repository: TypedID|string, branch: TypedID|string, node: TypedID|string): Promise<Rows<Attachment>>;
-    deleteAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId?: string): Promise<void>;
+    readNode(repository: TypedID|string, branch: TypedID|string, nodeId: string, path?: string, callback?: ResultCb): Promise<Node>;
+    queryNodes(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<Node>>;
+    searchNodes(repository: TypedID|string, branch: TypedID|string, search: Object|string, pagination?: Object, callback?: ResultCb): Promise<Rows<Node>>;
+    findNodes(repository: TypedID|string, branch: TypedID|string, config: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<Node>>;
+    createNode(repository: TypedID|string, branch: TypedID|string, obj?: Object, options?: Object, callback?: ResultCb): Promise<Node>;
+    queryNodeRelatives(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<Node>>;
+    queryNodeChildren(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<Node>>;
+    listNodeAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, associationDirection?: string, pagination?: Object, callback?: ResultCb): Promise<Rows<Association>>;
+    listOutgoingAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, pagination?: Object, callback?: ResultCb): Promise<Rows<Association>>;
+    listIncomingAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, pagination?: Object, callback?: ResultCb): Promise<Rows<Association>>;
+    associate(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb): Promise<Association>;
+    unassociate(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb): Promise<void>;
+    associateChild(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, childNode: TypedID|string, callback?: ResultCb): Promise<Association>;
+    unassociateChild(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, childNode: TypedID|string, callback?: ResultCb): Promise<void>;
+    deleteNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<void>;
+    deleteNodes(repository: TypedID|string, branch: TypedID|string, nodes: string|Array<string>|Array<TypedID>, callback?: ResultCb): Promise<void>;
+    updateNode(repository: TypedID|string, branch: TypedID|string, node: Node, callback?: ResultCb): Promise<Node>;
+    patchNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, patchObject: Object, callback?: ResultCb): Promise<Node>;
+    addNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string, config?: Object, callback?: ResultCb): Promise<void>;
+    removeNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string, callback?: ResultCb): Promise<void>;
+    refreshNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<void>;
+    nodeTree(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config?: Object, callback?: ResultCb): Promise<Object>;
+    resolveNodePath(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<{path: string}>;
+    resolveNodePaths(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<{[id: string]: string}>;
+    traverseNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config: Object, callback?: ResultCb): Promise<TraversalResult>;
+    uploadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, file: File, mimeType: string, filename?: string, callback?: ResultCb): Promise<void>;
+    downloadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, callback?: ResultCb): Promise<NodeJS.ReadStream>;
+    listAttachments(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<Rows<Attachment>>;
+    deleteAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId?: string, callback?: ResultCb): Promise<void>;
 }
 
 export declare interface PrincipalSession extends Session {
-    readPrincipal(domain: TypedID|string, principalId: string): Promise<Object>;
+    readPrincipal(domain: TypedID|string, principalId: string, callback?: ResultCb): Promise<Object>;
 }
 
 export declare interface ProjectSession extends Session {
-    readProject(project: TypedID|string): Promise<PlatformObject>;
+    readProject(project: TypedID|string, callback?: ResultCb): Promise<PlatformObject>;
 }
 
 export declare interface StackSession extends Session {
-    readStack(stack: TypedID|string): Promise<PlatformObject>;
-    listDataStores(stack: TypedID|string): Promise<Rows<TypedID>>;
-    queryDataStores(stack: TypedID|string, query: Object, pagination?: Object): Promise<Rows<TypedID>>;
+    readStack(stack: TypedID|string, callback?: ResultCb): Promise<PlatformObject>;
+    listDataStores(stack: TypedID|string, callback?: ResultCb): Promise<Rows<TypedID>>;
+    queryDataStores(stack: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<TypedID>>;
 }
 
 export declare interface WorkflowSession extends Session {
-    readWorkflow(workflowId: string): Promise<TypedID>;
-    queryWorkflows(query: Object, pagination?: Object): Promise<Rows<TypedID>>;
-    queryWorkflowTasks(query: Object, pagination?: Object): Promise<Rows<TypedID>>;
+    readWorkflow(workflowId: string, callback?: ResultCb): Promise<TypedID>;
+    queryWorkflows(query: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<TypedID>>;
+    queryWorkflowTasks(query: Object, pagination?: Object, callback?: ResultCb): Promise<Rows<TypedID>>;
 }
 
 
