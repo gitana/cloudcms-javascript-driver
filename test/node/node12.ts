@@ -1,4 +1,4 @@
-var CloudCMS = require("../../src/index");
+import * as CloudCMS from "../..";
 var assert = require('chai').assert;
 
 describe('node12', function() {

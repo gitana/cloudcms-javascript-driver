@@ -1,10 +1,10 @@
-var CloudCMS = require("../../src/index");
+import * as CloudCMS from "../..";
 var assert = require('chai').assert;
 
 describe('connect11', function() {
     it('should fail to connect using async/await and handle the error', async function() {
 
-        var session = null;
+        var session: CloudCMS.DefaultSession|null = null;
         var err = null;
         try
         {

@@ -1,11 +1,11 @@
-var CloudCMS = require("../../src/index");
+import * as CloudCMS from "../..";
 var assert = require('chai').assert;
 var fs = require("fs");
-const branch = require("../../src/session/default/methods/branch");
 
 
-function streamToData (stream) {
-    const chunks = []
+
+function streamToData (stream: NodeJS.ReadStream) {
+    const chunks = Array<any>();
     return new Promise((resolve, reject) => {
       stream.on('data', chunk => chunks.push(chunk))
       stream.on('error', reject)
@@ -44,7 +44,7 @@ describe('attachment10', function () {
             assert.equal(0, attachments.size);
 
             var err = null;
-            var stream2 = null;
+            var stream2: NodeJS.ReadStream|null = null;
             try {
                 stream2 = await session.downloadAttachment(repository, branchId, node, "default");
             } catch (e)

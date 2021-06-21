@@ -1,4 +1,6 @@
-var CloudCMS = require("../../src/index");
+import * as CloudCMS from "../..";
+import * as CustomSession from './custom-session';
+
 var assert = require('chai').assert;
 
 describe('custom_session_2', function() {
@@ -6,11 +8,10 @@ describe('custom_session_2', function() {
 
         // use a custom session
         // this has the test() method
-        var customSession = require("./custom-session");
-        CloudCMS.session(customSession);
+        CloudCMS.session(CustomSession);
 
         // connect
-        CloudCMS.connect().then(function(session) {
+        CloudCMS.connect<CustomSession>().then(function(session) {
 
             session.test().then(function(count) {
 
