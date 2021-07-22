@@ -362,6 +362,20 @@ module.exports = function(Session)
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/refresh", {}, callback);
         }
 
+        changeNodeQName(repository, branch, node, newQName)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var params = {
+                "qname": newQName
+            };
+
+            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/change_qname", params, callback);
+        }
+
         /*
         moveNodesTo(repository, branch, sourceNodes, targetNode, targetPath)
         {

@@ -160,6 +160,7 @@ export declare interface NodeSession extends Session {
     addNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string, config?: Object, callback?: ResultCb): Promise<void>;
     removeNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string, callback?: ResultCb): Promise<void>;
     refreshNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<void>;
+    changeNodeQName(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, newQName: string, callback?: ResultCb): Promise<Object>;
     nodeTree(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config?: Object, callback?: ResultCb): Promise<Object>;
     resolveNodePath(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<{path: string}>;
     resolveNodePaths(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<{[id: string]: string}>;
