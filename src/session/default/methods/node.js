@@ -614,6 +614,59 @@ module.exports = function(Session)
 
             return this.del("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/attachments/" + attachmentId, {}, callback);
         }
+
+        listVersions(repository, branch, node, options, pagination, callback) {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var uri = "/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/versions";
+            var qs = {}
+
+            if (options)
+            {
+                qs = options
+            }
+
+            if (pagination)
+            {
+                qs = {
+                    ...qs,
+                    ...pagination
+                }
+            }
+
+            return this.get(uri, qs, callback);
+        }
+
+        readVersion(repository, branch, node, changesetId, options, callback) {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var uri = "/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/versions/" + changesetId;
+            var qs = {}
+
+            if (options)
+            {
+                qs = options
+            }
+            
+            return this.get(uri, qs, callback);
+        }
+
+        restoreVersion(repository, branch, node, changesetId, callback) {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var uri = "/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/versions/" + changesetId + "/restore";
+
+            return this.post(uri, {}, {}, callback);
+        }
     }
 
     return NodeSession;

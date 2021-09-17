@@ -95,6 +95,11 @@ export declare interface TraversalResult {
     associations: {[id: string]: Association}
 }
 
+export declare interface NodeVersionOptions {
+    excludeSystem?: boolean,
+    diff?: boolean
+}
+
 // Sessions
 
 export declare interface Session {
@@ -169,6 +174,9 @@ export declare interface NodeSession extends Session {
     downloadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, callback?: ResultCb): Promise<NodeJS.ReadStream>;
     listAttachments(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb): Promise<Rows<Attachment>>;
     deleteAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId?: string, callback?: ResultCb): Promise<void>;
+    listVersions(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, options?: NodeVersionOptions, pagination?: Object, callback?: ResultCb): Promise<Rows<Node>>;
+    readVersion(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, changesetId: string, options?: NodeVersionOptions, callback?: ResultCb): Promise<Node>;
+    restoreVersion(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, changesetId: string, callback?: ResultCb): Promise<Node>;
 }
 
 export declare interface PrincipalSession extends Session {
