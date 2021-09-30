@@ -109,6 +109,29 @@ module.exports = function(Session)
 
             return this.put("/repositories/" + repositoryId + "/branches/" + branchId, {}, obj, callback);
         }
+
+        /**
+         * Resets a branch to a specified changeset, by creating a new changeset and appending it to the tip.
+         * @param {*} repository 
+         * @param {*} branch 
+         * @param {*} changeset 
+         * @returns 
+         */
+        resetBranch(repository, branch, changeset)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var changesetId = this.acquireId(changeset);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var params = {
+                "id":  changesetId
+            };
+
+            return this.get("/repositories/" + repositoryId + "/branches/" + branchId, params, null, callback);
+        }
+
+        
     }
 
     return BranchSession;
