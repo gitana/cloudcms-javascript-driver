@@ -75,6 +75,15 @@ export declare interface Association extends Node {
     directionality: "DIRECTED" | "UNDIRECTED"
 }
 
+export default interface Changeset extends RepositoryObject {
+    revision: string,
+    branch: string,
+    active: boolean,
+    parents: string[],
+    summary?: string,
+    tags?: string[],
+}
+
 export declare interface GraphQLResult {
     data?: Object,
     errors?: Array<Object>
@@ -204,8 +213,15 @@ export declare interface WorkflowSession extends Session {
     queryWorkflowTasks(query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>;
 }
 
+export declare interface ChangesetSession extends Session {
+    readChangeset(repository: string|TypedID, changeset: string|TypedID, callback?: ResultCb<Changeset>): Promise<Changeset>;
+    queryChangesets(repository: string|TypedID, query: Object, pagination?: Object, callback?: ResultCb<Rows<Changeset>>): Promise<Rows<Changeset>>;
+    listChangesets(repository: string|TypedID, pagination?: Object, callback?: ResultCb<Rows<Changeset>>): Promise<Rows<Changeset>>;
+    listChangesetNodes(repository: string|TypedID, changeset: string|TypedID, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>;
+}
 
-export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession;
+
+export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession;
 
 
 

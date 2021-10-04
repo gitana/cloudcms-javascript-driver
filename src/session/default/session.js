@@ -292,7 +292,8 @@ var modulePaths = [
     "./methods/workflow",
     "./methods/application",
     "./methods/project",
-    "./methods/stack"
+    "./methods/stack",
+    "./methods/changeset"
 ];
 for (var i = 0; i < modulePaths.length; i++)
 {
