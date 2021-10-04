@@ -104,6 +104,42 @@ export declare interface TraversalResult {
     associations: {[id: string]: Association}
 }
 
+export declare interface TreeConfig {
+    leafPath?: string,
+    basePath?: string,
+    containers?: boolean,
+    depth?: Number,
+    properties?: boolean,
+    query?: Object,
+    search?: Object
+}
+
+export declare interface TreeElement {
+    id: string,
+    repositoryId: string,
+    branchId: string,
+    rootNodeId: string,
+
+    // container
+    container?: boolean,
+    children?: Array<TreeElement>,
+    childCount?: Number,
+    childContainerCount?: Number
+
+    // file info
+    filename: string,
+    label: string,
+    path: string,
+
+    description?: string,
+    typeQName?: string,
+    qname?: string,
+    properties?: Object,
+    _object?: Object
+}
+
+
+// { "leafPath": "<leafPath>", "basePath": "<basePath>", "containers": true, "depth": integer, "properties": true|false, "query": {}, "search": {} }
 export declare interface NodeVersionOptions {
     excludeSystem?: boolean,
     diff?: boolean
@@ -112,6 +148,14 @@ export declare interface NodeVersionOptions {
 export declare interface StartJobResult {
     _doc: string;
 }
+
+export declare type JobState = "NONE" | "WAITING" | "RUNNING" | "FINISHED" | "ERROR" | "PAUSED" | "AWAITING"
+
+export declare interface Job extends TypedID {
+    state: JobState,
+    type: string
+}
+
 
 // Sessions
 
@@ -180,7 +224,7 @@ export declare interface NodeSession extends Session {
     removeNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string, callback?: ResultCb<void>): Promise<void>;
     refreshNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<void>): Promise<void>;
     changeNodeQName(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, newQName: string, callback?: ResultCb<Object>): Promise<Object>;
-    nodeTree(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config?: Object, callback?: ResultCb<Object>): Promise<Object>;
+    nodeTree(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config?: TreeConfig, callback?: ResultCb<TreeElement>): Promise<TreeElement>;
     resolveNodePath(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<{path: string}>): Promise<{path: string}>;
     resolveNodePaths(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<{[id: string]: string}>): Promise<{[id: string]: string}>;
     traverseNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config: Object, callback?: ResultCb<TraversalResult>): Promise<TraversalResult>;
@@ -220,8 +264,19 @@ export declare interface ChangesetSession extends Session {
     listChangesetNodes(repository: string|TypedID, changeset: string|TypedID, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>;
 }
 
+export declare interface JobSession extends Session {
+    readJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>;
+    queryJobs(query: Object, pagination?: Object, callback?: ResultCb<Rows<Job>>): Promise<Rows<Job>>
+    killJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
+}
 
-export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession;
+// TODO
+// domain
+// users
+// transfer
+
+
+export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession;
 
 
 

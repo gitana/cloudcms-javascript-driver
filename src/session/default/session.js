@@ -293,7 +293,8 @@ var modulePaths = [
     "./methods/application",
     "./methods/project",
     "./methods/stack",
-    "./methods/changeset"
+    "./methods/changeset",
+    "./methods/job"
 ];
 for (var i = 0; i < modulePaths.length; i++)
 {
