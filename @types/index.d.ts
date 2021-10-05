@@ -139,7 +139,6 @@ export declare interface TreeElement {
 }
 
 
-// { "leafPath": "<leafPath>", "basePath": "<basePath>", "containers": true, "depth": integer, "properties": true|false, "query": {}, "search": {} }
 export declare interface NodeVersionOptions {
     excludeSystem?: boolean,
     diff?: boolean
@@ -154,6 +153,15 @@ export declare type JobState = "NONE" | "WAITING" | "RUNNING" | "FINISHED" | "ER
 export declare interface Job extends TypedID {
     state: JobState,
     type: string
+}
+
+export declare interface Principal extends TypedID {
+    name: string,
+    type: string
+}
+
+export declare interface DataStore extends PlatformObject {
+
 }
 
 
@@ -238,7 +246,8 @@ export declare interface NodeSession extends Session {
 }
 
 export declare interface PrincipalSession extends Session {
-    readPrincipal(domain: TypedID|string, principalId: string, callback?: ResultCb<Object>): Promise<Object>;
+    readPrincipal(domain: TypedID|string, principalId: string, callback?: ResultCb<Principal>): Promise<Principal>;
+    queryPrincipals(domain: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>;
 }
 
 export declare interface ProjectSession extends Session {
@@ -247,8 +256,12 @@ export declare interface ProjectSession extends Session {
 
 export declare interface StackSession extends Session {
     readStack(stack: TypedID|string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>;
+    readDataStore(stack: TypedID|string, key: string, callback?: ResultCb<DataStore>): Promise<DataStore>
     listDataStores(stack: TypedID|string, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>;
     queryDataStores(stack: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>;
+    findDataStoreStack(dataStore: string|DataStore, dataStoreType: string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
+    assignDataStore(stack: TypedID|string, dataStore: string|DataStore, key: string, callback?: ResultCb<void>): Promise<void>
+    unassignDataStore(stack: TypedID|string, key: string, callback?: ResultCb<void>): Promise<void>
 }
 
 export declare interface WorkflowSession extends Session {
@@ -270,13 +283,13 @@ export declare interface JobSession extends Session {
     killJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
 }
 
-// TODO
-// domain
-// users
-// transfer
+export declare interface TransferSession extends Session {
+    exportArchive(sourceRefs: Array<string>, group: string, artifact: string, version: string, configuration: Object, vault: string|PlatformObject, callback: ResultCb<StartJobResult>): Promise<StartJobResult>;
+    importArchive(targetRef: string, group: string, artifact: string, version: string, configuration: Object, vault: string|TypedID, callback: ResultCb<StartJobResult>): Promise<StartJobResult>;
+}
 
 
-export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession;
+export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession;
 
 
 
