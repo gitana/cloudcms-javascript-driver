@@ -1,4 +1,10 @@
-const fs = require("fs");
+let fs = null;
+try {
+    fs = require("fs");
+}
+catch (e) {
+
+}
 const path = require("path");
 var moment = require("moment");
 
@@ -154,31 +160,36 @@ var factory = function()
 
     // LOADED_CONFIG
     var LOADED_CONFIG = null;
-    if (!LOADED_CONFIG) {
-        var configFilePath = path.resolve(path.join(".", "gitana.json"));
-        if (fs.existsSync(configFilePath)) {
-            LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
-        }
-    }
-    if (!LOADED_CONFIG) {
-        var configFilePath = path.resolve(path.join(".", "gitana-test.json"));
-        if (fs.existsSync(configFilePath)) {
-            LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
-        }
-    }
-    if (!LOADED_CONFIG) {
-        var configFilePath = path.resolve(path.join(".", "cloudcms.json"));
-        if (fs.existsSync(configFilePath)) {
-            LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
-        }
-    }
-    if (!LOADED_CONFIG) {
-        var configFilePath = path.resolve(path.join(".", "cloudcms-test.json"));
-        if (fs.existsSync(configFilePath)) {
-            LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
-        }
-    }
 
+    // Try to load config from local file, if available and possible
+    if (fs)
+    {
+        if (!LOADED_CONFIG) {
+            var configFilePath = path.resolve(path.join(".", "gitana.json"));
+            if (fs.existsSync(configFilePath)) {
+                LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
+            }
+        }
+        if (!LOADED_CONFIG) {
+            var configFilePath = path.resolve(path.join(".", "gitana-test.json"));
+            if (fs.existsSync(configFilePath)) {
+                LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
+            }
+        }
+        if (!LOADED_CONFIG) {
+            var configFilePath = path.resolve(path.join(".", "cloudcms.json"));
+            if (fs.existsSync(configFilePath)) {
+                LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
+            }
+        }
+        if (!LOADED_CONFIG) {
+            var configFilePath = path.resolve(path.join(".", "cloudcms-test.json"));
+            if (fs.existsSync(configFilePath)) {
+                LOADED_CONFIG = JSON.parse(fs.readFileSync(configFilePath));
+            }
+        }
+    }
+    
     var exports = {};
 
     // defaults
