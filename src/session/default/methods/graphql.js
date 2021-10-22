@@ -8,21 +8,21 @@ module.exports = function(Session)
             var branchId = this.acquireId(branch);
             var callback = this.extractOptionalCallback(arguments);
 
-            var params = {
+            var body = {
                 query: query
             };
 
             if (variables)
             {
-                params.variables = variables;
+                body.variables = variables;
             }
 
             if (operationName)
             {
-                params.operationName = operationName;
+                body.operationName = operationName;
             }
 
-            return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/graphql", params, callback);
+            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/graphql", null, body, callback);
         }
 
         graphqlSchema(repository, branch)
