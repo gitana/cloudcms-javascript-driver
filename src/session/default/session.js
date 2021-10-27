@@ -295,7 +295,8 @@ var modulePaths = [
     "./methods/stack",
     "./methods/changeset",
     "./methods/job",
-    "./methods/transfer"
+    "./methods/transfer",
+    "./methods/tracker"
 ];
 for (var i = 0; i < modulePaths.length; i++)
 {
