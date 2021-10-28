@@ -286,8 +286,9 @@ module.exports = function(Session)
                 {
                     title = titleSelector.first().data("cms-pagetitle");
                 }
-
             }
+
+            return title;
         }
 
         static buildDispatcher(trackerConfig, syncFn) {
