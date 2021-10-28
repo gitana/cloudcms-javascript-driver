@@ -1,5 +1,7 @@
 module.exports = function(Session)
 {
+    const cheerio = require("cheerio");
+    
     class TrackerSession extends Session
     {
         constructor(config, driver, storage)
@@ -129,9 +131,12 @@ module.exports = function(Session)
             this.dispatcher.push(repositoryId, branchId, renditionObject);
         }
 
-        trackPathHtml(repositoryId, branchId, path, html)
+        trackPage(repositoryId, branchId, page)
         {
-            var ids = TrackerSession.parse(html);
+            const { path, html } = page;
+            var ids = TrackerSession.parseIds(html);
+
+            const title = TrackerSession.parseTitle(html);
             if (ids && ids.length > 0)
             {
                 //console.log("Found ids: " + ids + " for path: " + path);
@@ -141,7 +146,8 @@ module.exports = function(Session)
                 };
                 
                 var page = {
-                    "path": path
+                    "path": path,
+                    "title": title
                 };
                 
                 var dependencies = {
@@ -151,9 +157,7 @@ module.exports = function(Session)
                     }
                 }
                 
-                this.track(repositoryId, branchId, request, page, dependencies, function(err) {
-                    // done
-                });
+                this.track(repositoryId, branchId, request, page, dependencies);
             }
         }
 
@@ -254,52 +258,22 @@ module.exports = function(Session)
             return 4294967296 * (2097151 & h2) + (h1>>>0);
         };
     
-        static parse(html)
+        static parseIds(html)
         {
-            var ids = [];
-            
-            var text = "" + html.toLowerCase();
-            
-            var done = false;
-            while (!done)
-            {
-                var i1 = text.indexOf("data-cms-id");
-                if (i1 > -1)
-                {
-                    text = text.substring(i1 + 11);
-                    
-                    var i2 = text.indexOf("=\"");
-                    if (i2 == -1) {
-                        i2 = text.indexOf("='");
-                    }
-                    
-                    if (i2 > -1)
-                    {
-                        text = text.substring(i2 + 2);
-                        
-                        var i3 = text.indexOf("\"");
-                        if (i3 == -1) {
-                            i3 = text.indexOf("'");
-                        }
-                        
-                        if (i3 > -1)
-                        {
-                            var id = text.substring(0, i3);
-                            
-                            text = text.substring(i3 + 1);
-                            
-                            ids.push(id);
-                        }
-                    }
-                }
-                else
-                {
-                    done = true;
-                }
-            }
+            const $ = cheerio.load(`${html.toLowerCase()}`);
+            let ids = [];
+            $("[data-cms-id]").each(function() {
+                ids.push($(this).data("cms-id"))
+            });
             
             return ids;
         };
+
+        static parseTitle(html)
+        {
+            const $ = cheerio.load(html);
+            return $("head title").text();
+        }
 
         static buildDispatcher(trackerConfig, syncFn) {
     

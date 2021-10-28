@@ -164,6 +164,11 @@ export declare interface DataStore extends PlatformObject {
 
 }
 
+export declare interface PageRendition {
+    path: string,
+    html: string
+}
+
 
 // Sessions
 
@@ -286,6 +291,10 @@ export declare interface JobSession extends Session {
 export declare interface TransferSession extends Session {
     exportArchive(sourceRefs: Array<string>, group: string, artifact: string, version: string, configuration: Object, vault: string|PlatformObject, callback: ResultCb<StartJobResult>): Promise<StartJobResult>;
     importArchive(targetRef: string, group: string, artifact: string, version: string, configuration: Object, vault: string|TypedID, callback: ResultCb<StartJobResult>): Promise<StartJobResult>;
+}
+
+export declare interface TrackerSession extends Session {
+    trackPage(repositoryId: string, branchId: string, page: PageRendition): void
 }
 
 

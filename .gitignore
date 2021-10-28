@@ -22,3 +22,4 @@ cloudcms.json
 cloudcms-test.json
 
 .DS_Store
+package-lock.json
