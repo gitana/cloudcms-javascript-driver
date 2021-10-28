@@ -136,11 +136,15 @@ module.exports = function(Session)
             const { path, html } = page;
             var ids = TrackerSession.parseIds(html);
 
-            const title = TrackerSession.parseTitle(html);
-            if (ids && ids.length > 0)
+            let title = page.title;
+            if (!title)
             {
-                //console.log("Found ids: " + ids + " for path: " + path);
-                
+                // Parse title from html if not provided
+                title = TrackerSession.parseTitle(html);
+            }
+
+            if (ids && ids.length > 0)
+            {   
                 var request = {
                     "path": path
                 };
@@ -272,7 +276,18 @@ module.exports = function(Session)
         static parseTitle(html)
         {
             const $ = cheerio.load(html);
-            return $("head title").text();
+            let title = $("head title").text();
+
+            if (!title)
+            {
+                // fallback to search for attribute
+                const titleSelector = $("[data-cms-pagetitle]");
+                if (titleSelector.length > 0)
+                {
+                    title = titleSelector.first().data("cms-pagetitle");
+                }
+
+            }
         }
 
         static buildDispatcher(trackerConfig, syncFn) {

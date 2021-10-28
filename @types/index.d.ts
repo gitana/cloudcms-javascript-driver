@@ -166,7 +166,8 @@ export declare interface DataStore extends PlatformObject {
 
 export declare interface PageRendition {
     path: string,
-    html: string
+    html: string,
+    title?: string
 }
 
 

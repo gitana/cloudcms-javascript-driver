@@ -1,6 +1,6 @@
 {
   "name": "cloudcms",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "repository": {
     "type": "git",
     "url": "git://github.com/gitana/cloudcms-javascript-driver.git"
