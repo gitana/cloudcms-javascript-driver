@@ -10,6 +10,7 @@ class Node
         "unassociate",
         "associateChild",
         "deleteNode",
+        "updateNode",
         "patchNode",
         "addNodeFeature",
         "removeNodeFeature",

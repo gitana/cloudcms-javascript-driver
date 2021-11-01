@@ -14,7 +14,8 @@
             "ES2015",
             "dom"
         ],
-        "types": ["node", "chai", "mocha", "./@types"],
+        "types": ["node", "chai", "mocha"],
+        "include": ["./@types/**/*"],
         "outDir": ".output"
     },
     "include": [

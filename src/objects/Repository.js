@@ -6,9 +6,6 @@ class Repository
         "readBranch",
         "createBranch",
         "listBranches",
-        "deleteBranch",
-        "updateBranch",
-        "resetBranch",
 
         "readChangeset",
         "queryChangesets",

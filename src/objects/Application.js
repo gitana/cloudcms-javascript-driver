@@ -2,8 +2,7 @@
 class Application
 {
     static APPLICATION_FNS = [
-        "readPrincipal",
-        "queryPrincipals"
+
     ];
 
     constructor(session, obj)
