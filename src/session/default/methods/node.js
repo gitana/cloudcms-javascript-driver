@@ -2,7 +2,7 @@ module.exports = function(Session)
 {
     var Helper = require("../../../helper");
     var FormData = require("form-data");
-    const Node = require("../objects/Node");
+    const Node = require("../../../objects/Node");
 
     class NodeSession extends Session
     {

@@ -1,6 +1,6 @@
 module.exports = function(Session)
 {
-    const Repository = require("../objects/Repository");
+    const Repository = require("../../../objects/Repository");
 
     class RepositorySession extends Session
     {

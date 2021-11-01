@@ -19,7 +19,6 @@ class Repository
     constructor(session, obj)
     {
         Object.assign(this, obj);
-        this.session = session;
 
         // bind all methods to this
         for (let fn of Repository.REPOSITORY_FNS)

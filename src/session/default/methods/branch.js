@@ -1,6 +1,6 @@
 module.exports = function(Session)
 {
-    var Branch = require("../objects/Branch"); 
+    var Branch = require("../../../objects/Branch"); 
 
     class BranchSession extends Session
     {

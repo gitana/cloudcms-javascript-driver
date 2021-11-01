@@ -267,6 +267,9 @@ var factory = function()
         return promise;
     };
 
+    exports.DefaultSession = require("./session/default/session");
+    exports.UtilitySession = require("./session/utility/session");
+
     return exports;
 };
 

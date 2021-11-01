@@ -1,6 +1,6 @@
 module.exports = function(Session)
 {
-    const Application = require("../objects/Application");
+    const Application = require("../../../objects/Application");
 
     class ApplicationSession extends Session
     {

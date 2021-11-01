@@ -1,11 +1,15 @@
 module.exports = function(Session)
 {
-    const Stack = require("../objects/Stack");
-    const Application = require("../objects/Application");
-    const Repository = require("../objects/Repository");
-    const Domain = require("../objects/Domain");
+    const Stack = require("../../../objects/Stack");
+    const Application = require("../../../objects/Application");
+    const Repository = require("../../../objects/Repository");
+    const Domain = require("../../../objects/Domain");
 
     const wrapDataStore = (session, obj) => {
+        // Make sure _doc reflects API value
+        obj._stackKey = obj._doc;
+        obj._doc = obj.datastoreId;
+
         if (!obj.datastoreTypeId)
         {
             return obj;
@@ -57,7 +61,8 @@ module.exports = function(Session)
             var callback = this.extractOptionalCallback(arguments);
 
             let result = await this.get("/stacks/" + stackId + "/datastores", {}, callback);
-            return result.map(dataStore => wrapDataStore(this, dataStore));
+            result.rows = result.rows.map(dataStore => wrapDataStore(this, dataStore));
+            return result;
         }
 
         /**
@@ -75,7 +80,8 @@ module.exports = function(Session)
             var callback = this.extractOptionalCallback(arguments);
 
             let result = await this.post("/stacks/" + stackId + "/datastores/query", pagination, query, callback);
-            return result.map(dataStore => wrapDataStore(this, dataStore));
+            result.rows = result.rows.map(dataStore => wrapDataStore(this, dataStore));
+            return result;
         }
 
         async readDataStore(stack, key)

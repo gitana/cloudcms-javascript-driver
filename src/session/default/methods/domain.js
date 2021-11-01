@@ -1,6 +1,6 @@
 module.exports = function(Session)
 {
-    const Domain = require("../objects/Domain");
+    const Domain = require("../../../objects/Domain");
 
     class DomainSession extends Session
     {
