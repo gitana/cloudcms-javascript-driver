@@ -2,6 +2,7 @@ module.exports = function(Session)
 {
     var Helper = require("../../../helper");
     var FormData = require("form-data");
+    const Node = require("../objects/Node");
 
     class NodeSession extends Session
     {
@@ -13,7 +14,7 @@ module.exports = function(Session)
          * @param nodeId
          * @returns {*}
          */
-        readNode(repository, branch, nodeId, path)
+        async readNode(repository, branch, nodeId, path)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -24,7 +25,8 @@ module.exports = function(Session)
                 qs["path"] = path;
             }
 
-            return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, qs, callback);
+            let result = await this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, qs, callback);
+            return new Node(this, repositoryId, branchId, result);
         }
 
         /**
@@ -36,7 +38,7 @@ module.exports = function(Session)
          * @param pagination
          * @returns {*}
          */
-        queryNodes(repository, branch, query, pagination)
+        async queryNodes(repository, branch, query, pagination)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -50,7 +52,20 @@ module.exports = function(Session)
                 }
             }
 
-            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/query", pagination, query, callback);
+            let result = await this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/query", pagination, query, callback);
+            result.rows = result.rows.map(row => new Node(this, repositoryId, branchId, row));
+            return result;
+        }
+
+        async queryOneNode(repository, branch, query, pagination)
+        {
+            const result = await this.queryNodes(repository, branch, query, {...pagination, limit: 1});
+            if (result.rows && result.rows.length > 0)
+            {
+                return result.rows[0];
+            }
+
+            return null;
         }
 
         /**
@@ -62,7 +77,7 @@ module.exports = function(Session)
          * @param pagination
          * @returns {*}
          */
-        searchNodes(repository, branch, search, pagination)
+        async searchNodes(repository, branch, search, pagination)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -76,7 +91,9 @@ module.exports = function(Session)
             }
             
 
-            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/search", pagination, search, callback);
+            let result = await this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/search", pagination, search, callback);
+            result.rows = result.rows.map(row => new Node(this, repositoryId, branchId, row));
+            return result;
         }
         
         /**
@@ -88,13 +105,15 @@ module.exports = function(Session)
          * @param pagination
          * @returns {*}
          */
-        findNodes(repository, branch, config, pagination)
+        async findNodes(repository, branch, config, pagination)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/find", pagination, config, callback);
+            let result = await this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/find", pagination, config, callback);
+            result.rows = result.rows.map(row => new Node(this, repositoryId, branchId, row));
+            return result;
         }
         
 
@@ -107,7 +126,7 @@ module.exports = function(Session)
          * @param options
          * @returns {*}
          */
-        createNode(repository, branch, obj, options)
+        async createNode(repository, branch, obj, options)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -145,10 +164,11 @@ module.exports = function(Session)
                 }
             }
 
-            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes", qs, obj, callback);
+            let result = await this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes", qs, obj, callback);
+            return new Node(this, repositoryId, branchId, result);
         }
 
-        queryNodeRelatives(repository, branch, node, associationTypeQName, associationDirection, query, pagination)
+        async queryNodeRelatives(repository, branch, node, associationTypeQName, associationDirection, query, pagination)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -172,14 +192,18 @@ module.exports = function(Session)
                 query = {};
             }
 
-            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/relatives/query", qs, query, callback);
+            let result = await this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/relatives/query", qs, query, callback);
+            result.rows = result.rows.map(row => new Node(this, repositoryId, branchId, row));
+            return result;
         };
 
-        queryNodeChildren(repository, branch, node, query, pagination)
+        async queryNodeChildren(repository, branch, node, query, pagination)
         {
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.queryNodeRelatives(repository, branch, node, "a:child", "OUTGOING", query, pagination, callback);
+            let result = await this.queryNodeRelatives(repository, branch, node, "a:child", "OUTGOING", query, pagination, callback);
+            result.rows = result.rows.map(row => new Node(this, repositoryId, branchId, row));
+            return result;
         };
 
         listNodeAssociations(repository, branch, node, associationType, associationDirection, pagination)
@@ -310,7 +334,7 @@ module.exports = function(Session)
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/delete", {}, payload, callback);
         }
 
-        updateNode(repository, branch, node)
+        async updateNode(repository, branch, node)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -319,17 +343,19 @@ module.exports = function(Session)
 
             var obj = this.cleanNodeBeforeWrite(node);
 
-            return this.put("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, obj, callback);
+            let result = await this.put("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, obj, callback);
+            return new Node(this, repositoryId, branchId, result);
         }
 
-        patchNode(repository, branch, node, patchObject)
+        async patchNode(repository, branch, node, patchObject)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
             var nodeId = this.acquireId(node);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.patch("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, patchObject, callback);
+            let result = await this.patch("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, patchObject, callback);
+            return new Node(this, repositoryId, branchId, result);
         }
 
         addNodeFeature(repository, branch, node, featureId, config)

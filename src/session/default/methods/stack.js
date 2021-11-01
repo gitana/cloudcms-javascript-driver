@@ -1,5 +1,7 @@
 module.exports = function(Session)
 {
+    const Stack = require("../objects/Stack");
+
     class StackSession extends Session
     {
         /**
@@ -8,12 +10,13 @@ module.exports = function(Session)
          * @param stack
          * @returns {*}
          */
-        readStack(stack)
+        async readStack(stack)
         {
             var stackId = this.acquireId(stack);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.get("/stacks/" + stackId, {}, callback);
+            let result = await this.get("/stacks/" + stackId, {}, callback);
+            return new Stack(this, result);
         }
 
         /**

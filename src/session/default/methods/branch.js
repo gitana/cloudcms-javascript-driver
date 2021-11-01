@@ -1,5 +1,7 @@
 module.exports = function(Session)
 {
+    var Branch = require("../objects/Branch"); 
+
     class BranchSession extends Session
     {
         /**
@@ -11,12 +13,14 @@ module.exports = function(Session)
          *
          * @returns {*}
          */
-        queryBranches(repository, query, pagination)
+        async queryBranches(repository, query, pagination)
         {
             var repositoryId = this.acquireId(repository);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.post("/repositories/" + repositoryId + "/branches/query", pagination, query, callback);
+            let result = await this.post("/repositories/" + repositoryId + "/branches/query", pagination, query, callback);
+            result.rows = result.rows.map(row => new Branch(this, repositoryId, row));
+            return result;
         };
 
         /**
@@ -27,13 +31,14 @@ module.exports = function(Session)
          *
          * @returns {*}
          */
-        readBranch(repository, branch)
+        async readBranch(repository, branch)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.get("/repositories/" + repositoryId + "/branches/" + branchId, {}, callback);
+            let result = await this.get("/repositories/" + repositoryId + "/branches/" + branchId, {}, callback);
+            return new Branch(this, repositoryId, result);
         };
 
         /**
@@ -46,7 +51,7 @@ module.exports = function(Session)
          *
          * @returns {*}
          */
-        createBranch(repository, branch, changesetId, obj={})
+        async createBranch(repository, branch, changesetId, obj={})
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -57,7 +62,8 @@ module.exports = function(Session)
                 branch: branchId
             };
 
-            return this.post("/repositories/" + repositoryId + "/branches", qs, obj, callback);
+            let result = await this.post("/repositories/" + repositoryId + "/branches", qs, obj, callback);
+            return new Branch(this, repositoryId, result);
         };
 
         /**
@@ -67,7 +73,7 @@ module.exports = function(Session)
          *
          * @returns {*}
          */
-        listBranches(repository)
+        async listBranches(repository)
         {
             var repositoryId = this.acquireId(repository);
             var callback = this.extractOptionalCallback(arguments);
@@ -76,7 +82,9 @@ module.exports = function(Session)
                 full: true
             };
 
-            return this.get("/repositories/" + repositoryId + "/branches", qs, callback);
+            let result = await this.get("/repositories/" + repositoryId + "/branches", qs, callback);
+            result.rows = result.rows.map(row => new Branch(this, repositoryId, row));
+            return result;
         };
 
         /**
@@ -101,13 +109,14 @@ module.exports = function(Session)
          * @param repository
          * @param obj
          */
-        updateBranch(repository, branch, obj)
+        async updateBranch(repository, branch, obj)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.put("/repositories/" + repositoryId + "/branches/" + branchId, {}, obj, callback);
+            let result = await this.put("/repositories/" + repositoryId + "/branches/" + branchId, {}, obj, callback);
+            return new Branch(this, repositoryId, result);
         }
 
         /**

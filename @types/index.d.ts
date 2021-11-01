@@ -218,6 +218,7 @@ export declare interface GraphQLSession extends Session {
 export declare interface NodeSession extends Session {
     readNode(repository: TypedID|string, branch: TypedID|string, nodeId: string, path?: string, callback?: ResultCb<Node>): Promise<Node>;
     queryNodes(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>;
+    queryOneNode(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Node|null>;
     searchNodes(repository: TypedID|string, branch: TypedID|string, search: Object|string, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>;
     findNodes(repository: TypedID|string, branch: TypedID|string, config: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>;
     createNode(repository: TypedID|string, branch: TypedID|string, obj?: Object, options?: Object, callback?: ResultCb<Node>): Promise<Node>;
@@ -299,7 +300,7 @@ export declare interface TrackerSession extends Session {
 }
 
 
-export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession;
+export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession;
 
 
 

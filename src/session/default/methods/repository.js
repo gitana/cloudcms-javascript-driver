@@ -1,5 +1,7 @@
 module.exports = function(Session)
 {
+    const Repository = require("../objects/Repository");
+
     class RepositorySession extends Session
     {
         /**
@@ -8,11 +10,12 @@ module.exports = function(Session)
          * @param obj
          * @returns object
          */
-        createRepository(obj)
+        async createRepository(obj)
         {
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.post("/repositories", {}, obj, callback);
+            let result = await this.post("/repositories", {}, obj, callback);
+            return new Repository(this, result);
         };
 
         /**
@@ -22,11 +25,13 @@ module.exports = function(Session)
          * @param pagination
          * @returns response
          */
-        queryRepositories(query, pagination)
+        async queryRepositories(query, pagination)
         {
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.post("/repositories/query", pagination, query, callback);
+            let result = await this.post("/repositories", {}, obj, callback);
+            result.rows = result.rows.map(row => new Repository(this, row));
+            return result;
         };
 
     }
