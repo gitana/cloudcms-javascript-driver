@@ -13,40 +13,40 @@ function streamToData (stream: NodeJS.ReadStream) {
     })
   }
 
-describe('attachment10', function () {
-    it('should run node test without error', async function () {
+describe('attachment20', function () {
+    it('should run node test without error using object bound functions', async function () {
 
         try {
             var session = await CloudCMS.connect();
 
             var repository = await session.createRepository();
-            var branchId = "master";
+            var master = await repository.readBranch("master");
 
             var attachment = fs.readFileSync(__dirname + "/cloudcms.png");
 
 
             // Upload an attachment and download it
-            var node = await session.createNode(repository, branchId, { "title": "my node" });
-            await session.uploadAttachment(repository, branchId, node, "default", attachment, "image/png", "cloudcms.png");
+            var node = await master.createNode({ "title": "my node" });
+            await node.uploadAttachment("default", attachment, "image/png", "cloudcms.png");
 
-            var stream = await session.downloadAttachment(repository, branchId, node, "default")
+            var stream = await node.downloadAttachment("default")
             var downloaded = await streamToData(stream);
             
             assert.deepEqual(attachment, downloaded);
 
             // List attachments
-            var attachments = await session.listAttachments(repository, branchId, node);
+            var attachments = await node.listAttachments();
             assert.equal(1, attachments.size);
 
             // Delete attachment
-            await session.deleteAttachment(repository, branchId, node, "default");
-            attachments = await session.listAttachments(repository, branchId, node);
+            await node.deleteAttachment("default");
+            attachments = await node.listAttachments();
             assert.equal(0, attachments.size);
 
             var err = null;
             var stream2: NodeJS.ReadStream|null = null;
             try {
-                stream2 = await session.downloadAttachment(repository, branchId, node, "default");
+                stream2 = await node.downloadAttachment("default");
             } catch (e: any)
             {
                 err = e;

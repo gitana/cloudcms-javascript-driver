@@ -29,7 +29,7 @@ module.exports = function(Session)
         {
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = this.post("/domains/query", pagination, query, callback);
+            let result = await this.post("/domains/query", pagination, query, callback);
             result.rows = result.rows.map(row => new Domain(this, row));
             return result;
         };
@@ -45,8 +45,7 @@ module.exports = function(Session)
             var callback = this.extractOptionalCallback(arguments);
 
             let result = await this.get("/domains/" + domainId, {}, callback);
-            result.rows = result.rows.map(row => new Domain(this, row));
-            return result;
+            return new Domain(this, result)
         }
     }
 

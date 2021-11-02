@@ -157,6 +157,15 @@ export declare interface DataStore extends PlatformObject {
 
 }
 
+export declare interface Stack extends PlatformObject {
+    readDataStore(key: string, callback?: ResultCb<DataStore>): Promise<DataStore>
+    listDataStores(callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
+    queryDataStores(query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
+    findDataStoreStack(dataStoreType: string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
+    assignDataStore(dataStore: string|DataStore, key: string, callback?: ResultCb<void>): Promise<void>
+    unassignDataStore(key: string, callback?: ResultCb<void>): Promise<void>
+}
+
 export declare interface Repository extends DataStore {
     queryBranches(query?: Object, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
     readBranch(branch: TypedID|string, callback?: ResultCb<Branch>): Promise<Branch>
@@ -193,8 +202,8 @@ export declare interface Branch extends RepositoryObject {
     createNode(obj?: Object, options?: Object, callback?: ResultCb<Node>): Promise<Node>
     deleteNodes(nodes: string|Array<string>|Array<TypedID>, callback?: ResultCb<void>): Promise<void>
 
-    graphqlQuery(repository: TypedID|string, branch: TypedID|string, query: string, operationName?: string, variables?: Object, callback?: ResultCb<GraphQLResult>): Promise<GraphQLResult>
-    graphqlSchema(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<string>): Promise<string>
+    graphqlQuery(query: string, operationName?: string, variables?: Object, callback?: ResultCb<GraphQLResult>): Promise<GraphQLResult>
+    graphqlSchema(callback?: ResultCb<string>): Promise<string>
 
     deleteBranch(callback?: ResultCb<void>): Promise<void>
     updateBranch(obj: Object, callback?: ResultCb<Branch>): Promise<Branch>
@@ -372,6 +381,20 @@ export declare interface TransferSession extends Session {
 
 export declare interface TrackerSession extends Session {
     trackPage(repositoryId: string, branchId: string, page: PageRendition): void
+}
+
+export declare interface UtilitySession extends DefaultSession {
+    new(config: DriverConfig, driver: Driver, storage: Object): UtilitySession
+    application(): Promise<Application>
+    project(): Promise<PlatformObject>
+    stack(): Promise<Stack>
+    dataStores(): Promise<Array<DataStore>>
+    dataStoresByKey(): Promise<{[key: string]: DataStore}>
+    repository(): Promise<Repository>
+    branches(): Promise<Array<Branch>>
+    branchesById(): Promise<{[id: string]: Branch}>
+    branchesByTitle(): Promise<{[title: string]: Branch}>
+    master(): Promise<Branch>
 }
 
 

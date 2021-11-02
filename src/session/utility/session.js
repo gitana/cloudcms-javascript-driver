@@ -84,7 +84,7 @@ class UtilitySession extends DefaultSession
         if (!this._branches)
         {
             const repository = await this.repository();
-            this._branches = await repository.listBranches();
+            this._branches = (await repository.listBranches()).rows;
         }
 
         return this._branches;
@@ -105,7 +105,7 @@ class UtilitySession extends DefaultSession
         return this._branchesById;
     }
 
-    async branchesById()
+    async branchesByTitle()
     {
         if(!this._branchesByTitle)
         {
