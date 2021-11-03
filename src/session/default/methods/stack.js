@@ -1,37 +1,5 @@
 module.exports = function(Session)
 {
-    const Stack = require("../../../objects/Stack");
-    const Application = require("../../../objects/Application");
-    const Repository = require("../../../objects/Repository");
-    const Domain = require("../../../objects/Domain");
-
-    const wrapDataStore = (session, obj) => {
-        // Make sure _doc reflects API value
-        obj._stackKey = obj._doc;
-        obj._doc = obj.datastoreId;
-
-        if (!obj.datastoreTypeId)
-        {
-            return obj;
-        }
-        else if (obj.datastoreTypeId === "repository")
-        {
-            return new Repository(session, obj);
-        }
-        else if (obj.datastoreTypeId === "application")
-        {
-            return new Application(session, obj);
-        }
-        else if (obj.datastoreTypeId === "domain")
-        {
-            return new Domain(session, obj);
-        }
-        else
-        {
-            return obj;
-        }
-    }
-
     class StackSession extends Session
     {
         /**
@@ -40,13 +8,12 @@ module.exports = function(Session)
          * @param stack
          * @returns {*}
          */
-        async readStack(stack)
+        readStack(stack)
         {
             var stackId = this.acquireId(stack);
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = await this.get("/stacks/" + stackId, {}, callback);
-            return new Stack(this, result);
+            return this.get("/stacks/" + stackId, {}, callback);
         }
 
         /**
@@ -55,14 +22,12 @@ module.exports = function(Session)
          * @param stack
          * @returns {*}
          */
-        async listDataStores(stack)
+        listDataStores(stack)
         {
             var stackId = this.acquireId(stack);
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = await this.get("/stacks/" + stackId + "/datastores", {}, callback);
-            result.rows = result.rows.map(dataStore => wrapDataStore(this, dataStore));
-            return result;
+            return this.get("/stacks/" + stackId + "/datastores", {}, callback);
         }
 
         /**
@@ -74,32 +39,28 @@ module.exports = function(Session)
          *
          * @returns {*}
          */
-        async queryDataStores(stack, query, pagination)
+        queryDataStores(stack, query, pagination)
         {
             var stackId = this.acquireId(stack);
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = await this.post("/stacks/" + stackId + "/datastores/query", pagination, query, callback);
-            result.rows = result.rows.map(dataStore => wrapDataStore(this, dataStore));
-            return result;
+            return this.post("/stacks/" + stackId + "/datastores/query", pagination, query, callback);
         }
 
-        async readDataStore(stack, key)
+        readDataStore(stack, key)
         {
             var stackId = this.acquireId(stack);
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = await this.get("/stacks/" + stackId + "/datastores/" + key, {}, callback);
-            return wrapDataStore(this, result);
+            return this.get("/stacks/" + stackId + "/datastores/" + key, {}, callback);
         }
 
-        async findDataStoreStack(dataStore, dataStoreType)
+        findDataStoreStack(dataStore, dataStoreType)
         {
             var dataStoreId = this.acquireId(dataStore);
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = await this.get("/stacks/find/" + dataStoreType + "/" + dataStoreId, {}, callback);
-            return new Stack(this, result);
+            return this.get("/stacks/find/" + dataStoreType + "/" + dataStoreId, {}, callback);
         }
 
         assignDataStore(stack, dataStore, dataStoreType, key)

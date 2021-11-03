@@ -158,19 +158,19 @@ export declare interface DataStore extends PlatformObject {
 }
 
 export declare interface Stack extends PlatformObject {
-    readDataStore(key: string, callback?: ResultCb<DataStore>): Promise<DataStore>
-    listDataStores(callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
-    queryDataStores(query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
-    findDataStoreStack(dataStoreType: string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
-    assignDataStore(dataStore: string|DataStore, key: string, callback?: ResultCb<void>): Promise<void>
-    unassignDataStore(key: string, callback?: ResultCb<void>): Promise<void>
+    // readDataStore(key: string, callback?: ResultCb<DataStore>): Promise<DataStore>
+    // listDataStores(callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
+    // queryDataStores(query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
+    // findDataStoreStack(dataStoreType: string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
+    // assignDataStore(dataStore: string|DataStore, key: string, callback?: ResultCb<void>): Promise<void>
+    // unassignDataStore(key: string, callback?: ResultCb<void>): Promise<void>
 }
 
 export declare interface Repository extends DataStore {
-    queryBranches(query?: Object, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
-    readBranch(branch: TypedID|string, callback?: ResultCb<Branch>): Promise<Branch>
-    createBranch(branch: TypedID|string, changesetId?: string, obj?: Object, callback?: ResultCb<Branch>): Promise<Branch>
-    listBranches(callback?: ResultCb<Rows<Branch>>): Promise<Rows<Branch>>
+    // queryBranches(query?: Object, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
+    // readBranch(branch: TypedID|string, callback?: ResultCb<Branch>): Promise<Branch>
+    // createBranch(branch: TypedID|string, changesetId?: string, obj?: Object, callback?: ResultCb<Branch>): Promise<Branch>
+    // listBranches(callback?: ResultCb<Rows<Branch>>): Promise<Rows<Branch>>
 }
 
 export declare interface Application extends DataStore {
@@ -178,8 +178,8 @@ export declare interface Application extends DataStore {
 }
 
 export declare interface Domain extends DataStore {
-    readPrincipal(principalId: string, callback?: ResultCb<Principal>): Promise<Principal>
-    queryPrincipals(query: Object, pagination?: Object, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
+    // readPrincipal(principalId: string, callback?: ResultCb<Principal>): Promise<Principal>
+    // queryPrincipals(query: Object, pagination?: Object, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
 }
 
 export declare interface Branch extends RepositoryObject {
@@ -194,55 +194,55 @@ export declare interface Branch extends RepositoryObject {
     readonly?: boolean
     frozen?: false
 
-    readNode(nodeId: string, path?: string, callback?: ResultCb<Node>): Promise<Node>
-    queryNodes(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    queryOneNode(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Node>
-    searchNodes(search: Object|string, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    findNodes(config: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    createNode(obj?: Object, options?: Object, callback?: ResultCb<Node>): Promise<Node>
-    deleteNodes(nodes: string|Array<string>|Array<TypedID>, callback?: ResultCb<void>): Promise<void>
+    // readNode(nodeId: string, path?: string, callback?: ResultCb<Node>): Promise<Node>
+    // queryNodes(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // queryOneNode(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Node>
+    // searchNodes(search: Object|string, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // findNodes(config: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // createNode(obj?: Object, options?: Object, callback?: ResultCb<Node>): Promise<Node>
+    // deleteNodes(nodes: string|Array<string>|Array<TypedID>, callback?: ResultCb<void>): Promise<void>
 
-    graphqlQuery(query: string, operationName?: string, variables?: Object, callback?: ResultCb<GraphQLResult>): Promise<GraphQLResult>
-    graphqlSchema(callback?: ResultCb<string>): Promise<string>
+    // graphqlQuery(query: string, operationName?: string, variables?: Object, callback?: ResultCb<GraphQLResult>): Promise<GraphQLResult>
+    // graphqlSchema(callback?: ResultCb<string>): Promise<string>
 
-    deleteBranch(callback?: ResultCb<void>): Promise<void>
-    updateBranch(obj: Object, callback?: ResultCb<Branch>): Promise<Branch>
-    resetBranch(changeset: string|TypedID, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    // deleteBranch(callback?: ResultCb<void>): Promise<void>
+    // updateBranch(obj: Object, callback?: ResultCb<Branch>): Promise<Branch>
+    // resetBranch(changeset: string|TypedID, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
 
-    trackPage(page: PageRendition): void
+    // trackPage(page: PageRendition): void
 }
 
 export declare interface Node extends TypedID {
     _qname: string
     _type: string
 
-    queryNodeRelatives(associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    queryNodeChildren(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    listNodeAssociations(associationType?: string, associationDirection?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
-    listOutgoingAssociations(associationType?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
-    listIncomingAssociations(associationType?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
-    associate(otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb<Association>): Promise<Association>
-    unassociate(otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb<void>): Promise<void>
-    associateChild(childNode: TypedID|string, callback?: ResultCb<Association>): Promise<Association>
-    unassociateChild(childNode: TypedID|string, callback?: ResultCb<void>): Promise<void>
-    deleteNode(callback?: ResultCb<void>): Promise<void>
-    updateNode(callback?: ResultCb<Node>): Promise<Node>
-    patchNode(patchObject: Object, callback?: ResultCb<Node>): Promise<Node>
-    addNodeFeature(featureId: string, config?: Object, callback?: ResultCb<void>): Promise<void>
-    removeNodeFeature(featureId: string, callback?: ResultCb<void>): Promise<void>
-    refreshNode(callback?: ResultCb<void>): Promise<void>
-    changeNodeQName(newQName: string, callback?: ResultCb<Object>): Promise<Object>
-    nodeTree(config?: TreeConfig, callback?: ResultCb<TreeElement>): Promise<TreeElement>
-    resolveNodePath(callback?: ResultCb<{path: string}>): Promise<{path: string}>
-    resolveNodePaths(callback?: ResultCb<{[id: string]: string}>): Promise<{[id: string]: string}>
-    traverseNode(config: Object, callback?: ResultCb<TraversalResult>): Promise<TraversalResult>
-    uploadAttachment(attachmentId: string, file: File, mimeType: string, filename?: string, callback?: ResultCb<void>): Promise<void>
-    downloadAttachment(attachmentId: string, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
-    listAttachments(callback?: ResultCb<Rows<Attachment>>): Promise<Rows<Attachment>>
-    deleteAttachment(attachmentId?: string, callback?: ResultCb<void>): Promise<void>
-    listVersions(options?: NodeVersionOptions, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    readVersion(changesetId: string, options?: NodeVersionOptions, callback?: ResultCb<Node>): Promise<Node>
-    restoreVersion(changesetId: string, callback?: ResultCb<Node>): Promise<Node>
+    // queryNodeRelatives(associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // queryNodeChildren(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // listNodeAssociations(associationType?: string, associationDirection?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    // listOutgoingAssociations(associationType?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    // listIncomingAssociations(associationType?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    // associate(otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb<Association>): Promise<Association>
+    // unassociate(otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb<void>): Promise<void>
+    // associateChild(childNode: TypedID|string, callback?: ResultCb<Association>): Promise<Association>
+    // unassociateChild(childNode: TypedID|string, callback?: ResultCb<void>): Promise<void>
+    // deleteNode(callback?: ResultCb<void>): Promise<void>
+    // updateNode(callback?: ResultCb<Node>): Promise<Node>
+    // patchNode(patchObject: Object, callback?: ResultCb<Node>): Promise<Node>
+    // addNodeFeature(featureId: string, config?: Object, callback?: ResultCb<void>): Promise<void>
+    // removeNodeFeature(featureId: string, callback?: ResultCb<void>): Promise<void>
+    // refreshNode(callback?: ResultCb<void>): Promise<void>
+    // changeNodeQName(newQName: string, callback?: ResultCb<Object>): Promise<Object>
+    // nodeTree(config?: TreeConfig, callback?: ResultCb<TreeElement>): Promise<TreeElement>
+    // resolveNodePath(callback?: ResultCb<{path: string}>): Promise<{path: string}>
+    // resolveNodePaths(callback?: ResultCb<{[id: string]: string}>): Promise<{[id: string]: string}>
+    // traverseNode(config: Object, callback?: ResultCb<TraversalResult>): Promise<TraversalResult>
+    // uploadAttachment(attachmentId: string, file: File, mimeType: string, filename?: string, callback?: ResultCb<void>): Promise<void>
+    // downloadAttachment(attachmentId: string, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
+    // listAttachments(callback?: ResultCb<Rows<Attachment>>): Promise<Rows<Attachment>>
+    // deleteAttachment(attachmentId?: string, callback?: ResultCb<void>): Promise<void>
+    // listVersions(options?: NodeVersionOptions, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // readVersion(changesetId: string, options?: NodeVersionOptions, callback?: ResultCb<Node>): Promise<Node>
+    // restoreVersion(changesetId: string, callback?: ResultCb<Node>): Promise<Node>
 }
 
 export declare interface Association extends Node {

@@ -60,7 +60,7 @@ class UtilitySession extends DefaultSession
             this._dataStoresByKey = {};
             for (let dataStore of dataStores)
             {
-                this._dataStoresByKey[dataStore._stackKey] = dataStore;
+                this._dataStoresByKey[dataStore._doc] = dataStore;
             }
         }
         
@@ -74,6 +74,9 @@ class UtilitySession extends DefaultSession
         {
             const dataStoresByKey = await this.dataStoresByKey();
             this._repository = dataStoresByKey.content;
+            // make sure repository id is accurate
+            this._repository._stackKey = this._repository._doc;
+            this._repository._doc = this._repository.datastoreId;
         }
 
         return this._repository;
@@ -84,7 +87,7 @@ class UtilitySession extends DefaultSession
         if (!this._branches)
         {
             const repository = await this.repository();
-            this._branches = (await repository.listBranches()).rows;
+            this._branches = (await this.listBranches(repository)).rows;
         }
 
         return this._branches;
@@ -125,7 +128,7 @@ class UtilitySession extends DefaultSession
         if (!this._master)
         {
             const repository = await this.repository();
-            this._master = await repository.readBranch("master");
+            this._master = await this.readBranch(repository, "master");
         }
 
         return this._master;

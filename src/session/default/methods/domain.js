@@ -1,7 +1,5 @@
 module.exports = function(Session)
 {
-    const Domain = require("../../../objects/Domain");
-
     class DomainSession extends Session
     {
         /**
@@ -10,12 +8,11 @@ module.exports = function(Session)
          * @param obj
          * @returns object
          */
-        async createDomain(obj)
+        createDomain(obj)
         {
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = this.post("/domains", {}, obj, callback);
-            return new Domain(this, result);
+            return this.post("/domains", {}, obj, callback);
         };
 
         /**
@@ -25,13 +22,11 @@ module.exports = function(Session)
          * @param pagination
          * @returns response
          */
-        async queryDomains(query, pagination)
+        queryDomains(query, pagination)
         {
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = await this.post("/domains/query", pagination, query, callback);
-            result.rows = result.rows.map(row => new Domain(this, row));
-            return result;
+            return this.post("/domains/query", pagination, query, callback);
         };
 
         /**
@@ -40,12 +35,11 @@ module.exports = function(Session)
          * @param domainId
          * @returns {*}
          */
-        async readDomain(domainId)
+        readDomain(domainId)
         {
             var callback = this.extractOptionalCallback(arguments);
 
-            let result = await this.get("/domains/" + domainId, {}, callback);
-            return new Domain(this, result)
+            return this.get("/domains/" + domainId, {}, callback);
         }
     }
 
