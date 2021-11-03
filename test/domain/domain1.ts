@@ -6,13 +6,13 @@ describe('domain_1', function() {
 
         const session = await cloudcms.connect();
         const domains = await session.queryDomains({});
-        assert.isAtLeast(domains.total_rows, 1);
+        assert.isAtLeast(domains.rows.length, 1);
 
         const domain = await session.readDomain(domains.rows[0]._doc);
         assert.isObject(domain);
 
         const principals = await session.queryPrincipals(domain, {});
-        assert.isAtLeast(principals.total_rows, 1);
+        assert.isAtLeast(principals.rows.length, 1);
 
         const principal = await session.readPrincipal(domain, principals.rows[0]._doc);
         assert.isObject(principal);

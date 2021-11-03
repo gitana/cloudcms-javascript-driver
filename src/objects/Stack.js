@@ -12,6 +12,7 @@ class Stack extends AbstractObject
 
     constructor(session, obj)
     {
+        super();
         Object.assign(this, obj);
         this.session = session;
 

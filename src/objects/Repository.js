@@ -16,6 +16,7 @@ class Repository extends AbstractObject
 
     constructor(session, obj)
     {
+        super();
         Object.assign(this, obj);
 
         // bind all methods to this

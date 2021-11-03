@@ -23,6 +23,7 @@ class Branch extends AbstractObject
 
     constructor(session, repositoryId, obj)
     {
+        super();
         Object.assign(this, obj)
         this.session = session;
         this.repositoryId = repositoryId;
