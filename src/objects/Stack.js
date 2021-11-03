@@ -1,5 +1,6 @@
+const AbstractObject = require("./AbstractObject");
 
-class Stack
+class Stack extends AbstractObject
 {
     static STACK_FNS = [
         "readDataStore",

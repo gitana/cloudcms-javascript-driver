@@ -1,5 +1,6 @@
+const AbstractObject = require("./AbstractObject");
 
-class Repository
+class Repository extends AbstractObject
 {
     static REPOSITORY_FNS = [
         "queryBranches",

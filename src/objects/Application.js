@@ -1,5 +1,6 @@
+const AbstractObject = require("./AbstractObject");
 
-class Application
+class Application extends AbstractObject
 {
     static APPLICATION_FNS = [
 

@@ -1,5 +1,6 @@
+const AbstractObject = require("./AbstractObject");
 
-class Domain
+class Domain extends AbstractObject
 {
     static DOMAIN_FNS = [
         "readPrincipal",

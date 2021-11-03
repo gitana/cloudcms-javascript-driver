@@ -1,5 +1,6 @@
+const AbstractObject = require("./AbstractObject");
 
-class Node
+class Node extends AbstractObject
 {
     static NODE_FNS = [
         "queryNodeRelatives",
@@ -31,6 +32,7 @@ class Node
 
     constructor(session, repositoryId, branchId, obj)
     {
+        super();
         Object.assign(this, obj)
         this.session = session;
         this.repositoryId = repositoryId;
@@ -42,8 +44,6 @@ class Node
             this[fn] = session[fn].bind(session, this.repositoryId, this.branchId, this._doc);
         }
     }
-
-
 } 
 
 module.exports = Node;

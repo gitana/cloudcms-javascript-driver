@@ -1,5 +1,6 @@
+const AbstractObject = require("./AbstractObject");
 
-class Branch
+class Branch extends AbstractObject
 {
     static BRANCH_FNS = [
         "queryNodes",
