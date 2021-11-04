@@ -7,7 +7,6 @@ describe('utility_1', function() {
         // Use utility session
         cloudcms.session(UtilitySession);
         const session = await cloudcms.connect<UtilitySession>();
-        console.log(UtilitySession);
 
         const application = await session.application();
         assert.isObject(application);

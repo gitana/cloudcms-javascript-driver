@@ -1,5 +1,34 @@
 
 const DefaultSession = require("../default/session");
+const Application = require("../../objects/Application");
+const Stack = require("../../objects/Stack");
+const Domain = require("../../objects/Domain");
+const Repository = require("../../objects/Repository");
+const Branch = require("../../objects/Branch");
+
+const wrapDataStore = (session, obj) => {
+
+    if (!obj.datastoreTypeId)
+    {
+        return obj;
+    }
+    else if (obj.datastoreTypeId === "repository")
+    {
+        return new Repository(session, obj);
+    }
+    else if (obj.datastoreTypeId === "application")
+    {
+        return new Application(session, obj);
+    }
+    else if (obj.datastoreTypeId === "domain")
+    {
+        return new Domain(session, obj);
+    }
+    else
+    {
+        return obj;
+    }
+}
 
 class UtilitySession extends DefaultSession
 {
@@ -16,7 +45,7 @@ class UtilitySession extends DefaultSession
             this._application = await this.readApplication(this.config.application);
         }
 
-        return this._application;
+        return new Application(this, this._application);
     }
     
     async project()
@@ -38,7 +67,7 @@ class UtilitySession extends DefaultSession
             this._stack = await this.readStack(project.stackId)
         }
 
-        return this._stack;
+        return new Stack(this, this._stack);
     }
 
     async dataStores()
@@ -47,6 +76,7 @@ class UtilitySession extends DefaultSession
         {
             const stack = await this.stack();
             this._dataStores = (await this.listDataStores(stack)).rows;
+            this._dataStores = this._dataStores.map(dataStore => wrapDataStore(this, dataStore));
         }
 
         return this._dataStores;
@@ -88,6 +118,7 @@ class UtilitySession extends DefaultSession
         {
             const repository = await this.repository();
             this._branches = (await this.listBranches(repository)).rows;
+            this._branches = this._branches.map(branch => new Branch(this, repository._doc, branch));
         }
 
         return this._branches;
@@ -129,6 +160,7 @@ class UtilitySession extends DefaultSession
         {
             const repository = await this.repository();
             this._master = await this.readBranch(repository, "master");
+            this._master = new Branch(this, repository._doc, this._master);
         }
 
         return this._master;
