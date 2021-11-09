@@ -450,6 +450,15 @@ class AxiosDriver extends Driver
             }
         };
     }
+
+    // Must return object with keys status: string and body: string
+    async oauthRequest(method, url, body, headers) {
+        let result = await axios.request({method, url, data: body, headers});
+        return { 
+            status: result.status,
+            body: JSON.stringify(result.data)
+        }
+    }
 }
 
 module.exports = AxiosDriver;

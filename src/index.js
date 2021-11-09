@@ -21,32 +21,33 @@ var DEFAULT_CONFIG = {
 
 var _connect = function(config, _storageClass, _driverClass, _sessionClass, callback)
 {
-    _authenticate(config, function(err, credentials) {
+    if (!_driverClass)
+    {
+        _driverClass = require("./drivers/fetch/driver");
+    }
+
+    if (!_storageClass)
+    {
+        _storageClass = require("./storage/memory/storage");
+    }
+
+    // instantiate the storage
+    var storage = new _storageClass(config);
+
+    // instantiate the driver
+    var driver = new _driverClass(config, null, storage);
+
+    _authenticate(driver.oauthRequest.bind(driver), config, function(err, credentials) {
+        driver.credentials = credentials;
 
         if (err) {
             return callback(err);
-        }
-
-        if (!_driverClass)
-        {
-            _driverClass = require("./drivers/axios/driver");
-        }
-
-        if (!_storageClass)
-        {
-            _storageClass = require("./storage/memory/storage");
         }
 
         if (!_sessionClass)
         {
             _sessionClass = require("./session/default/session");
         }
-
-        // instantiate the storage
-        var storage = new _storageClass(config);
-
-        // instantiate the driver
-        var driver = new _driverClass(config, credentials, storage);
 
         // instantiate the session
         var session = new _sessionClass(config, driver, storage);
@@ -78,10 +79,11 @@ var _connect = function(config, _storageClass, _driverClass, _sessionClass, call
  *
  * @chained platform
  *
+ * @param {Function} request - (Optional) async function that returns an object with keys status: string and body: string. This is used to perform the oauth handshake, and if not set the oauth client's internal http client will be used.
  * @param {Object} config
  * @param [Function] callback
  */
-var _authenticate = function(config, callback)
+var _authenticate = function(request, config, callback)
 {
     var authConfig = {
         clientId: config.clientKey,
@@ -133,7 +135,7 @@ var _authenticate = function(config, callback)
     };
 
     var ClientOAuth2 = require("client-oauth2");
-    var auth = new ClientOAuth2(authConfig);
+    var auth = new ClientOAuth2(authConfig, request);
 
     auth.owner.getToken(config.username, config.password).then(function(token) {
 
@@ -266,6 +268,9 @@ var factory = function()
 
         return promise;
     };
+
+    exports.AxiosDriver = require("./drivers/axios/driver");
+    exports.FetchDriver = require("./drivers/fetch/driver");
 
     exports.DefaultSession = require("./session/default/session");
     exports.UtilitySession = require("./session/utility/session");

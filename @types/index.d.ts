@@ -20,12 +20,13 @@ export declare interface params {
 export declare type ResultCb<T=Object> = (err: Error, result: T) => void
 
 export declare interface DriverConfig {
-    clientKey: string
-    clientSecret: string
-    username: string
-    password: string
+    clientKey?: string
+    clientSecret?: string
+    username?: string
+    password?: string
     baseURL?: string
-    application?: string
+    application?: string,
+    fetch?: Function
 }
 
 export declare interface Driver {
