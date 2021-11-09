@@ -1,8 +1,7 @@
 var Driver = require("../../driver");
 var Helper = require("../../helper");
 
-var fetch = require('node-fetch');
-var Request = require('node-fetch').Request;
+// var Request = require('node-fetch').Request;
 
 // needs to be able to accept arbitrary fetch() implementation
 // Implement fetch API
@@ -13,6 +12,7 @@ class FetchDriver extends Driver
     constructor(config, credentials, storage)
     {
         super(config, credentials, storage);
+        this.fetch = config.fetch;
 
         var doRequest = (options, callback) =>
         {
@@ -27,21 +27,32 @@ class FetchDriver extends Driver
             var params = new URLSearchParams(options.params);
             options.url += "?" + params.toString();
 
-            var request = new Request(options.url, options);
+            // var request = new Request(options.url, options);
 
             // fetch
-            fetch(request)
-                .then(function(_response) {
+            this.fetch(options.url, options)
+                .then(async function(_response) {
                     // pass back result in correct format (json or stream, plaintext?) responseType
                     response = _response;
 
-                    if (options.responseType === "stream")
+                    if (!response.ok)
                     {
-                        // return stream
-                        return response.body;
+                        throw new Error(await response.text());
                     }
 
-                    var data = response.text();
+                    if (options.responseType === "stream")
+                    {
+                        if (response.body)
+                        {
+                            return response.body;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+                    
+                    var data = await response.text();
                     try {
                         data = JSON.parse(data);
                     }
@@ -356,6 +367,8 @@ class FetchDriver extends Driver
             }
         };
 
+
+        // This is the bit that still isn't working!
         this.buildMultipartPostHandler = function(uri, params, payload)
         {
             var self = this;
@@ -375,8 +388,7 @@ class FetchDriver extends Driver
                         "method": "POST",
                         "url": uri,
                         "headers": {
-                            'Content-Type': 'multipart/form-data',
-                            ...formHeaders // need to add headers from form
+                            // 'Content-Type': 'multipart/form-data',
                         },
                         "params": {}
                     };
