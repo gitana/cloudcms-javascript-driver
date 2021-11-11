@@ -296,7 +296,8 @@ var modulePaths = [
     "./methods/changeset",
     "./methods/job",
     "./methods/transfer",
-    "./methods/tracker"
+    "./methods/tracker",
+    "./methods/release"
 ];
 for (var i = 0; i < modulePaths.length; i++)
 {

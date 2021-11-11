@@ -282,7 +282,7 @@ export declare interface BranchSession extends Session {
     queryBranches(repository: TypedID|string, query?: Object, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
     readBranch(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<Branch>): Promise<Branch>
     createBranch(repository: TypedID|string, branch: TypedID|string, changesetId?: string, obj?: Object, callback?: ResultCb<Branch>): Promise<Branch>
-    listBranches(repository: TypedID|string, callback?: ResultCb<Rows<Branch>>): Promise<Rows<Branch>>
+    listBranches(repository: TypedID|string, pagination?: Object, callback?: ResultCb<Rows<Branch>>): Promise<Rows<Branch>>
     deleteBranch(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<void>): Promise<void>
     updateBranch(repository: TypedID|string, branch: TypedID|string, obj: Object, callback?: ResultCb<Branch>): Promise<Branch>
     resetBranch(repository: TypedID|string, branch: TypedID|string, changeset: string|TypedID, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
@@ -373,6 +373,7 @@ export declare interface JobSession extends Session {
     readJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
     queryJobs(query: Object, pagination?: Object, callback?: ResultCb<Rows<Job>>): Promise<Rows<Job>>
     killJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
+    waitForJobCompletion(job: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
 }
 
 export declare interface TransferSession extends Session {
@@ -382,6 +383,15 @@ export declare interface TransferSession extends Session {
 
 export declare interface TrackerSession extends Session {
     trackPage(repositoryId: string, branchId: string, page: PageRendition): void
+}
+
+export declare interface ReleaseSession extends Session {
+    startCreateRelease(repository: string|TypedID, object: Object, sourceRelease?: string|TypedID, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    readRelease(repository: string|TypedID, releaseId: string, callback?: ResultCb<RepositoryObject>): Promise<RepositoryObject>
+    updateRelease(repository: string|TypedID, release: string|TypedID, obj: Object, callback?: ResultCb<void>): Promise<void>
+    deleteRelease(repository: string|TypedID, release: string|TypedID, callback?: ResultCb<void>): Promise<void>
+    queryReleases(repository: string|TypedID, query: Object, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<RepositoryObject>>
+    listReleases(repository: string|TypedID, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<RepositoryObject>>
 }
 
 export declare interface UtilitySession extends DefaultSession {
@@ -399,7 +409,7 @@ export declare interface UtilitySession extends DefaultSession {
 }
 
 
-export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession
+export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession;
 
 
 

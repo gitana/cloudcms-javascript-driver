@@ -67,7 +67,7 @@ module.exports = function(Session)
          *
          * @returns {*}
          */
-        listBranches(repository)
+        listBranches(repository, pagination)
         {
             var repositoryId = this.acquireId(repository);
             var callback = this.extractOptionalCallback(arguments);
@@ -75,6 +75,13 @@ module.exports = function(Session)
             var qs = {
                 full: true
             };
+
+            if (pagination) {
+                qs = {
+                    ...qs,
+                    ...pagination
+                }
+            }
 
             return this.get("/repositories/" + repositoryId + "/branches", qs, callback);
         };
