@@ -1,11 +1,12 @@
 const AbstractObject = require("./AbstractObject");
 
+
+const DOMAIN_FNS = [
+    "readPrincipal",
+    "queryPrincipals"
+];
 class Domain extends AbstractObject
 {
-    static DOMAIN_FNS = [
-        "readPrincipal",
-        "queryPrincipals"
-    ];
 
     constructor(session, obj)
     {
@@ -14,7 +15,7 @@ class Domain extends AbstractObject
         this.session = session;
 
         // bind all methods to this
-        for (let fn of Domain.DOMAIN_FNS)
+        for (let fn of DOMAIN_FNS)
         {
             this[fn] = session[fn].bind(session, this._doc);
         }

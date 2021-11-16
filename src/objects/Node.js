@@ -1,34 +1,34 @@
 const AbstractObject = require("./AbstractObject");
 
+const NODE_FNS = [
+    "queryNodeRelatives",
+    "queryNodeChildren",
+    "listNodeAssociations",
+    "listOutgoingAssociations",
+    "associate",
+    "unassociate",
+    "associateChild",
+    "deleteNode",
+    "updateNode",
+    "patchNode",
+    "addNodeFeature",
+    "removeNodeFeature",
+    "refreshNode",
+    "changeNodeQName",
+    "nodeTree",
+    "resolveNodePath",
+    "resolveNodePaths",
+    "traverseNode",
+    "uploadAttachment",
+    "downloadAttachment",
+    "listAttachments",
+    "deleteAttachment",
+    "listVersions",
+    "readVersion",
+    "restoreVersion"
+];
 class Node extends AbstractObject
 {
-    static NODE_FNS = [
-        "queryNodeRelatives",
-        "queryNodeChildren",
-        "listNodeAssociations",
-        "listOutgoingAssociations",
-        "associate",
-        "unassociate",
-        "associateChild",
-        "deleteNode",
-        "updateNode",
-        "patchNode",
-        "addNodeFeature",
-        "removeNodeFeature",
-        "refreshNode",
-        "changeNodeQName",
-        "nodeTree",
-        "resolveNodePath",
-        "resolveNodePaths",
-        "traverseNode",
-        "uploadAttachment",
-        "downloadAttachment",
-        "listAttachments",
-        "deleteAttachment",
-        "listVersions",
-        "readVersion",
-        "restoreVersion"
-    ];
 
     constructor(session, repositoryId, branchId, obj)
     {
@@ -39,7 +39,7 @@ class Node extends AbstractObject
         this.branchId = branchId;
 
         // bind all branch methods to this
-        for (let fn of Node.NODE_FNS)
+        for (let fn of NODE_FNS)
         {
             this[fn] = session[fn].bind(session, this.repositoryId, this.branchId, this._doc);
         }

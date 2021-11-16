@@ -1,14 +1,15 @@
 const AbstractObject = require("./AbstractObject");
 
+const STACK_FNS = [
+    "readDataStore",
+    "listDataStores",
+    "queryDataStores",
+    "assignDataStore",
+    "unassignDataStore"
+];
 class Stack extends AbstractObject
 {
-    static STACK_FNS = [
-        "readDataStore",
-        "listDataStores",
-        "queryDataStores",
-        "assignDataStore",
-        "unassignDataStore"
-    ];
+    
 
     constructor(session, obj)
     {
@@ -17,7 +18,7 @@ class Stack extends AbstractObject
         this.session = session;
 
         // bind all methods to this
-        for (let fn of Stack.STACK_FNS)
+        for (let fn of STACK_FNS)
         {
             this[fn] = session[fn].bind(session, this._doc);
         }

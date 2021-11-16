@@ -282,26 +282,26 @@ class DefaultSession
     // ALL OTHER METHODS ARE PULLED IN BELOW
 };
 
-var modulePaths = [
-    "./methods/branch",
-    "./methods/domain",
-    "./methods/graphql",
-    "./methods/node",
-    "./methods/principal",
-    "./methods/repository",
-    "./methods/workflow",
-    "./methods/application",
-    "./methods/project",
-    "./methods/stack",
-    "./methods/changeset",
-    "./methods/job",
-    "./methods/transfer",
-    "./methods/tracker",
-    "./methods/release"
+var modules = [
+    require("./methods/branch"),
+    require("./methods/domain"),
+    require("./methods/graphql"),
+    require("./methods/node"),
+    require("./methods/principal"),
+    require("./methods/repository"),
+    require("./methods/workflow"),
+    require("./methods/application"),
+    require("./methods/project"),
+    require("./methods/stack"),
+    require("./methods/changeset"),
+    require("./methods/job"),
+    require("./methods/transfer"),
+    require("./methods/tracker"),
+    require("./methods/release")
 ];
-for (var i = 0; i < modulePaths.length; i++)
+for (var i = 0; i < modules.length; i++)
 {
-    DefaultSession = require(modulePaths[i])(DefaultSession)
+    DefaultSession = modules[i](DefaultSession)
 }
 
 module.exports = DefaultSession;

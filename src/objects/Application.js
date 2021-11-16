@@ -1,11 +1,10 @@
 const AbstractObject = require("./AbstractObject");
 
+const APPLICATION_FNS = [
+
+];
 class Application extends AbstractObject
 {
-    static APPLICATION_FNS = [
-
-    ];
-
     constructor(session, obj)
     {
         super();
@@ -13,7 +12,7 @@ class Application extends AbstractObject
         this.session = session;
         
         // bind all methods to this
-        for (let fn of Application.APPLICATION_FNS)
+        for (let fn of APPLICATION_FNS)
         {
             this[fn] = session[fn].bind(session, this._doc);
         }
