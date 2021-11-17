@@ -32,7 +32,7 @@ class Branch extends AbstractObject
         // bind all branch methods to this
         for (let fn of BRANCH_FNS)
         {
-            this[fn] = session[fn].bind(session, this.repositoryId, this._doc);
+            this[fn] = session[fn].bind(session, this.repositoryId, obj);
         }
     }
 
