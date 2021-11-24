@@ -297,7 +297,8 @@ var modules = [
     require("./methods/job"),
     require("./methods/transfer"),
     require("./methods/tracker"),
-    require("./methods/release")
+    require("./methods/release"),
+    require("./methods/platform")
 ];
 for (var i = 0; i < modules.length; i++)
 {

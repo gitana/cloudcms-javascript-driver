@@ -344,6 +344,7 @@ export declare interface PrincipalSession extends Session {
 
 export declare interface ProjectSession extends Session {
     readProject(project: TypedID|string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
+    createProject(obj: Object, callback?: ResultCb<StartJobResult>):  Promise<StartJobResult>
 }
 
 export declare interface StackSession extends Session {
@@ -394,6 +395,10 @@ export declare interface ReleaseSession extends Session {
     listReleases(repository: string|TypedID, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<RepositoryObject>>
 }
 
+export declare interface PlatformSession extends Session {
+    readPlatform(callback?: ResultCb<Object>): Promise<Object>
+}
+
 export declare interface UtilitySession extends DefaultSession {
     new(config: DriverConfig, driver: Driver, storage: Object): UtilitySession
     application(): Promise<Application>
@@ -409,7 +414,7 @@ export declare interface UtilitySession extends DefaultSession {
 }
 
 
-export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession;
+export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession & PlatformSession;
 
 
 
