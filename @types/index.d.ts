@@ -340,6 +340,8 @@ export declare interface NodeSession extends Session {
 export declare interface PrincipalSession extends Session {
     readPrincipal(domain: TypedID|string, principalId: string, callback?: ResultCb<Principal>): Promise<Principal>
     queryPrincipals(domain: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
+    createPrincipal(domain: TypedID|string, obj: Object, callback?: ResultCb<Principal>): Promise<Principal>
+    updatePrincipal(domain: TypedID|string, principal: Principal, callback?: ResultCb<void>): Promise<void>
 }
 
 export declare interface ProjectSession extends Session {

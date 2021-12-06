@@ -135,7 +135,7 @@ module.exports = function(Session)
                 "id":  changesetId
             };
 
-            return this.get("/repositories/" + repositoryId + "/branches/" + branchId, params, null, callback);
+            return this.post("/repositories/" + repositoryId + "/branches/reset/start" + branchId, params, null, callback);
         }
 
         
