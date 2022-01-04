@@ -504,7 +504,7 @@ module.exports = function(Session)
          * @param node
          * @returns {*}
          */
-        resolveNodePath(repository, branch, node)
+        async resolveNodePath(repository, branch, node)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -512,10 +512,9 @@ module.exports = function(Session)
             var callback = this.extractOptionalCallback(arguments);
 
             var qs = {};
-            //qs.rootNodeId = "821c40ab613d9b5bcbbc656b62229301";
-            qs.rootNodeId = "r:root";
 
-            return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/path", qs, callback);
+            var result = await this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/path", qs, callback);
+            return result.path;
         };
 
         /**
@@ -527,14 +526,15 @@ module.exports = function(Session)
          * @param node
          * @returns {*}
          */
-        resolveNodePaths(repository, branch, node)
+        async resolveNodePaths(repository, branch, node)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
             var nodeId = this.acquireId(node);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/paths", {}, callback);
+            var result = await this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/paths", {}, callback);
+            return result.paths;
         };
         
         /**

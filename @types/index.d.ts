@@ -325,7 +325,7 @@ export declare interface NodeSession extends Session {
     refreshNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<void>): Promise<void>
     changeNodeQName(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, newQName: string, callback?: ResultCb<Object>): Promise<Object>
     nodeTree(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config?: TreeConfig, callback?: ResultCb<TreeElement>): Promise<TreeElement>
-    resolveNodePath(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<{path: string}>): Promise<{path: string}>
+    resolveNodePath(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<{path: string}>): Promise<string>
     resolveNodePaths(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<{[id: string]: string}>): Promise<{[id: string]: string}>
     traverseNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config: Object, callback?: ResultCb<TraversalResult>): Promise<TraversalResult>
     uploadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, file: File, mimeType: string, filename?: string, callback?: ResultCb<void>): Promise<void>

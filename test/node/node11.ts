@@ -55,6 +55,13 @@ describe('node11', function() {
         var n7 = await session.readNode(repository, branchId, "root", "/folder2/folder12/folder111/node7");
         var n8 = await session.readNode(repository, branchId, "root", "/folder2/folder12/folder112/node8");
 
+        // test node path
+        var n8Paths = await session.resolveNodePaths(repository, branchId, n8);
+        assert.isAbove(Object.keys(n8Paths).length, 0);
+
+        var n8Path = await session.resolveNodePath(repository, branchId, n8);
+        assert.equal("/folder2/folder12/folder112/node8", n8Path);
+
         // verify nodes exist
         assert.exists(n1);
         assert.exists(n2);
