@@ -255,6 +255,14 @@ export declare interface Association extends Node {
 }
 
 
+export declare interface ChangesetHistoryConfig {
+    root?: string,
+    tip?: string,
+    include_root?: boolean,
+    view?: string
+}
+
+
 // Sessions
 
 export declare interface Session {
@@ -286,6 +294,7 @@ export declare interface BranchSession extends Session {
     deleteBranch(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<void>): Promise<void>
     updateBranch(repository: TypedID|string, branch: TypedID|string, obj: Object, callback?: ResultCb<Branch>): Promise<Branch>
     resetBranch(repository: TypedID|string, branch: TypedID|string, changeset: string|TypedID, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    startChangesetHistory(repository: TypedID|string, branch: TypedID|string, config?: ChangesetHistoryConfig): Promise<StartJobResult>
 }
 
 export declare interface DomainSession extends Session {

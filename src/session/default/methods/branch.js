@@ -138,7 +138,14 @@ module.exports = function(Session)
             return this.post("/repositories/" + repositoryId + "/branches/reset/start" + branchId, params, null, callback);
         }
 
-        
+        startChangesetHistory(repository, branch, config)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.post(`/repositories/${repositoryId}/branches/${branchId}/history/start`, config, {}, callback);
+        }
     }
 
     return BranchSession;
