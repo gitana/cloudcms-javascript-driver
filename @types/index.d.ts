@@ -336,6 +336,7 @@ export declare interface NodeSession extends Session {
     nodeTree(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config?: TreeConfig, callback?: ResultCb<TreeElement>): Promise<TreeElement>
     resolveNodePath(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<{path: string}>): Promise<string>
     resolveNodePaths(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<{[id: string]: string}>): Promise<{[id: string]: string}>
+    moveNodes(repository: TypedID|string, branch: TypedID|string, sourceNodeIds: Array<string>, targetNodeId: string, options?: Object): Promise<void>
     traverseNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, config: Object, callback?: ResultCb<TraversalResult>): Promise<TraversalResult>
     uploadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, file: File, mimeType: string, filename?: string, callback?: ResultCb<void>): Promise<void>
     downloadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>

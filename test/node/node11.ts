@@ -71,5 +71,16 @@ describe('node11', function() {
         assert.exists(n6);
         assert.exists(n7);
         assert.exists(n8);
+
+        // Try moving some nodes
+        await session.moveNodes(repository, branchId, [node1._doc, node3._doc], "root", "/folder1/folder12");
+
+        // Check that paths are correct
+
+        var path1 = await session.resolveNodePath(repository, branchId, node1);
+        var path3 = await session.resolveNodePath(repository, branchId, node3);
+
+        assert.equal("/folder1/folder12/node1", path1);
+        assert.equal("/folder1/folder12/node3", path3);
     });
 });

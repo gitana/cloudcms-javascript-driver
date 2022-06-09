@@ -536,6 +536,37 @@ module.exports = function(Session)
             var result = await this.get("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/paths", {}, callback);
             return result.paths;
         };
+
+        /**
+         * Moves a list of nodes to the container targetNodeId.
+         *
+         * @param repository
+         * @param branch
+         * @param sourceNodeIds
+         * @param targetNodeId id of target folder, default is "root" for top folder
+         * @param targetPath optional relative path to apply to targetNodeId for determining move target
+         * @returns {*}
+         */
+        async moveNodes(repository, branch, sourceNodeIds, targetNodeId, targetPath)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            if (!targetNodeId) targetNodeId = "root"
+
+            var payload = {};
+            if (targetPath)
+            {
+                payload.targetPath = targetPath;
+            }
+
+            payload.sourceNodeIds = sourceNodeIds;
+            payload.targetNodeId = targetNodeId;
+
+            var result = await this.post(`/repositories/${repositoryId}/branches/${branchId}/movenodes`, {}, payload, callback);
+            return;
+        }
         
         /**
          * Traverses around the node and returns any nodes found to be connected on the graph.
