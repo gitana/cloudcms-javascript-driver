@@ -328,9 +328,9 @@ module.exports = function(Session)
             var nodeId = this.acquireId(node);
             var callback = this.extractOptionalCallback(arguments);
 
-            var obj = this.cleanNodeBeforeWrite(node);
+            // var obj = this.cleanNodeBeforeWrite(node);
 
-            return this.put("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, obj, callback);
+            return this.put("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, node, callback);
         }
 
         patchNode(repository, branch, node, patchObject)
