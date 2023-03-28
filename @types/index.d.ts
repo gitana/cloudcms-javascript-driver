@@ -50,6 +50,14 @@ export declare interface Rows<T> {
     rows: Array<T>
 }
 
+export declare interface Pagination {
+    skip?: Number,
+    limit?: Number,
+    sorting?: Object,
+    options?: Object,
+    from?: string
+}
+
 export declare interface TypedID {
     _doc: string
     [key: string]: any
@@ -143,6 +151,80 @@ export declare interface Job extends TypedID {
     type: string
 }
 
+// Archives
+
+export declare interface Archive extends TypedID {
+    type: string
+    group: string
+    artifact: string
+    version: string
+    contentType: string
+    length: Number
+
+    published?: boolean
+}
+
+export declare interface UploadArchiveOptions {
+    group?: string
+    artifact?: string
+    version?: string
+    type?: string
+    title?: string
+    description?: string
+    published?: boolean
+}
+
+export declare interface TransferExportConfiguration {
+    startDate?: Number
+    endDate?: Number
+    startChangeset?: string
+    endChangeset?: string
+    tipChangesetOnly?: boolean
+    selectedBranchIds?: Array<string>
+    includeACLs?: boolean
+    includeTeams?: boolean
+    includeTeamMembers?: boolean
+    includeRoles?: boolean
+    includeActivities?: boolean
+    includeBinaries?: boolean
+    includeAttachments?: boolean
+    artifactParts?: Array<string>
+    artifactIncludes?: Array<string>
+    forceIncludes?: boolean
+    contentIncludeFolders?: boolean
+    contentIncludeRelators?: boolean
+    contentIncludeRelatingAssociations?: boolean
+    branchIncludeArchives?: boolean
+    branchIncludeSnapshots?: boolean
+
+    [key: string]: any
+}
+
+export declare interface TransferImportConfiguration {
+    includeACLs?: boolean
+    includeTeams?: boolean
+    includeTeamMembers?: boolean
+    includeRoles?: boolean
+    includeActivities?: boolean
+    includeBinaries?: boolean
+    includeAttachments?: boolean
+    strategy?: string
+    substitutions?: params
+    childrenOnly?: boolean
+    includeSourceIds?: Array<string>
+    properties?: Object
+    dryRun?: boolean
+    copyOnExisting?: boolean
+    requireAllIncludes?: boolean
+    autoCleanup?: boolean
+    autoPublish?: boolean
+    allowWriteToFrozenBranches?: boolean
+    copyBinaries?: boolean
+    copyAttachments?: boolean
+
+    [key: string]: any
+}
+
 export declare interface PageRendition {
     path: string
     html: string
@@ -161,14 +243,14 @@ export declare interface DataStore extends PlatformObject {
 export declare interface Stack extends PlatformObject {
     // readDataStore(key: string, callback?: ResultCb<DataStore>): Promise<DataStore>
     // listDataStores(callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
-    // queryDataStores(query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
+    // queryDataStores(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
     // findDataStoreStack(dataStoreType: string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
     // assignDataStore(dataStore: string|DataStore, key: string, callback?: ResultCb<void>): Promise<void>
     // unassignDataStore(key: string, callback?: ResultCb<void>): Promise<void>
 }
 
 export declare interface Repository extends DataStore {
-    // queryBranches(query?: Object, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
+    // queryBranches(query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
     // readBranch(branch: TypedID|string, callback?: ResultCb<Branch>): Promise<Branch>
     // createBranch(branch: TypedID|string, changesetId?: string, obj?: Object, callback?: ResultCb<Branch>): Promise<Branch>
     // listBranches(callback?: ResultCb<Rows<Branch>>): Promise<Rows<Branch>>
@@ -180,7 +262,7 @@ export declare interface Application extends DataStore {
 
 export declare interface Domain extends DataStore {
     // readPrincipal(principalId: string, callback?: ResultCb<Principal>): Promise<Principal>
-    // queryPrincipals(query: Object, pagination?: Object, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
+    // queryPrincipals(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
 }
 
 export declare interface Branch extends RepositoryObject {
@@ -196,10 +278,10 @@ export declare interface Branch extends RepositoryObject {
     frozen?: false
 
     // readNode(nodeId: string, path?: string, callback?: ResultCb<Node>): Promise<Node>
-    // queryNodes(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    // queryOneNode(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Node>
-    // searchNodes(search: Object|string, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    // findNodes(config: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // queryNodes(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // queryOneNode(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Node>
+    // searchNodes(search: Object|string, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // findNodes(config: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
     // createNode(obj?: Object, options?: Object, callback?: ResultCb<Node>): Promise<Node>
     // deleteNodes(nodes: string|Array<string>|Array<TypedID>, callback?: ResultCb<void>): Promise<void>
 
@@ -217,11 +299,11 @@ export declare interface Node extends TypedID {
     _qname: string
     _type: string
 
-    // queryNodeRelatives(associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    // queryNodeChildren(query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    // listNodeAssociations(associationType?: string, associationDirection?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
-    // listOutgoingAssociations(associationType?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
-    // listIncomingAssociations(associationType?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    // queryNodeRelatives(associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // queryNodeChildren(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // listNodeAssociations(associationType?: string, associationDirection?: string, pagination?: Pagination, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    // listOutgoingAssociations(associationType?: string, pagination?: Pagination, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    // listIncomingAssociations(associationType?: string, pagination?: Pagination, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
     // associate(otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb<Association>): Promise<Association>
     // unassociate(otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb<void>): Promise<void>
     // associateChild(childNode: TypedID|string, callback?: ResultCb<Association>): Promise<Association>
@@ -241,7 +323,7 @@ export declare interface Node extends TypedID {
     // downloadAttachment(attachmentId: string, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
     // listAttachments(callback?: ResultCb<Rows<Attachment>>): Promise<Rows<Attachment>>
     // deleteAttachment(attachmentId?: string, callback?: ResultCb<void>): Promise<void>
-    // listVersions(options?: NodeVersionOptions, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    // listVersions(options?: NodeVersionOptions, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
     // readVersion(changesetId: string, options?: NodeVersionOptions, callback?: ResultCb<Node>): Promise<Node>
     // restoreVersion(changesetId: string, callback?: ResultCb<Node>): Promise<Node>
 }
@@ -283,14 +365,14 @@ export declare interface ApplicationSession extends Session {
 
 export declare interface RepositorySession extends Session {
     createRepository(obj?: Object, callback?: ResultCb<Repository>): Promise<Repository>
-    queryRepositories(query?: Object, pagination?: Object, callback?: ResultCb<Rows<Repository>>): Promise<Rows<Repository>>
+    queryRepositories(query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<Repository>>): Promise<Rows<Repository>>
 }
 
 export declare interface BranchSession extends Session {
-    queryBranches(repository: TypedID|string, query?: Object, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
+    queryBranches(repository: TypedID|string, query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
     readBranch(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<Branch>): Promise<Branch>
     createBranch(repository: TypedID|string, branch: TypedID|string, changesetId?: string, obj?: Object, callback?: ResultCb<Branch>): Promise<Branch>
-    listBranches(repository: TypedID|string, pagination?: Object, callback?: ResultCb<Rows<Branch>>): Promise<Rows<Branch>>
+    listBranches(repository: TypedID|string, pagination?: Pagination, callback?: ResultCb<Rows<Branch>>): Promise<Rows<Branch>>
     deleteBranch(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<void>): Promise<void>
     updateBranch(repository: TypedID|string, branch: TypedID|string, obj: Object, callback?: ResultCb<Branch>): Promise<Branch>
     resetBranch(repository: TypedID|string, branch: TypedID|string, changeset: string|TypedID, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
@@ -299,7 +381,7 @@ export declare interface BranchSession extends Session {
 
 export declare interface DomainSession extends Session {
     createDomain(obj?: Object, callback?: ResultCb<Domain>): Promise<Domain>
-    queryDomains(query?: Object, pagination?: Object, callback?: ResultCb<Rows<Domain>>): Promise<Rows<Domain>>
+    queryDomains(query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<Domain>>): Promise<Rows<Domain>>
     readDomain(domainId: string, callback?: ResultCb<Domain>): Promise<Domain>
 }
 
@@ -310,18 +392,18 @@ export declare interface GraphQLSession extends Session {
 
 export declare interface NodeSession extends Session {
     readNode(repository: TypedID|string, branch: TypedID|string, nodeId: string, path?: string, callback?: ResultCb<Node>): Promise<Node>
-    queryNodes(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    queryOneNode(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Node|null>
-    searchNodes(repository: TypedID|string, branch: TypedID|string, search: Object|string, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    findNodes(repository: TypedID|string, branch: TypedID|string, config: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    queryNodes(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    queryOneNode(repository: TypedID|string, branch: TypedID|string, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Node|null>
+    searchNodes(repository: TypedID|string, branch: TypedID|string, search: Object|string, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    findNodes(repository: TypedID|string, branch: TypedID|string, config: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
     createNode(repository: TypedID|string, branch: TypedID|string, obj?: Object, options?: Object, callback?: ResultCb<Node>): Promise<Node>
     deleteNodes(repository: TypedID|string, branch: TypedID|string, nodes: string|Array<string>|Array<TypedID>, callback?: ResultCb<void>): Promise<void>
     
-    queryNodeRelatives(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    queryNodeChildren(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
-    listNodeAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, associationDirection?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
-    listOutgoingAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
-    listIncomingAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, pagination?: Object, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    queryNodeRelatives(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    queryNodeChildren(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    listNodeAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, associationDirection?: string, pagination?: Pagination, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    listOutgoingAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, pagination?: Pagination, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
+    listIncomingAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, pagination?: Pagination, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>
     associate(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb<Association>): Promise<Association>
     unassociate(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, otherNode: TypedID|string, associationType?: string, associationDirectionality?: string, callback?: ResultCb<void>): Promise<void>
     associateChild(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, childNode: TypedID|string, callback?: ResultCb<Association>): Promise<Association>
@@ -342,14 +424,14 @@ export declare interface NodeSession extends Session {
     downloadAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId: string, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
     listAttachments(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<Rows<Attachment>>): Promise<Rows<Attachment>>
     deleteAttachment(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, attachmentId?: string, callback?: ResultCb<void>): Promise<void>
-    listVersions(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, options?: NodeVersionOptions, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    listVersions(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, options?: NodeVersionOptions, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
     readVersion(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, changesetId: string, options?: NodeVersionOptions, callback?: ResultCb<Node>): Promise<Node>
     restoreVersion(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, changesetId: string, callback?: ResultCb<Node>): Promise<Node>
 }
 
 export declare interface PrincipalSession extends Session {
     readPrincipal(domain: TypedID|string, principalId: string, callback?: ResultCb<Principal>): Promise<Principal>
-    queryPrincipals(domain: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
+    queryPrincipals(domain: TypedID|string, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
     createPrincipal(domain: TypedID|string, obj: Object, callback?: ResultCb<Principal>): Promise<Principal>
     updatePrincipal(domain: TypedID|string, principal: Principal, callback?: ResultCb<void>): Promise<void>
 }
@@ -363,7 +445,7 @@ export declare interface StackSession extends Session {
     readStack(stack: TypedID|string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
     readDataStore(stack: TypedID|string, key: string, callback?: ResultCb<DataStore>): Promise<DataStore>
     listDataStores(stack: TypedID|string, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
-    queryDataStores(stack: TypedID|string, query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
+    queryDataStores(stack: TypedID|string, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
     findDataStoreStack(dataStore: string|DataStore, dataStoreType: string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
     assignDataStore(stack: TypedID|string, dataStore: string|DataStore, key: string, callback?: ResultCb<void>): Promise<void>
     unassignDataStore(stack: TypedID|string, key: string, callback?: ResultCb<void>): Promise<void>
@@ -371,27 +453,38 @@ export declare interface StackSession extends Session {
 
 export declare interface WorkflowSession extends Session {
     readWorkflow(workflowId: string, callback?: ResultCb<TypedID>): Promise<TypedID>
-    queryWorkflows(query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
-    queryWorkflowTasks(query: Object, pagination?: Object, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
+    queryWorkflows(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
+    queryWorkflowTasks(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
 }
 
 export declare interface ChangesetSession extends Session {
     readChangeset(repository: string|TypedID, changeset: string|TypedID, callback?: ResultCb<Changeset>): Promise<Changeset>
-    queryChangesets(repository: string|TypedID, query: Object, pagination?: Object, callback?: ResultCb<Rows<Changeset>>): Promise<Rows<Changeset>>
-    listChangesets(repository: string|TypedID, pagination?: Object, callback?: ResultCb<Rows<Changeset>>): Promise<Rows<Changeset>>
-    listChangesetNodes(repository: string|TypedID, changeset: string|TypedID, pagination?: Object, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
+    queryChangesets(repository: string|TypedID, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Changeset>>): Promise<Rows<Changeset>>
+    listChangesets(repository: string|TypedID, pagination?: Pagination, callback?: ResultCb<Rows<Changeset>>): Promise<Rows<Changeset>>
+    listChangesetNodes(repository: string|TypedID, changeset: string|TypedID, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
 }
 
 export declare interface JobSession extends Session {
     readJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
-    queryJobs(query: Object, pagination?: Object, callback?: ResultCb<Rows<Job>>): Promise<Rows<Job>>
+    queryJobs(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Job>>): Promise<Rows<Job>>
     killJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
     waitForJobCompletion(job: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
 }
 
 export declare interface TransferSession extends Session {
-    exportArchive(sourceRefs: Array<string>, group: string, artifact: string, version: string, configuration: Object, vault: string|PlatformObject, callback: ResultCb<StartJobResult>): Promise<StartJobResult>
-    importArchive(targetRef: string, group: string, artifact: string, version: string, configuration: Object, vault: string|TypedID, callback: ResultCb<StartJobResult>): Promise<StartJobResult>
+    exportArchive(sourceRefs: Array<string>, group: string, artifact: string, version: string, configuration: TransferExportConfiguration, vault: string|PlatformObject, callback: ResultCb<StartJobResult>): Promise<StartJobResult>
+    importArchive(targetRef: string, group: string, artifact: string, version: string, configuration: TransferImportConfiguration, vault: string|TypedID, callback: ResultCb<StartJobResult>): Promise<StartJobResult>
+}
+
+export declare interface ArchiveSession extends Session {
+    readArchive(vault: string|TypedID, archive: string|TypedID, callback?: ResultCb<Archive>): Promise<Archive>
+    updateArchive(vault: string|TypedID, archive: Archive, callback?: ResultCb<Archive>): Promise<TypedID>
+    deleteArchive(vault: string|TypedID, archive: string|TypedID, callback?: ResultCb<void>): Promise<void>
+    lookupArchive(vault: string|TypedID, group: string, artifact: string, version: string, callback?: ResultCb<Archive>): Promise<Archive>
+    queryArchives(vault: string|TypedID, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Archive>>): Promise<Rows<Archive>>
+    uploadArchive(vault: string|TypedID, opts: UploadArchiveOptions, file: File, fileName: string, callback?: ResultCb<TypedID>): Promise<TypedID>
+    downloadArchiveById(vault: string|TypedID, archive: string|TypedID, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
+    downloadArchive(vault: string|TypedID, group: string, artifact: string, version: string, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
 }
 
 export declare interface TrackerSession extends Session {
@@ -403,8 +496,8 @@ export declare interface ReleaseSession extends Session {
     readRelease(repository: string|TypedID, releaseId: string, callback?: ResultCb<RepositoryObject>): Promise<RepositoryObject>
     updateRelease(repository: string|TypedID, release: string|TypedID, obj: Object, callback?: ResultCb<void>): Promise<void>
     deleteRelease(repository: string|TypedID, release: string|TypedID, callback?: ResultCb<void>): Promise<void>
-    queryReleases(repository: string|TypedID, query: Object, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<RepositoryObject>>
-    listReleases(repository: string|TypedID, pagination?: Object, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<RepositoryObject>>
+    queryReleases(repository: string|TypedID, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<RepositoryObject>>
+    listReleases(repository: string|TypedID, pagination?: Pagination, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<RepositoryObject>>
 }
 
 export declare interface PlatformSession extends Session {
@@ -426,7 +519,7 @@ export declare interface UtilitySession extends DefaultSession {
 }
 
 
-export declare type DefaultSession = ApplicationSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession & PlatformSession;
+export declare type DefaultSession = ApplicationSession & ArchiveSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession & PlatformSession;
 
 
 

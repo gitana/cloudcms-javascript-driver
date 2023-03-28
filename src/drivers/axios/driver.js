@@ -371,6 +371,8 @@ class AxiosDriver extends Driver
                         options.data = payload;
                     }
 
+                    options.maxBodyLength = 1000000000;
+
                     var signedOptions = self.incoming(options);
 
                     doRequest(signedOptions, function(err, response, data, stats) {

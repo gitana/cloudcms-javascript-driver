@@ -298,7 +298,8 @@ var modules = [
     require("./methods/transfer"),
     require("./methods/tracker"),
     require("./methods/release"),
-    require("./methods/platform")
+    require("./methods/platform"),
+    require("./methods/archive")
 ];
 for (var i = 0; i < modules.length; i++)
 {
