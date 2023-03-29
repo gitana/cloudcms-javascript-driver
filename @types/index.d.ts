@@ -482,6 +482,11 @@ export declare interface ArchiveSession extends Session {
     deleteArchive(vault: string|TypedID, archive: string|TypedID, callback?: ResultCb<void>): Promise<void>
     lookupArchive(vault: string|TypedID, group: string, artifact: string, version: string, callback?: ResultCb<Archive>): Promise<Archive>
     queryArchives(vault: string|TypedID, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Archive>>): Promise<Rows<Archive>>
+    
+    /**
+     * Uploads an archive ZIP file to Cloud CMS.
+     * The uploaded archive will not be imediately available for use, you may need to poll the archive until is ready for use.
+     */
     uploadArchive(vault: string|TypedID, opts: UploadArchiveOptions, file: File, fileName: string, callback?: ResultCb<TypedID>): Promise<TypedID>
     downloadArchiveById(vault: string|TypedID, archive: string|TypedID, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
     downloadArchive(vault: string|TypedID, group: string, artifact: string, version: string, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
