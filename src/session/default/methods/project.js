@@ -16,6 +16,13 @@ module.exports = function(Session)
             return this.get("/projects/" + projectId, {}, callback);
         }
 
+        queryProjects(query, pagination)
+        {
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.post("/projects/query", pagination, query, callback);
+        }
+
         startCreateProject(object)
         {
             var callback = this.extractOptionalCallback(arguments);

@@ -438,6 +438,7 @@ export declare interface PrincipalSession extends Session {
 
 export declare interface ProjectSession extends Session {
     readProject(project: TypedID|string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
+    queryProjects(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<PlatformObject>>): Promise<Rows<PlatformObject>>
     createProject(obj: Object, callback?: ResultCb<StartJobResult>):  Promise<StartJobResult>
 }
 
