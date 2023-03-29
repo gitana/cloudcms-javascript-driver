@@ -1,7 +1,7 @@
 import * as CloudCMS from "../..";
 var assert = require('chai').assert;
 var fs = require("fs");
-
+var path = require("path");
 
 
 function streamToData (stream: NodeJS.ReadStream) {
@@ -22,7 +22,13 @@ describe('attachment10', function () {
             var repository = await session.createRepository();
             var branchId = "master";
 
-            var attachment = fs.readFileSync(__dirname + "/cloudcms.png");
+            var imgPath = path.resolve(__dirname, "cloudcms.png");
+            if (!fs.existsSync(imgPath))
+            {
+                throw new Error("Cannot find file: " + imgPath);
+            }
+
+            var attachment = fs.readFileSync(imgPath);
 
 
             // Upload an attachment and download it
@@ -57,6 +63,7 @@ describe('attachment10', function () {
 
         } catch (error) {
             console.error(error);
+            throw error;
         }
         
     });

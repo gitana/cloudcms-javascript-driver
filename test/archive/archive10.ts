@@ -23,6 +23,11 @@ describe('archive10', function () {
         
         var vaultId = "primary";
         var archiveName = "org.gitana.sample-sample-project-2.3.9.zip";
+        var archivePath = path.resolve(__dirname, archiveName);
+        if (!fs.existsSync(archivePath))
+        {
+            throw new Error("Cannot find file: " + archivePath);
+        }
         var archiveFile = fs.readFileSync(path.resolve(__dirname, archiveName));
         var res = await session.uploadArchive(vaultId, {}, archiveFile, archiveName);
         var archiveId = res._doc;
