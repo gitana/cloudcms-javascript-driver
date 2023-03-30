@@ -1,23 +1,52 @@
+
 module.exports = function(Session)
 {
+    var Helper = require("../../../helper");
+
     class TransferSession extends Session
     {
-        exportArchive(sourceRefs, group, artifact, version, configuration, vault, callback)
+        exportArchive(sourceRefs, opts, configuration)
         {
+            var callback = this.extractOptionalCallback(arguments);
+
+            var optsErr = null;
+            if (!Helper.isObject(opts))
+            {
+                optsErr = "opts is not an object";
+            }
+            else if (!("group" in opts))
+            {
+                optsErr = "opts is missing 'group'";
+            }
+            else if (!("artifact" in opts))
+            {
+                optsErr = "opts is missing 'artifact'";
+            }
+            else if (!("version" in opts))
+            {
+                optsErr = "opts is missing 'version'";
+            }
+            if (optsErr)
+            {
+                throw new Error(optsErr);
+            }
+
             var vaultId = "primary";
-            if (vault)
+            if (opts.vault)
             {
                 vaultId = this.acquireId(vault);
             }
-            var callback = this.extractOptionalCallback(arguments);
 
             var params = {
-                "vault": this._doc,
-                "group": group,
-                "artifact": artifact,
-                "version": version,
+                ...opts,
+                "vault": vaultId,
                 "schedule": "ASYNCHRONOUS"
             };
+
+            if (!Helper.isArray(sourceRefs))
+            {
+                sourceRefs = [sourceRefs];
+            }
 
             var payload = {
                 ...configuration,
@@ -27,21 +56,93 @@ module.exports = function(Session)
             return this.post("/transfer/export", params, payload, callback);
         }
 
-        importArchive(targetRef, group, artifact, version, configuration, vault)
+        exportProject(sourceRefs, opts, configuration)
         {
+            var callback = this.extractOptionalCallback(arguments);
+
+            var optsErr = null;
+            if (!Helper.isObject(opts))
+            {
+                optsErr = "opts is not an object";
+            }
+            else if (!("group" in opts))
+            {
+                optsErr = "opts is missing 'group'";
+            }
+            else if (!("artifact" in opts))
+            {
+                optsErr = "opts is missing 'artifact'";
+            }
+            else if (!("version" in opts))
+            {
+                optsErr = "opts is missing 'version'";
+            }
+            if (optsErr)
+            {
+                throw new Error(optsErr);
+            }
+
             var vaultId = "primary";
-            if (vault)
+            if (opts.vault)
             {
                 vaultId = this.acquireId(vault);
             }
-            var callback = this.extractOptionalCallback(arguments);
 
             var params = {
-                "vault": this._doc,
+                ...opts,
+                "vault": vaultId,
+                "schedule": "ASYNCHRONOUS"
+            };
+
+            if (!Helper.isArray(sourceRefs))
+            {
+                sourceRefs = [sourceRefs];
+            }
+
+            var payload = {
+                ...configuration,
+                "sources": sourceRefs
+            };
+
+            return this.post("/transfer/export", params, payload, callback);
+        }
+
+        importArchive(targetRef, opts, configuration)
+        {
+            var callback = this.extractOptionalCallback(arguments);
+
+            var optsErr = null;
+            if (!Helper.isObject(opts))
+            {
+                optsErr = "opts is not an object";
+            }
+            else if (!("group" in opts))
+            {
+                optsErr = "opts is missing 'group'";
+            }
+            else if (!("artifact" in opts))
+            {
+                optsErr = "opts is missing 'artifact'";
+            }
+            else if (!("version" in opts))
+            {
+                optsErr = "opts is missing 'version'";
+            }
+            if (optsErr)
+            {
+                throw new Error(optsErr);
+            }
+
+            var vaultId = "primary";
+            if (opts.vault)
+            {
+                vaultId = this.acquireId(vault);
+            }
+
+            var params = {
+                ...opts,
+                "vault": vaultId,
                 "target": targetRef,
-                "group": group,
-                "artifact": artifact,
-                "version": version,
                 "schedule": "ASYNCHRONOUS"
             };
 

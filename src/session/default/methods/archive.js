@@ -4,36 +4,46 @@ module.exports = function(Session)
 
     class ArchiveSession extends Session
     {
-        readArchive(vault, archive)
+        acquireVaultId(vault)
         {
-            var vaultId = this.acquireId(vault);
+            var res = "primary";
+            if (vault) {
+                res = this.acquireId(vault);
+            }
+
+            return res;
+        }
+
+        readArchive(archive, vault)
+        {
+            var vaultId = this.acquireVaultId(vault);
             var archiveId = this.acquireId(archive);
             var callback = this.extractOptionalCallback(arguments);
 
             return this.get(`/vaults/${vaultId}/archives/${archiveId}`, {}, callback);
         }
 
-        updateArchive(vault, archive)
+        updateArchive(archive, vault)
         {
-            var vaultId = this.acquireId(vault);
+            var vaultId = this.acquireVaultId(vault);
             var archiveId = archive._doc;
             var callback = this.extractOptionalCallback(arguments);
 
             return this.put(`/vaults/${vaultId}/archives/${archiveId}`, {}, archive, callback);
         }
 
-        deleteArchive(vault, archive)
+        deleteArchive(archive, vault)
         {
-            var vaultId = this.acquireId(vault);
+            var vaultId = this.acquireVaultId(vault);
             var archiveId = this.acquireId(archive);
             var callback = this.extractOptionalCallback(arguments);
 
             return this.del(`/vaults/${vaultId}/archives/${archiveId}`, {}, callback);
         }
 
-        lookupArchive(vault, group, artifact, version)
+        lookupArchive(group, artifact, version, vault)
         {
-            var vaultId = this.acquireId(vault);
+            var vaultId = this.acquireVaultId(vault);
             var callback = this.extractOptionalCallback(arguments);
 
             var qs = {
@@ -45,17 +55,17 @@ module.exports = function(Session)
             return this.get(`/vaults/${vaultId}/archives/lookup`, qs, callback)
         }
 
-        queryArchives(vault, query, pagination)
+        queryArchives(query, pagination, vault)
         {
-            var vaultId = this.acquireId(vault);
+            var vaultId = this.acquireVaultId(vault);
             var callback = this.extractOptionalCallback(arguments);
 
             return this.post(`/vaults/${vaultId}/archives/query`, pagination, query, callback);
         }
 
-        async uploadArchive(vault, opts, file, filename)
+        async uploadArchive(opts, file, filename, vault)
         {
-            var vaultId = this.acquireId(vault);
+            var vaultId = this.acquireVaultId(vault);
             var callback = this.extractOptionalCallback(arguments);
 
             var uri = `/vaults/${vaultId}/archives`;
@@ -73,18 +83,18 @@ module.exports = function(Session)
             return response;
         }
 
-        downloadArchiveById(vault, archive)
+        downloadArchiveById(archive, vault)
         {
-            var vaultId = this.acquireId(vault);
+            var vaultId = this.acquireVaultId(vault);
             var archiveId = this.acquireId(archive);
             var callback = this.extractOptionalCallback(arguments);
 
             return this.download(`/vaults/${vaultId}/archives/${archiveId}/download`, {}, callback);
         }
 
-        downloadArchive(vault, group, artifact, version)
+        downloadArchive(group, artifact, version, vault)
         {
-            var vaultId = this.acquireId(vault);
+            var vaultId = this.acquireVaultId(vault);
             var callback = this.extractOptionalCallback(arguments);
             var qs = {
                 groupId: group,

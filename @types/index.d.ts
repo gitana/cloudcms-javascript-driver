@@ -174,6 +174,23 @@ export declare interface UploadArchiveOptions {
     published?: boolean
 }
 
+export declare interface TransferImportOpts {
+    group: string
+    artifact: string
+    version: string
+    vault?: string
+}
+
+export declare interface TransferExportOpts {
+    group: string
+    artifact: string
+    version: string
+    vault?: string
+    title?: string
+    description?: string
+    published?: boolean
+}
+
 export declare interface TransferExportConfiguration {
     startDate?: Number
     endDate?: Number
@@ -438,8 +455,11 @@ export declare interface PrincipalSession extends Session {
 
 export declare interface ProjectSession extends Session {
     readProject(project: TypedID|string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
+    deleteProject(project: TypedID|string, callback?: ResultCb<void>): Promise<void>
+    updateProject(project: TypedID, callback?: ResultCb<void>): Promise<void>
     queryProjects(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<PlatformObject>>): Promise<Rows<PlatformObject>>
-    createProject(obj: Object, callback?: ResultCb<StartJobResult>):  Promise<StartJobResult>
+    startCreateProject(obj: Object, callback?: ResultCb<StartJobResult>):  Promise<StartJobResult>
+    listProjectTypes(pagination?: Pagination, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
 }
 
 export declare interface StackSession extends Session {
@@ -473,24 +493,24 @@ export declare interface JobSession extends Session {
 }
 
 export declare interface TransferSession extends Session {
-    exportArchive(sourceRefs: Array<string>, group: string, artifact: string, version: string, configuration: TransferExportConfiguration, vault: string|PlatformObject, callback: ResultCb<StartJobResult>): Promise<StartJobResult>
-    importArchive(targetRef: string, group: string, artifact: string, version: string, configuration: TransferImportConfiguration, vault: string|TypedID, callback: ResultCb<StartJobResult>): Promise<StartJobResult>
+    exportArchive(sourceRefs: Array<string>|string, opts: TransferExportOpts, configuration: TransferExportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    importArchive(targetRef: string, opts: TransferImportOpts, configuration: TransferImportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
 }
 
 export declare interface ArchiveSession extends Session {
-    readArchive(vault: string|TypedID, archive: string|TypedID, callback?: ResultCb<Archive>): Promise<Archive>
-    updateArchive(vault: string|TypedID, archive: Archive, callback?: ResultCb<Archive>): Promise<TypedID>
-    deleteArchive(vault: string|TypedID, archive: string|TypedID, callback?: ResultCb<void>): Promise<void>
-    lookupArchive(vault: string|TypedID, group: string, artifact: string, version: string, callback?: ResultCb<Archive>): Promise<Archive>
-    queryArchives(vault: string|TypedID, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Archive>>): Promise<Rows<Archive>>
+    readArchive(archive: string|TypedID, vault?: string|TypedID, callback?: ResultCb<Archive>): Promise<Archive>
+    updateArchive(archive: Archive, vault?: string|TypedID, callback?: ResultCb<Archive>): Promise<TypedID>
+    deleteArchive(archive: string|TypedID, vault?: string|TypedID, callback?: ResultCb<void>): Promise<void>
+    lookupArchive(group: string, artifact: string, version: string, vault?: string|TypedID, callback?: ResultCb<Archive>): Promise<Archive>
+    queryArchives(query: Object, pagination?: Pagination, vault?: string|TypedID, callback?: ResultCb<Rows<Archive>>): Promise<Rows<Archive>>
     
     /**
      * Uploads an archive ZIP file to Cloud CMS.
      * The uploaded archive will not be imediately available for use, you may need to poll the archive until is ready for use.
      */
-    uploadArchive(vault: string|TypedID, opts: UploadArchiveOptions, file: File, fileName: string, callback?: ResultCb<TypedID>): Promise<TypedID>
-    downloadArchiveById(vault: string|TypedID, archive: string|TypedID, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
-    downloadArchive(vault: string|TypedID, group: string, artifact: string, version: string, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
+    uploadArchive(opts: UploadArchiveOptions, file: File, fileName: string, vault?: string|TypedID,  callback?: ResultCb<TypedID>): Promise<TypedID>
+    downloadArchiveById(archive: string|TypedID, vault?: string|TypedID, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
+    downloadArchive(group: string, artifact: string, version: string, vault?: string|TypedID, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
 }
 
 export declare interface TrackerSession extends Session {
@@ -507,7 +527,7 @@ export declare interface ReleaseSession extends Session {
 }
 
 export declare interface PlatformSession extends Session {
-    readPlatform(callback?: ResultCb<Object>): Promise<Object>
+    readPlatform(callback?: ResultCb<TypedID>): Promise<TypedID>
 }
 
 export declare interface UtilitySession extends DefaultSession {

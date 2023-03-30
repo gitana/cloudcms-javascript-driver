@@ -16,6 +16,22 @@ module.exports = function(Session)
             return this.get("/projects/" + projectId, {}, callback);
         }
 
+        deleteProject(project)
+        {
+            var projectId = this.acquireId(project);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.del("/projects/" + projectId, {}, callback);
+        }
+
+        updateProject(project)
+        {
+            var projectId = this.acquireId(project);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.put("/projects/" + projectId, {}, project, callback);
+        }
+
         queryProjects(query, pagination)
         {
             var callback = this.extractOptionalCallback(arguments);
@@ -28,6 +44,13 @@ module.exports = function(Session)
             var callback = this.extractOptionalCallback(arguments);
 
             return this.post("/projects/start", {}, object, callback);
+        }
+
+        listProjectTypes(pagination)
+        {
+            var callback = this.extractOptionalCallback(arguments)
+
+            return this.get("/projecttypes", pagination, callback);
         }
     }
 
