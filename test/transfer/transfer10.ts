@@ -67,9 +67,6 @@ describe('transfer10', function () {
             var repository2 = await session.readDataStore(project2.stackId, "content");
             
             var node2 = await session.queryOneNode(repository2, branchId, { title : "a novel node" });
-            console.log(node1);
-            console.log(node2);
-            console.log(repository2, branchId);
             assert.equal(node2?.title, node1.title);
 
             await Promise.all([

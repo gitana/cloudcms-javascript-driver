@@ -1,3 +1,4 @@
+const { config } = require("chai");
 
 module.exports = function(Session)
 {
@@ -46,6 +47,16 @@ module.exports = function(Session)
             if (!Helper.isArray(sourceRefs))
             {
                 sourceRefs = [sourceRefs];
+            }
+
+            if (!Helper.isObject(configuration))
+            {
+                configuration = {};
+            }
+
+            if (!("tipChangesetOnly" in configuration))
+            {
+                configuration.tipChangesetOnly = true;
             }
 
             var payload = {
@@ -97,6 +108,11 @@ module.exports = function(Session)
             if (!Helper.isArray(sourceRefs))
             {
                 sourceRefs = [sourceRefs];
+            }
+
+            if (!Helper.isObject(configuration))
+            {
+                configuration = {};
             }
 
             var payload = {
