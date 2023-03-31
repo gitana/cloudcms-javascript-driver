@@ -48,8 +48,6 @@ describe('transfer10', function () {
             var exportJob = await session.exportArchive(ref, exportOpts, exportConfig);
             await session.waitForJobCompletion(exportJob);
 
-            // session.sleep(1000);
-
             var archive = await session.lookupArchive("test", "test", now);
             assert.isNotNull(archive);
 

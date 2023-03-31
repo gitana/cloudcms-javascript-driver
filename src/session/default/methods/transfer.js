@@ -1,5 +1,3 @@
-const { config } = require("chai");
-
 module.exports = function(Session)
 {
     var Helper = require("../../../helper");
