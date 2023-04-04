@@ -29,6 +29,8 @@ module.exports = function(Session)
         async waitForJobCompletion(job)
         {
             const jobId = this.acquireId(job);
+            var callback = this.extractOptionalCallback(arguments);
+            var self = this;
 
             const _wait = async () => {
                 job = await this.readJob(jobId);
@@ -44,9 +46,18 @@ module.exports = function(Session)
                 }
             }
 
-            await _wait();
+            try
+            {
+                await _wait();
+            }
+            catch (err)
+            {
+                if (callback) callback.call(self, err, job);
+                throw err;
+            }
 
             // in 4.0, it might be better to hand back the job result which is a separate record
+            if (callback) callback.call(self, null, job);
             return job;
         }
 
