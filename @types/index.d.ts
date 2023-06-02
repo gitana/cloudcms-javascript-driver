@@ -53,7 +53,7 @@ export declare interface Rows<T> {
 export declare interface Pagination {
     skip?: Number,
     limit?: Number,
-    sorting?: Object,
+    sort?: Object,
     options?: Object,
     from?: string
 }
