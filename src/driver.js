@@ -79,8 +79,10 @@ class Driver
             return self.credentials.refresh(function(err, newCredentials) {
 
                 if (err) {
-                    return self.handleRefreshFailure(function() {
-                        done(err);
+                    return self.handleRefreshFailure(function(refreshErr) {
+                        if(refreshErr) {
+                            done(refreshErr);
+                        }
                     });
                 }
 
@@ -104,8 +106,10 @@ class Driver
                 self.credentials.refresh(function(err, newCredentials) {
 
                     if (err) {
-                        return self.handleRefreshFailure(function() {
-                            callback(err);
+                        return self.handleRefreshFailure(function(refreshErr) {
+                            if(refreshErr) {
+                                callback(refreshErr);
+                            }
                         });
                     }
 
