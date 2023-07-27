@@ -82,6 +82,8 @@ class Driver
                     return self.handleRefreshFailure(function(refreshErr) {
                         if(refreshErr) {
                             done(refreshErr);
+                        } else{
+                            callback();
                         }
                     });
                 }
@@ -109,6 +111,8 @@ class Driver
                         return self.handleRefreshFailure(function(refreshErr) {
                             if(refreshErr) {
                                 callback(refreshErr);
+                            } else{
+                                callback();
                             }
                         });
                     }
