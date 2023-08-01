@@ -260,3 +260,12 @@ var sessionFunction = exports.sessionFunction = function(_arguments, fn)
     });
 
 }
+
+var cleanKeys = exports.cleanKeys = function(config) {
+    let copy = Object.assign({}, config);
+    delete copy.clientKey;
+    delete copy.clientSecret;
+    delete copy.username;
+    delete copy.password;
+    return copy;
+};

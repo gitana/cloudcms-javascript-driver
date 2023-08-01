@@ -1,8 +1,10 @@
+var Helper = require("../../helper");
+
 class MemoryStorage
 {
     constructor(config)
     {
-        this.config = config;
+        this.config = Helper.cleanKeys(config);
 
         this.memory = {};
     }

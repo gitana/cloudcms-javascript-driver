@@ -1,8 +1,10 @@
+var Helper = require("../../helper");
+
 class RedisStorage
 {
     constructor(config)
     {
-        this.config = config;
+        this.config = Helper.cleanKeys(config);
     }
 }
 

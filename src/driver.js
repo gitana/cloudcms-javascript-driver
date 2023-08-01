@@ -6,7 +6,7 @@ class Driver
 {
     constructor(config, credentials, storage)
     {
-        this.config = config;
+        this.config = Helper.cleanKeys(config);
         this.credentials = credentials;
         this.storage = storage;
 

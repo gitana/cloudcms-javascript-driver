@@ -5,9 +5,7 @@ class DefaultSession
 {
     constructor(config, driver, storage)
     {
-        this.cleanKeys(config);
-
-        this.config = config;
+        this.config = Helper.cleanKeys(config);
         this.driver = driver;
         this.storage = storage;
 
@@ -165,13 +163,6 @@ class DefaultSession
             return this.driver.download(uri, qs, callback);
         };
     }
-
-    cleanKeys(config) {
-        delete config.clientKey;
-        delete config.clientSecret;
-        delete config.username;
-        delete config.password;
-    };
 
     // HELPER FUNCTIONS
 
