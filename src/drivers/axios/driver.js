@@ -8,8 +8,9 @@ class AxiosDriver extends Driver
     constructor(config, credentials, storage)
     {
         super(config, credentials, storage);
+        var self = this;
 
-        var doRequest = function(options, callback)
+        var doRequest = this.doRequest = function(options, callback)
         {
             var stats = {};
             stats.startTime = Helper.now();
@@ -24,22 +25,41 @@ class AxiosDriver extends Driver
                 .catch(function(_err) {
                     err = _err;
                 })
-                .then(function() {
+                .then(async function() {
                     // Always executed
                     stats.endTime = Helper.now();
                     stats.executionTime = stats.endTime - stats.startTime;
 
                     var data = (response && response.data) ? response.data : null;
 
+                    // Refresh token?
+                    if (self.isInvalidAccessToken(err, response, data))
+                    {
+                        try {
+                            await self.handleRefreshAccessToken(err, response, data);
+                            err = null;
+                        }
+                        catch (_err) {
+                            err = _err;
+                        }
+                    }
+
                     callback(err, response, data, stats);
                 });
         };
+
+        // var doRequest = this.doRequest;
 
         this.isInvalidAccessToken = function(err, response, body)
         {
             var self = this;
 
             // {"error":"invalid_token","error_description":"Invalid access token: 06ef574a-d177-4ba9-ac4b-5a57555a3a8d"}
+            if (err) {
+                response = err.response;
+                body = response.data;
+            }
+
             if (response.status === 401)
             {
                 var json = self.outgoing(body);
@@ -48,6 +68,14 @@ class AxiosDriver extends Driver
 
             return false;
         };
+
+        this.isNotFound = function(err, response) {
+            if (err) {
+                response = err.response;
+            }
+
+            return response.status === 404;
+        }
 
         // @abstract
         this.buildGetHandler = function(uri, params)
@@ -81,19 +109,12 @@ class AxiosDriver extends Driver
                     var signedOptions = self.incoming(options);
 
                     doRequest(signedOptions, function(err, response, data, stats) {
-
-                        if (err) {
+                        if (self.isNotFound(err, response))
+                        {
+                            return done(null, null);
+                        }
+                        else if (err) {
                             return done(err);
-                        }
-
-                        if (self.isInvalidAccessToken(err, response, data))
-                        {
-                            return self.handleRefreshAccessToken.call(self, err, response, data, done);
-                        }
-
-                        if (response.status === 404)
-                        {
-                            return done();
                         }
                         else if (response.status >= 200 && response.status <= 204)
                         {
@@ -159,11 +180,6 @@ class AxiosDriver extends Driver
                             return done(err);
                         }
 
-                        if (self.isInvalidAccessToken(err, response, data))
-                        {
-                            return self.handleRefreshAccessToken.call(self, err, response, data, done);
-                        }
-
                         done(null, self.outgoing(data));
                     });
                 });
@@ -213,11 +229,6 @@ class AxiosDriver extends Driver
                             return done(err);
                         }
 
-                        if (self.isInvalidAccessToken(err, response, data))
-                        {
-                            return self.handleRefreshAccessToken.call(self, err, response, data, done);
-                        }
-
                         done(null, self.outgoing(data));
                     });
                 });
@@ -261,10 +272,6 @@ class AxiosDriver extends Driver
                             return done(err);
                         }
 
-                        if (self.isInvalidAccessToken(err, response, data))
-                        {
-                            return self.handleRefreshAccessToken.call(self, err, response, data, done);
-                        }
 
                         done(null, self.outgoing(data));
                     });
@@ -313,11 +320,6 @@ class AxiosDriver extends Driver
 
                         if (err) {
                             return done(err);
-                        }
-
-                        if (self.isInvalidAccessToken(err, response, data))
-                        {
-                            return self.handleRefreshAccessToken.call(self, err, response, data, done);
                         }
 
                         done(null, self.outgoing(data));
@@ -381,11 +383,6 @@ class AxiosDriver extends Driver
                             return done(err);
                         }
 
-                        if (self.isInvalidAccessToken(err, response, data))
-                        {
-                            return self.handleRefreshAccessToken.call(self, err, response, data, done);
-                        }
-
                         done(null, self.outgoing(data));
                     });
                 });
@@ -425,19 +422,12 @@ class AxiosDriver extends Driver
                     var signedOptions = self.incoming(options);
 
                     doRequest(signedOptions, function(err, response, data, stats) {
-
-                        if (err) {
+                        if (self.isNotFound(err, response))
+                        {
+                            return done(null, null);
+                        }
+                        else if (err) {
                             return done(err);
-                        }
-
-                        if (self.isInvalidAccessToken(err, response, data))
-                        {
-                            return self.handleRefreshAccessToken.call(self, err, response, data, done);
-                        }
-
-                        if (response.status === 404)
-                        {
-                            return done();
                         }
                         else if (response.status >= 200 && response.status <= 204)
                         {

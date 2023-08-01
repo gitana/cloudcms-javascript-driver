@@ -52,16 +52,8 @@ describe('archive10', function () {
         assert.deepEqual(archiveFile, buff);
 
         await session.deleteArchive(archiveId);
-        var ex = null;
-        try
-        {
-          archive = await session.readArchive(archiveId);
-        }
-        catch (e: any)
-        {
-          ex = e;
-        }
-        assert.isNotNull(ex);
+        archive = await session.readArchive(archiveId);
+        assert.isNull(archive);
       }
       catch (err)
       {
