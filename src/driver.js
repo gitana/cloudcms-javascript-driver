@@ -134,7 +134,7 @@ class Driver
             var self = this;
 
             if (!self._reauthenticateFn) {
-                return callback("No reauthentication handler set");
+                return callback(new Error("Refresh key expired"));
             }
 
             // wipe down credentials

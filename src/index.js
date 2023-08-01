@@ -52,13 +52,6 @@ var _connect = function(config, _storageClass, _driverClass, _sessionClass, call
 
         // instantiate the session
         var session = new _sessionClass(config, driver, storage);
-
-        driver.reauthenticate(cb => {
-            _authenticate(oauth, config, (err, newCredentials) => {
-                driver.credentials = newCredentials;
-                cb(err, session)
-            });
-        });
         
         // hand it back
         callback(null, session);
