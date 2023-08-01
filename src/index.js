@@ -37,7 +37,8 @@ var _connect = function(config, _storageClass, _driverClass, _sessionClass, call
     // instantiate the driver
     var driver = new _driverClass(config, null, storage);
 
-    _authenticate(driver.oauthRequest.bind(driver), config, function(err, credentials) {
+    var oauth = driver.oauthRequest.bind(driver);
+    _authenticate(oauth, config, function(err, credentials) {
         driver.credentials = credentials;
 
         if (err) {
@@ -51,7 +52,7 @@ var _connect = function(config, _storageClass, _driverClass, _sessionClass, call
 
         // instantiate the session
         var session = new _sessionClass(config, driver, storage);
-
+        
         // hand it back
         callback(null, session);
     });
@@ -127,7 +128,6 @@ var _authenticate = function(request, config, callback)
                     var newCredentials = buildCredentials(token);
                     callback(null, newCredentials);
                 }, function(err) {
-                    console.log("Failed to refresh credentials: " + JSON.stringify(err));
                     callback(new Error(JSON.stringify(err)));
                 });
             }

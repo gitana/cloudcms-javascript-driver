@@ -71,24 +71,27 @@ class Driver
             return false;
         };
 
-        this.handleRefreshAccessToken = function(err, response, body, done)
+        this.handleRefreshAccessToken = function(err, response, body)
         {
             var self = this;
 
             // use the refresh token to acquire a new access token
-            return self.credentials.refresh(function(err, newCredentials) {
-
-                if (err) {
-                    return self.handleRefreshFailure(function(refreshErr) {
-                        if(refreshErr) {
-                            done(refreshErr);
-                        }
-                    });
-                }
-
-                self.credentials = newCredentials;
-
-                return done(null, self.outgoing(body), null);
+            return new Promise((resolve, reject) => {
+                self.credentials.refresh(function(err, newCredentials) {
+                    if (err) {
+                        return self.handleRefreshFailure(function(refreshErr) {
+                            if(refreshErr) {
+                                reject(refreshErr);
+                            } 
+                            else {
+                                resolve(self.outgoing(body));
+                            }
+                        });
+                    }
+    
+                    self.credentials = newCredentials;
+                    resolve(self.outgoing(body));
+                });
             });
         };
 
@@ -109,6 +112,8 @@ class Driver
                         return self.handleRefreshFailure(function(refreshErr) {
                             if(refreshErr) {
                                 callback(refreshErr);
+                            } else{
+                                callback();
                             }
                         });
                     }
@@ -129,14 +134,13 @@ class Driver
             var self = this;
 
             if (!self._reauthenticateFn) {
-                return callback();
+                return callback(new Error("Refresh key expired"));
             }
 
             // wipe down credentials
             self.credentials = null;
 
             // reauthenticate
-            console.log("Reauthenticating");
             self._reauthenticateFn.call(self, function (err, newSession) {
 
                 if (err) {

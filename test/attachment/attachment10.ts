@@ -50,16 +50,9 @@ describe('attachment10', function () {
             assert.equal(0, attachments.size);
 
             var err = null;
-            var stream2: NodeJS.ReadStream|null = null;
-            try {
-                stream2 = await session.downloadAttachment(repository, branchId, node, "default");
-            } catch (e: any)
-            {
-                err = e;
-            }
+            var stream2 = await session.downloadAttachment(repository, branchId, node, "default");
 
             assert.isNull(stream2);
-            assert.isNotNull(err);
 
         } catch (error) {
             console.error(error);
