@@ -610,7 +610,7 @@ module.exports = function(Session)
 
             var uri = "/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/attachments/" + attachmentId;
 
-            if (filename === null)
+            if (!filename)
             {
                 filename = attachmentId;
             }
