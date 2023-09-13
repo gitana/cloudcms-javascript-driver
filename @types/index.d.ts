@@ -361,6 +361,21 @@ export declare interface ChangesetHistoryConfig {
     view?: string
 }
 
+export declare interface DownloadJobOptions {
+    a?: boolean,
+    filename?: string
+}
+
+export type BranchChangesView = "editorial" | "editorial-pull" | undefined;
+
+export declare interface BranchChangesOptions {
+    view?: BranchChangesView,
+    filter?: string,
+    source?: boolean,
+    target?: boolean,
+    force?: boolean,
+}
+
 
 // Sessions
 
@@ -394,6 +409,9 @@ export declare interface BranchSession extends Session {
     updateBranch(repository: TypedID|string, branch: TypedID|string, obj: Object, callback?: ResultCb<Branch>): Promise<Branch>
     resetBranch(repository: TypedID|string, branch: TypedID|string, changeset: string|TypedID, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
     startChangesetHistory(repository: TypedID|string, branch: TypedID|string, config?: ChangesetHistoryConfig): Promise<StartJobResult>
+    startBranchChanges(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, pagination?: Pagination, opts?: BranchChangesOptions, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    invalidateBranchChanges(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<void>): Promise<void>
+    exportBranchChanges(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, view?: BranchChangesView, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
 }
 
 export declare interface DomainSession extends Session {
@@ -489,6 +507,7 @@ export declare interface JobSession extends Session {
     readJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
     queryJobs(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Job>>): Promise<Rows<Job>>
     killJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
+    downloadJobAttachment(jobId: string|TypedID, attachmentId?: string, opts?: DownloadJobOptions, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
     waitForJobCompletion(job: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
 }
 

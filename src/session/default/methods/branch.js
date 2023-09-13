@@ -146,6 +146,55 @@ module.exports = function(Session)
 
             return this.post(`/repositories/${repositoryId}/branches/${branchId}/history/start`, config, {}, callback);
         }
+
+        // Branch Changes
+
+        startBranchChanges(repository, sourceBranch, targetBranch, pagination, opts)
+        {
+            var repositoryId = this.acquireId(repository);
+            var sourceBranchId = this.acquireId(sourceBranch);
+            var targetBranchId = this.acquireId(targetBranch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            if (!pagination) {
+                pagination = {};
+            }
+
+            if (!pagination.limit) {
+                pagination.limit = 9999999;
+            }
+
+            var params = Object.assign({}, pagination, opts);
+            params.id = sourceBranchId;
+
+            return this.post(`/repositories/${repositoryId}/branches/${targetBranchId}/changes/start`, params, null, callback);
+        }
+
+        invalidateBranchChanges(repository, branch)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.post(`/repositories/${repositoryId}/branches/${branchId}/changes/invalidate`, null, null, callback);
+        }
+
+        exportBranchChanges(repository, sourceBranch, targetBranch, view)
+        {
+            var repositoryId = this.acquireId(repository);
+            var sourceBranchId = this.acquireId(sourceBranch);
+            var targetBranchId = this.acquireId(targetBranch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var params = {
+                "id": sourceBranchId
+            };
+            if (view) {
+                params["view"] = view;
+            }
+
+            return this.download(`/repositories/${repositoryId}/branches/${targetBranchId}/changes/export`, params, callback);
+        }
     }
 
     return BranchSession;

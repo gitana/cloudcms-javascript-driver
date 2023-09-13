@@ -26,6 +26,18 @@ module.exports = function(Session)
             return this.post("/jobs/" + jobId + "/kill", {}, {}, callback);
         }
 
+        downloadJobAttachment(job, attachmentId, opts)
+        {
+            var jobId = this.acquireId(job);
+            var callback = this.extractOptionalCallback(arguments);
+
+            if (!attachmentId) {
+                attachmentId = "default";
+            }
+
+            return this.download(`/jobs/${jobId}/attachments/${attachmentId}`, opts, callback);
+        }
+
         async waitForJobCompletion(job)
         {
             const jobId = this.acquireId(job);
