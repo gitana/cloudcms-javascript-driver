@@ -709,6 +709,27 @@ module.exports = function(Session)
 
             return this.post(uri, {}, {}, callback);
         }
+
+        startCopyNodes(repository, sourceBranch, targetBranch, nodeIds, config) {
+            var repositoryId = this.acquireId(repository);
+            var sourceBranchId = this.acquireId(sourceBranch);
+            var targetBranchId = this.acquireId(targetBranch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var params = {
+                "id": sourceBranchId
+            };
+
+            var body = {
+                "nodeIds": nodeIds
+            };
+
+            if (config) {
+                Object.assign(body, config);
+            }
+
+            return this.post(`/repositories/${repositoryId}/branches/${targetBranchId}/copyfrom/start`, params, body, callback);
+        }
     }
 
     return NodeSession;

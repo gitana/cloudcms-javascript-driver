@@ -376,6 +376,15 @@ export declare interface BranchChangesOptions {
     force?: boolean,
 }
 
+export declare interface SyncNodesConfig {
+    includeAllAssociations?: boolean,
+    includeRelators?: boolean,
+    forceDelete?: boolean,
+    allowWriteToFrozenBranches?: boolean,
+    optionalAssociationsMaxDepth?: number,
+    excludeAssociationTypes?: boolean,
+}
+
 
 // Sessions
 
@@ -462,6 +471,7 @@ export declare interface NodeSession extends Session {
     listVersions(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, options?: NodeVersionOptions, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
     readVersion(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, changesetId: string, options?: NodeVersionOptions, callback?: ResultCb<Node>): Promise<Node>
     restoreVersion(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, changesetId: string, callback?: ResultCb<Node>): Promise<Node>
+    startCopyNodes(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, nodeIds: Array<string>, config?: SyncNodesConfig, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
 }
 
 export declare interface PrincipalSession extends Session {
