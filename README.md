@@ -22,7 +22,7 @@ Here are examples of each:
 
 ### Async / Await
 
-```
+```javascript
 const cloudcms = require("cloudcms");
 
 const apiKeys = {
@@ -251,7 +251,7 @@ session.reauthenticate(function(done) {
 
 You can manually refresh the access token (using your Refresh Token) like this:
 
-```
+```javascript
 await session.refresh();
 ```
 
@@ -259,7 +259,7 @@ await session.refresh();
 
 You can also manually expire the issued Access and Refresh Token, like this:
 
-```
+```javascript
 await session.disconnect();
 ```
 
