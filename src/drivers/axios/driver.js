@@ -74,7 +74,7 @@ class AxiosDriver extends Driver
                 response = err.response;
             }
 
-            return response.status === 404;
+            return response ? (response.status === 404) : false;
         }
 
         // @abstract
