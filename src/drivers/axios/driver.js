@@ -10,7 +10,7 @@ class AxiosDriver extends Driver
         super(config, credentials, storage);
         var self = this;
 
-        var doRequest = this.doRequest = function(options, callback)
+        this.doRequest = this.doRequest = function(options, callback)
         {
             var stats = {};
             stats.startTime = Helper.now();
@@ -18,7 +18,8 @@ class AxiosDriver extends Driver
             var response = null;
             var err = null;
 
-            axios.request(options)
+            var signedOptions = self.incoming(options);
+            return axios.request(signedOptions)
                 .then(function(_response) {
                     response = _response;
                 })
@@ -31,24 +32,9 @@ class AxiosDriver extends Driver
                     stats.executionTime = stats.endTime - stats.startTime;
 
                     var data = (response && response.data) ? response.data : null;
-
-                    // Refresh token?
-                    if (self.isInvalidAccessToken(err, response, data))
-                    {
-                        try {
-                            await self.handleRefreshAccessToken(err, response, data);
-                            err = null;
-                        }
-                        catch (_err) {
-                            err = _err;
-                        }
-                    }
-
                     callback(err, response, data, stats);
                 });
         };
-
-        // var doRequest = this.doRequest;
 
         this.isInvalidAccessToken = function(err, response, body)
         {
@@ -60,7 +46,7 @@ class AxiosDriver extends Driver
                 body = response.data;
             }
 
-            if (response.status === 401)
+            if (response && response.status === 401)
             {
                 var json = self.outgoing(body);
                 return (json.error === "invalid_token");
@@ -84,46 +70,36 @@ class AxiosDriver extends Driver
 
             return function(done)
             {
-                // ensures that access token is valid - if not, a refresh token request is made to get a new one
-                self.ensureTokenState(function(err) {
+                var options = {
+                    "method": "GET",
+                    "url": uri,
+                    "headers": {},
+                    "params": {}
+                };
 
-                    if (err) {
+                if (params)
+                {
+                    for (var k in params)
+                    {
+                        options.params[k] = params[k];
+                    }
+                }
+
+                self.request(options, function(err, response, data, stats) {
+                    if (self.isNotFound(err, response))
+                    {
+                        return done(null, null);
+                    }
+                    else if (err) {
                         return done(err);
                     }
-
-                    var options = {
-                        "method": "GET",
-                        "url": uri,
-                        "headers": {},
-                        "params": {}
-                    };
-
-                    if (params)
+                    else if (response.status >= 200 && response.status <= 204)
                     {
-                        for (var k in params)
-                        {
-                            options.params[k] = params[k];
-                        }
+                        return done(null, data);
                     }
 
-                    var signedOptions = self.incoming(options);
-
-                    doRequest(signedOptions, function(err, response, data, stats) {
-                        if (self.isNotFound(err, response))
-                        {
-                            return done(null, null);
-                        }
-                        else if (err) {
-                            return done(err);
-                        }
-                        else if (response.status >= 200 && response.status <= 204)
-                        {
-                            return done(null, data);
-                        }
-
-                        return done({
-                            "code": response.status
-                        });
+                    return done({
+                        "code": response.status
                     });
                 });
             }
@@ -136,52 +112,42 @@ class AxiosDriver extends Driver
 
             return function(done)
             {
-                // ensures that access token is valid - if not, a refresh token request is made to get a new one
-                self.ensureTokenState(function(err) {
+                var options = {
+                    "method": "POST",
+                    "url": uri,
+                    "headers": {},
+                    "params": {}
+                };
+
+                if (params)
+                {
+                    for (var k in params)
+                    {
+                        var v = params[k];
+
+                        if (Helper.isObject(v))
+                        {
+                            v = JSON.stringify(v);
+                        }
+
+                        options.params[k] = v;
+                    }
+                }
+
+                if (payload)
+                {
+                    options.headers["Content-Type"] = "application/json";
+                    //options.body = JSON.stringify(payload);
+                    options.data = payload;
+                }
+
+                self.request(options, function(err, response, data, stats) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    var options = {
-                        "method": "POST",
-                        "url": uri,
-                        "headers": {},
-                        "params": {}
-                    };
-
-                    if (params)
-                    {
-                        for (var k in params)
-                        {
-                            var v = params[k];
-
-                            if (Helper.isObject(v))
-                            {
-                                v = JSON.stringify(v);
-                            }
-
-                            options.params[k] = v;
-                        }
-                    }
-
-                    if (payload)
-                    {
-                        options.headers["Content-Type"] = "application/json";
-                        //options.body = JSON.stringify(payload);
-                        options.data = payload;
-                    }
-
-                    var signedOptions = self.incoming(options);
-
-                    doRequest(signedOptions, function(err, response, data, stats) {
-
-                        if (err) {
-                            return done(err);
-                        }
-
-                        done(null, self.outgoing(data));
-                    });
+                    done(null, self.outgoing(data));
                 });
             }
         };
@@ -193,44 +159,34 @@ class AxiosDriver extends Driver
 
             return function(done)
             {
-                // ensures that access token is valid - if not, a refresh token request is made to get a new one
-                self.ensureTokenState(function(err) {
+                var options = {
+                    "method": "PUT",
+                    "url": uri,
+                    "headers": {},
+                    "params": {}
+                };
+
+                if (params)
+                {
+                    for (var k in params)
+                    {
+                        options.params[k] = params[k];
+                    }
+                }
+
+                if (payload)
+                {
+                    options.headers["Content-Type"] = "application/json";
+                    options.data = JSON.stringify(payload);
+                }
+
+                self.request(options, function(err, response, data, stats) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    var options = {
-                        "method": "PUT",
-                        "url": uri,
-                        "headers": {},
-                        "params": {}
-                    };
-
-                    if (params)
-                    {
-                        for (var k in params)
-                        {
-                            options.params[k] = params[k];
-                        }
-                    }
-
-                    if (payload)
-                    {
-                        options.headers["Content-Type"] = "application/json";
-                        options.data = JSON.stringify(payload);
-                    }
-
-                    var signedOptions = self.incoming(options);
-
-                    doRequest(signedOptions, function(err, response, data, stats) {
-
-                        if (err) {
-                            return done(err);
-                        }
-
-                        done(null, self.outgoing(data));
-                    });
+                    done(null, self.outgoing(data));
                 });
             }
         };
@@ -242,39 +198,29 @@ class AxiosDriver extends Driver
 
             return function(done)
             {
-                // ensures that access token is valid - if not, a refresh token request is made to get a new one
-                self.ensureTokenState(function(err) {
+                var options = {
+                    "method": "DELETE",
+                    "url": uri,
+                    "headers": {},
+                    "params": {}
+                };
+
+                if (params)
+                {
+                    for (var k in params)
+                    {
+                        options.params[k] = params[k];
+                    }
+                }
+
+                self.request(options, function(err, response, data, stats) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    var options = {
-                        "method": "DELETE",
-                        "url": uri,
-                        "headers": {},
-                        "params": {}
-                    };
 
-                    if (params)
-                    {
-                        for (var k in params)
-                        {
-                            options.params[k] = params[k];
-                        }
-                    }
-
-                    var signedOptions = self.incoming(options);
-
-                    doRequest(signedOptions, function(err, response, data, stats) {
-
-                        if (err) {
-                            return done(err);
-                        }
-
-
-                        done(null, self.outgoing(data));
-                    });
+                    done(null, self.outgoing(data));
                 });
             }
         };
@@ -286,44 +232,34 @@ class AxiosDriver extends Driver
 
             return function(done)
             {
-                // ensures that access token is valid - if not, a refresh token request is made to get a new one
-                self.ensureTokenState(function(err) {
+                var options = {
+                    "method": "PATCH",
+                    "url": uri,
+                    "headers": {},
+                    "params": {}
+                };
+
+                if (params)
+                {
+                    for (var k in params)
+                    {
+                        options.params[k] = params[k];
+                    }
+                }
+
+                if (payload)
+                {
+                    options.headers["Content-Type"] = "application/json";
+                    options.data = JSON.stringify(data);
+                }
+
+                self.request(options, function(err, response, data, stats) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    var options = {
-                        "method": "PATCH",
-                        "url": uri,
-                        "headers": {},
-                        "params": {}
-                    };
-
-                    if (params)
-                    {
-                        for (var k in params)
-                        {
-                            options.params[k] = params[k];
-                        }
-                    }
-
-                    if (payload)
-                    {
-                        options.headers["Content-Type"] = "application/json";
-                        options.data = JSON.stringify(data);
-                    }
-
-                    var signedOptions = self.incoming(options);
-
-                    doRequest(signedOptions, function(err, response, data, stats) {
-
-                        if (err) {
-                            return done(err);
-                        }
-
-                        done(null, self.outgoing(data));
-                    });
+                    done(null, self.outgoing(data));
                 });
             }
         };
@@ -334,57 +270,47 @@ class AxiosDriver extends Driver
 
             return function(done)
             {
-                // ensures that access token is valid - if not, a refresh token request is made to get a new one
-                self.ensureTokenState(function(err) {
+                var formHeaders = payload.getHeaders();
+
+                var options = {
+                    "method": "POST",
+                    "url": uri,
+                    "headers": {
+                        'Content-Type': 'multipart/form-data',
+                        ...formHeaders // need to add headers from form
+                    },
+                    "params": {}
+                };
+
+                if (params)
+                {
+                    for (var k in params)
+                    {
+                        var v = params[k];
+
+                        if (Helper.isObject(v))
+                        {
+                            v = JSON.stringify(v);
+                        }
+
+                        options.params[k] = v;
+                    }
+                }
+
+                if (payload)
+                {
+                    options.data = payload;
+                }
+
+                options.maxBodyLength = 1000000000;
+
+                self.request(options, function(err, response, data, stats) {
 
                     if (err) {
                         return done(err);
                     }
 
-                    var formHeaders = payload.getHeaders();
-
-                    var options = {
-                        "method": "POST",
-                        "url": uri,
-                        "headers": {
-                            'Content-Type': 'multipart/form-data',
-                            ...formHeaders // need to add headers from form
-                        },
-                        "params": {}
-                    };
-
-                    if (params)
-                    {
-                        for (var k in params)
-                        {
-                            var v = params[k];
-
-                            if (Helper.isObject(v))
-                            {
-                                v = JSON.stringify(v);
-                            }
-
-                            options.params[k] = v;
-                        }
-                    }
-
-                    if (payload)
-                    {
-                        options.data = payload;
-                    }
-
-                    options.maxBodyLength = 1000000000;
-
-                    var signedOptions = self.incoming(options);
-
-                    doRequest(signedOptions, function(err, response, data, stats) {
-
-                        if (err) {
-                            return done(err);
-                        }
-
-                        done(null, self.outgoing(data));
-                    });
+                    done(null, self.outgoing(data));
                 });
             }
         },
@@ -396,47 +322,37 @@ class AxiosDriver extends Driver
 
             return function(done)
             {
-                // ensures that access token is valid - if not, a refresh token request is made to get a new one
-                self.ensureTokenState(function(err) {
+                var options = {
+                    "method": "GET",
+                    "url": uri,
+                    "responseType": "stream", // this is what allows axios to download a binary as a stream
+                    "headers": {},
+                    "params": {}
+                };
 
-                    if (err) {
+                if (params)
+                {
+                    for (var k in params)
+                    {
+                        options.params[k] = params[k];
+                    }
+                }
+
+                self.request(options, function(err, response, data, stats) {
+                    if (self.isNotFound(err, response))
+                    {
+                        return done(null, null);
+                    }
+                    else if (err) {
                         return done(err);
                     }
-
-                    var options = {
-                        "method": "GET",
-                        "url": uri,
-                        "responseType": "stream", // this is what allows axios to download a binary as a stream
-                        "headers": {},
-                        "params": {}
-                    };
-
-                    if (params)
+                    else if (response.status >= 200 && response.status <= 204)
                     {
-                        for (var k in params)
-                        {
-                            options.params[k] = params[k];
-                        }
+                        return done(null, data);
                     }
 
-                    var signedOptions = self.incoming(options);
-
-                    doRequest(signedOptions, function(err, response, data, stats) {
-                        if (self.isNotFound(err, response))
-                        {
-                            return done(null, null);
-                        }
-                        else if (err) {
-                            return done(err);
-                        }
-                        else if (response.status >= 200 && response.status <= 204)
-                        {
-                            return done(null, data);
-                        }
-
-                        return done({
-                            "code": response.status
-                        });
+                    return done({
+                        "code": response.status
                     });
                 });
             }

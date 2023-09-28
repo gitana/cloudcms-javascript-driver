@@ -12,6 +12,46 @@ class Driver
 
         this._reauthenticateFn = null;
 
+        var self = this;
+        this.request = function(options, callback)
+        {
+            var cb = callback;
+            callback = function() {
+                cb.apply(this, arguments);
+            }
+            
+            self.ensureTokenState(function(err) {
+                if (err) {
+                    callback(err)
+                    return;
+                }
+                
+                self.doRequest(options, async function(err, response, data, stats) {
+                    var isInvalid = self.isInvalidAccessToken(err, response, data);
+
+                    // Refresh token?
+                    if (isInvalid)
+                    {
+                        try {
+                            await self.handleRefreshAccessToken(err, response, data);
+    
+                            // Retry the request
+                            self.doRequest(options, async function(err, response, data, stats) {
+                                callback(err, response, data, stats);
+                            })
+                        }
+                        catch (_err) {
+                            err = _err;
+                        }
+                    }
+                    else
+                    {
+                        callback(err, response, data, stats);
+                    }
+                });
+            });
+        };
+
         this.incoming = function(requestObject)
         {
             var self = this;
