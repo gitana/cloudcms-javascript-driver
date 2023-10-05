@@ -10,7 +10,7 @@ class AxiosDriver extends Driver
         super(config, credentials, storage);
         var self = this;
 
-        this.doRequest = this.doRequest = function(options, callback)
+        this.doRequest = function(options, callback)
         {
             var stats = {};
             stats.startTime = Helper.now();
