@@ -2,6 +2,21 @@ module.exports = function(Session)
 {
     class ProjectSession extends Session
     {
+        async buildProjectReference(project)
+        {
+            var projectId = this.acquireId(project);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var platformId = await this.getPlatformId();
+            var ref = `project://${platformId}/${projectId}`;
+            if (callback)
+            {
+                callback(ref);
+            }
+
+            return ref;
+        }
+        
         /**
          * Reads an Project.
          *

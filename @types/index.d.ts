@@ -405,11 +405,13 @@ export declare interface ApplicationSession extends Session {
 }
 
 export declare interface RepositorySession extends Session {
+    buildRepositoryReference(repository: TypedID|string, callback?: ResultCb<string>): Promise<string>
     createRepository(obj?: Object, callback?: ResultCb<Repository>): Promise<Repository>
     queryRepositories(query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<Repository>>): Promise<Rows<Repository>>
 }
 
 export declare interface BranchSession extends Session {
+    buildBranchReference(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<string>): Promise<string>
     queryBranches(repository: TypedID|string, query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<RepositoryObject>>): Promise<Rows<Branch>>
     readBranch(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<Branch>): Promise<Branch>
     createBranch(repository: TypedID|string, branch: TypedID|string, changesetId?: string, obj?: Object, callback?: ResultCb<Branch>): Promise<Branch>
@@ -482,6 +484,7 @@ export declare interface PrincipalSession extends Session {
 }
 
 export declare interface ProjectSession extends Session {
+    buildProjectReference(project: TypedID|string, callback?: ResultCb<string>): Promise<string>
     readProject(project: TypedID|string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
     deleteProject(project: TypedID|string, callback?: ResultCb<void>): Promise<void>
     updateProject(project: TypedID, callback?: ResultCb<void>): Promise<void>
@@ -523,7 +526,12 @@ export declare interface JobSession extends Session {
 
 export declare interface TransferSession extends Session {
     exportArchive(sourceRefs: Array<string>|string, opts: TransferExportOpts, configuration: TransferExportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    exportNodes(repository: TypedID|string, branch: TypedID|string, nodes: Array<string|TypedID>|string|TypedID, opts: TransferExportOpts, configuration: TransferExportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    exportProject(project: string|TypedID, opts: TransferExportOpts, configuration: TransferExportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
     importArchive(targetRef: string, opts: TransferImportOpts, configuration: TransferImportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    importArchiveToBranch(repository: TypedID|string, branch: TypedID|string, opts: TransferImportOpts, configuration: TransferImportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    importArchiveToRepository(repository: TypedID|string, opts: TransferImportOpts, configuration: TransferImportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+    importArchiveToPlatform(opts: TransferImportOpts, configuration: TransferImportConfiguration, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
 }
 
 export declare interface ArchiveSession extends Session {
@@ -557,6 +565,8 @@ export declare interface ReleaseSession extends Session {
 
 export declare interface PlatformSession extends Session {
     readPlatform(callback?: ResultCb<TypedID>): Promise<TypedID>
+    getPlatformId(callback?: ResultCb<string>): Promise<string>
+    buildPlatformReference(callback?: ResultCb<string>): Promise<string>
 }
 
 export declare interface UtilitySession extends DefaultSession {

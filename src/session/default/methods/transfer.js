@@ -65,60 +65,26 @@ module.exports = function(Session)
             return this.post("/transfer/export", params, payload, callback);
         }
 
-        exportProject(sourceRefs, opts, configuration)
+        async exportNodes(repository, branch, nodes, opts, configuration)
         {
+            var self = this;
             var callback = this.extractOptionalCallback(arguments);
 
-            var optsErr = null;
-            if (!Helper.isObject(opts))
+            if (!Helper.isArray(nodes))
             {
-                optsErr = "opts is not an object";
-            }
-            else if (!("group" in opts))
-            {
-                optsErr = "opts is missing 'group'";
-            }
-            else if (!("artifact" in opts))
-            {
-                optsErr = "opts is missing 'artifact'";
-            }
-            else if (!("version" in opts))
-            {
-                optsErr = "opts is missing 'version'";
-            }
-            if (optsErr)
-            {
-                throw new Error(optsErr);
+                nodes = [nodes];
             }
 
-            var vaultId = "primary";
-            if (opts.vault)
-            {
-                vaultId = this.acquireId(vault);
-            }
+            var nodeRefs = await Promise.all(nodes.map(node => self.buildNodeBranchReference(repository, branch, node)));
+            return self.exportArchive(nodeRefs, opts, configuration, callback);
+        }
 
-            var params = {
-                ...opts,
-                "vault": vaultId,
-                "schedule": "ASYNCHRONOUS"
-            };
+        async exportProject(project, opts, configuration, callback)
+        {
+            var callback = this.extractOptionalCallback(arguments);
+            var projectRef = await this.buildProjectReference(project);
 
-            if (!Helper.isArray(sourceRefs))
-            {
-                sourceRefs = [sourceRefs];
-            }
-
-            if (!Helper.isObject(configuration))
-            {
-                configuration = {};
-            }
-
-            var payload = {
-                ...configuration,
-                "sources": sourceRefs
-            };
-
-            return this.post("/transfer/export", params, payload, callback);
+            return self.exportArchive([projectRef], opts, configuration, callback);
         }
 
         importArchive(targetRef, opts, configuration)
@@ -165,6 +131,20 @@ module.exports = function(Session)
             };
 
             return this.post("/transfer/import", params, payload, callback);
+        }
+
+        async importArchiveToPlatform(opts, configuration)
+        {
+            var callback = this.extractOptionalCallback(arguments);
+            var platformRef = await this.buildBranchReference(repository, branch);
+            return this.importArchive(platformRef, opts, configuration, callback);
+        }
+
+        async importArchiveToBranch(repository, branch, opts, configuration)
+        {
+            var callback = this.extractOptionalCallback(arguments);
+            var branchRef = await this.buildBranchReference(repository, branch);
+            return this.importArchive(branchRef, opts, configuration, callback);
         }
     }
 

@@ -2,6 +2,22 @@ module.exports = function(Session)
 {
     class BranchSession extends Session
     {
+        async buildBranchReference(repository, branch)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var platformId = await this.getPlatformId();
+            var ref = `branch://${platformId}/${repositoryId}/${branchId}`;
+            if (callback)
+            {
+                callback(ref);
+            }
+
+            return ref;
+        }
+
         /**
          * Queries for branches.
          *

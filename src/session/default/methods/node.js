@@ -5,6 +5,40 @@ module.exports = function(Session)
 
     class NodeSession extends Session
     {
+        async buildNodeBranchReference(repository, branch, node)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var platformId = await this.getPlatformId();
+            var ref = `node://${platformId}/${repositoryId}/${branchId}/${nodeId}`;
+            if (callback)
+            {
+                callback(ref);
+            }
+
+            return ref;
+        }
+
+        async buildNodeChangesetReference(repository, changeset, node)
+        {
+            var repositoryId = this.acquireId(repository);
+            var changesetId = this.acquireId(changeset);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var platformId = await this.getPlatformId();
+            var ref = `node://${platformId}/${repositoryId}/${changesetId}/${nodeId}`;
+            if (callback)
+            {
+                callback(ref);
+            }
+
+            return ref;
+        }
+
         /**
          * Reads a node.
          *
