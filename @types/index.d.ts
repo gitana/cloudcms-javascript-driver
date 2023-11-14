@@ -499,7 +499,7 @@ export declare interface StackSession extends Session {
     listDataStores(stack: TypedID|string, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
     queryDataStores(stack: TypedID|string, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
     findDataStoreStack(dataStore: string|DataStore, dataStoreType: string, callback?: ResultCb<PlatformObject>): Promise<PlatformObject>
-    assignDataStore(stack: TypedID|string, dataStore: string|DataStore, key: string, callback?: ResultCb<void>): Promise<void>
+    assignDataStore(stack: TypedID|string, dataStore: string|DataStore, type: string, key: string, callback?: ResultCb<void>): Promise<void>
     unassignDataStore(stack: TypedID|string, key: string, callback?: ResultCb<void>): Promise<void>
 }
 

@@ -116,7 +116,7 @@ module.exports = function(Session)
             var vaultId = "primary";
             if (opts.vault)
             {
-                vaultId = this.acquireId(vault);
+                vaultId = this.acquireId(opts.vault);
             }
 
             var params = {
