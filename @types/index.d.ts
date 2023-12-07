@@ -444,7 +444,8 @@ export declare interface NodeSession extends Session {
     findNodes(repository: TypedID|string, branch: TypedID|string, config: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
     createNode(repository: TypedID|string, branch: TypedID|string, obj?: Object, options?: Object, callback?: ResultCb<Node>): Promise<Node>
     deleteNodes(repository: TypedID|string, branch: TypedID|string, nodes: string|Array<string>|Array<TypedID>, callback?: ResultCb<void>): Promise<void>
-    
+    updateNodes(repository: TypedID|string, branch: TypedID|string, nodes: Array<TypedID>, callback?: ResultCb<void>): Promise<void>
+
     queryNodeRelatives(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
     queryNodeChildren(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Node>>): Promise<Rows<Node>>
     listNodeAssociations(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationType?: string, associationDirection?: string, pagination?: Pagination, callback?: ResultCb<Rows<Association>>): Promise<Rows<Association>>

@@ -367,6 +367,19 @@ module.exports = function(Session)
             return this.put("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, node, callback);
         }
 
+        async updateNodes(repository, branch, nodes)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var nodeEntries = await Promise.all(nodes.map(async node => [await this.buildNodeBranchReference(repositoryId, branchId, node), node]))
+            var payload = {
+                "nodes": Object.fromEntries(nodeEntries)
+            };
+            return this.put(`/repositories/${repositoryId}/branches/${branchId}/nodes`, {}, payload, callback);
+        }
+
         patchNode(repository, branch, node, patchObject)
         {
             var repositoryId = this.acquireId(repository);
