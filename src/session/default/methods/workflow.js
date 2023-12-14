@@ -9,6 +9,13 @@ module.exports = function(Session)
             return this.get("/workflow/instances/" + workflowId, {}, callback);
         }
 
+        deleteWorkflow(workflowId)
+        {
+            var callback = this.extractOptionalCallback(arguments);
+         
+            return this.del("/workflow/instances/" + workflowId, {}, callback);
+        }
+
         queryWorkflows(query, pagination)
         {
             var callback = this.extractOptionalCallback(arguments);
@@ -22,6 +29,8 @@ module.exports = function(Session)
 
             return this.post("/workflow/tasks/query", pagination, query, callback);
         }
+
+
     }
 
     return WorkflowSession;

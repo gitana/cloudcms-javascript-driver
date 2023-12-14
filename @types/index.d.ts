@@ -506,6 +506,7 @@ export declare interface StackSession extends Session {
 
 export declare interface WorkflowSession extends Session {
     readWorkflow(workflowId: string, callback?: ResultCb<TypedID>): Promise<TypedID>
+    deleteWorkflow(workflowId: string, callback?: ResultCb<TypedID>): Promise<TypedID>
     queryWorkflows(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
     queryWorkflowTasks(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<TypedID>>): Promise<Rows<TypedID>>
 }
