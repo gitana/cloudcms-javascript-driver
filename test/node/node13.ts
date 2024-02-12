@@ -1,7 +1,7 @@
 import * as CloudCMS from "../..";
 var assert = require('chai').assert;
 
-describe('node14', function() {
+describe('node13', function() {
     it('should run node test without error', async function() {
 
         var session = await CloudCMS.connect();

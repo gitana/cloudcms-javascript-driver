@@ -289,8 +289,20 @@ async function myRequest(): Promise<void> {
 }
 
 myRequest();
+```
 
+You can also provide custom generic types to methods involving nodes to further describe returned node types in your TypeScript application:
 
+```typescript
+import { Node, Rows } from 'cloudcms';
+
+interface CustomType extends Node {
+    title: String,
+    aProp: String,
+    bProp: String
+}
+
+const results: Rows<CustomType> = await session.queryNodes(repositoryId, branchId, { "_type": "custom:type" });
 ```
 
 ## Tests
