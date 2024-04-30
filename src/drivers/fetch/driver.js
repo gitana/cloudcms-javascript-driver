@@ -1,11 +1,13 @@
 var Driver = require("../../driver");
 var Helper = require("../../helper");
+const {refreshToken, ownerCredentials} = require("axios-oauth-client");
 
 class FetchDriver extends Driver
 {
-    constructor(config, credentials, storage)
+    constructor(config, credentials, storage, options)
     {
-        super(config, credentials, storage);
+        super(config, credentials, storage, options);
+
         this.fetch = config.fetch;
 
         this.doRequest = (options, callback) =>
@@ -407,14 +409,24 @@ class FetchDriver extends Driver
                 });
             }
         };
-    }
 
-    // Must return object with keys status: string and body: string
-    async oauthRequest(method, url, body, headers) {
-        let result = await this.fetch(url, {method, body, headers});
-        let status = result.status;
-        let responseBody = await result.text();
-        return { status, body: responseBody };
+        // Not Implemented
+        this.buildGetRefreshToken = function()
+        {
+            return function(refreshToken, scopes)
+            {
+                // TODO
+            };
+        };
+
+        // Not Implemented
+        this.buildGetOwnerCredentials = function()
+        {
+            return function(username, password)
+            {
+                // TODO
+            };
+        };
     }
 }
 

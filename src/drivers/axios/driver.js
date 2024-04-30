@@ -3,12 +3,48 @@ var Helper = require("../../helper");
 
 var axios = require('axios');
 
+const { HttpsProxyAgent} = require("https-proxy-agent");
+const { HttpProxyAgent} = require("http-proxy-agent");
+
+var { ownerCredentials, refreshToken } = require("axios-oauth-client");
+
 class AxiosDriver extends Driver
 {
-    constructor(config, credentials, storage)
+    constructor(config, credentials, storage, options)
     {
-        super(config, credentials, storage);
+        super(config, credentials, storage, options);
+
         var self = this;
+
+
+        //////////////////////////////////////////////////////////////////
+        //
+        // AXIOS CLIENT CONFIG
+        //
+        var axiosClientConfig = {};
+
+        // copy (optional) options into client config
+        if (options) {
+            for (var k in options) {
+                axiosClientConfig[k] = options[k];
+            }
+        }
+
+        if (process.env.HTTP_PROXY) {
+            axiosClientConfig.proxy = false;
+            axiosClientConfig.httpAgent = new HttpProxyAgent(process.env.HTTP_PROXY);
+        }
+
+        if (process.env.HTTPS_PROXY) {
+            axiosClientConfig.proxy = false;
+            axiosClientConfig.httpsAgent = new HttpsProxyAgent(process.env.HTTPS_PROXY);
+        }
+
+        // build axios client
+        var client = self.client = axios.create(axiosClientConfig);
+
+
+        ////
 
         this.doRequest = function(options, callback)
         {
@@ -19,7 +55,7 @@ class AxiosDriver extends Driver
             var err = null;
 
             var signedOptions = self.incoming(options);
-            return axios.request(signedOptions)
+            return client.request(signedOptions)
                 .then(function(_response) {
                     response = _response;
                 })
@@ -356,16 +392,17 @@ class AxiosDriver extends Driver
                     });
                 });
             }
-        };
-    }
-
-    // Must return object with keys status: string and body: string
-    async oauthRequest(method, url, body, headers) {
-        let result = await axios.request({method, url, data: body, headers});
-        return { 
-            status: result.status,
-            body: JSON.stringify(result.data)
         }
+
+        this.buildGetRefreshToken = function()
+        {
+            return refreshToken(client, [config.baseURL, "oauth/token"].join("/"), config.clientKey, config.clientSecret);
+        };
+
+        this.buildGetOwnerCredentials = function()
+        {
+            return ownerCredentials(client, [config.baseURL, "oauth/token"].join("/"), config.clientKey, config.clientSecret);
+        };
     }
 }
 

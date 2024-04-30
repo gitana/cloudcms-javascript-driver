@@ -1,4 +1,6 @@
 var Helper = require("./helper");
+const moment = require("moment/moment");
+const {refreshToken, ownerCredentials} = require("axios-oauth-client");
 
 var ONE_HOUR_MS = 1000 * 60 * 60;
 
@@ -6,13 +8,15 @@ class Driver
 {
     constructor(config, credentials, storage)
     {
-        this.config = Helper.cleanKeys(config);
+        var self = this;
+
+        //this.config = Helper.cleanKeys(config);
+        this.config = config;
         this.credentials = credentials;
         this.storage = storage;
 
         this._reauthenticateFn = null;
 
-        var self = this;
         this.request = function(options, callback)
         {
             var cb = callback;
@@ -244,10 +248,27 @@ class Driver
         {
             return function(done)
             {
-                //
+                // TODO
             }
         }
 
+        // @abstract
+        this.buildGetRefreshToken = function()
+        {
+            return function(refreshToken, scopes)
+            {
+                // TODO
+            };
+        };
+
+        // @abstract
+        this.buildGetOwnerCredentials = function()
+        {
+            return function(username, password)
+            {
+                // TODO
+            };
+        };
     }
 
     /**
@@ -504,6 +525,93 @@ class Driver
         this.post("/auth/expire", {}, {}, function(err) {
             callback(err);
         });
+    }
+
+    connect(callback)
+    {
+        return this.authenticate(callback);
+    }
+
+    authenticate(callback)
+    {
+        var self = this;
+
+        var getRefreshToken = this.buildGetRefreshToken();
+        var getOwnerCredentials = this.buildGetOwnerCredentials();
+
+        var optionalScopes = ["api"];
+
+        var buildCredentials = function(result)
+        {
+            var accessToken = result["access_token"];
+            var tokenType = result["token_type"];
+            var refreshToken = result["refresh_token"];
+            var expires = result["expires"];
+            var expiresMs = moment(expires).valueOf();
+
+            return {
+                "accessToken": accessToken,
+                "refreshToken": refreshToken,
+                "tokenType": tokenType,
+                "expires": expires,
+                "expiresMs": expiresMs,
+                "refresh": function(refreshToken, optionalScopes) {
+                    return function (callback) {
+
+                        var result = null;
+                        try
+                        {
+                            result = async function() {
+                                return await getRefreshToken(refreshToken, optionalScopes)
+                            }();
+                        }
+                        catch (e)
+                        {
+                            return done(e);
+                        }
+
+                        var newCredentials = buildCredentials(result);
+                        callback(null, newCredentials);
+                    }
+                }(refreshToken, optionalScopes)
+            };
+        };
+
+        var fn = function(config, optionalScopes, done)
+        {
+            return function(done)
+            {
+                // authenticate
+                getOwnerCredentials(config.username, config.password, optionalScopes).then(function(result) {
+                    var credentials = buildCredentials(result);
+                    return done(null, credentials);
+                }).catch(function(err) {
+                    return done(err);
+                });
+            }
+        }(self.config, optionalScopes);
+
+        // support for callback approach
+        if (callback && Helper.isFunction(callback))
+        {
+            return fn(function(err) {
+                callback(err);
+            });
+        }
+
+        var promise = new Promise((resolve, reject) => {
+
+            fn(function(err, result) {
+
+                if (err) {
+                    return reject(err);
+                }
+
+                resolve(result);
+            });
+        });
+
+        return promise;
     }
 }
 

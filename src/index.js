@@ -6,7 +6,6 @@ catch (e) {
 
 }
 const path = require("path");
-var moment = require("moment");
 
 var Helper = require("./helper");
 
@@ -19,13 +18,15 @@ var DEFAULT_CONFIG = {
     "baseURL": "https://api.cloudcms.com"
 };
 
-var _connect = function(config, _storageClass, _driverClass, _sessionClass, callback)
+var _connect = function(config, _storageClass, _driverClass, _driverOptions, _sessionClass, callback)
 {
+    // assume axios driver class
     if (!_driverClass)
     {
         _driverClass = require("./drivers/axios/driver");
     }
 
+    // assume memory storage
     if (!_storageClass)
     {
         _storageClass = require("./storage/memory/storage");
@@ -35,11 +36,8 @@ var _connect = function(config, _storageClass, _driverClass, _sessionClass, call
     var storage = new _storageClass(config);
 
     // instantiate the driver
-    var driver = new _driverClass(config, null, storage);
-
-    var oauth = driver.oauthRequest.bind(driver);
-    _authenticate(oauth, config, function(err, credentials) {
-        driver.credentials = credentials;
+    var driver = new _driverClass(config, null, storage, _driverOptions);
+    driver.connect(function(err) {
 
         if (err) {
             return callback(err);
@@ -52,102 +50,14 @@ var _connect = function(config, _storageClass, _driverClass, _sessionClass, call
 
         // instantiate the session
         var session = new _sessionClass(config, driver, storage);
-        
+
         // hand it back
         callback(null, session);
-    });
 
+    })
 };
 
-/**
- * Authenticates using the supplied configuration.
- *
- * Authorization Code flow:
- *
- *   {
- *     "code": "<code>",
- *     "redirectUri": "<redirectUri>"
- *   }
 
- * Username/password flow:
- *
- *   {
- *     "username": "<username>",
- *     "password": "<password>"
- *   }
- *
- * An authentication failure handler can be passed as the final argument
- *
- * @chained platform
- *
- * @param {Function} request - (Optional) async function that returns an object with keys status: string and body: string. This is used to perform the oauth handshake, and if not set the oauth client's internal http client will be used.
- * @param {Object} config
- * @param [Function] callback
- */
-var _authenticate = function(request, config, callback)
-{
-    var authConfig = {
-        clientId: config.clientKey,
-        clientSecret: config.clientSecret,
-        accessTokenUri: [config.baseURL, "oauth/token"].join("/"),
-        //authorizationUri: [config.baseURL, "oauth/authorize"].join("/"),
-        //redirectUri: 'http://example.com/auth/github/callback',
-        authorizationGrants: ['owner'],
-        scopes: "api"
-    };
-
-    /*
-    if (config.code && config.redirectUri)
-    {
-        authConfig.redirectUri = config.redirectUri;
-    }
-    */
-
-    var buildCredentials = function(token)
-    {
-        var accessToken = token.accessToken; // cd452036-dea1-4775-84b6-88dd374f1c13
-        var tokenType = token.tokenType; // bearer
-        var refreshToken = token.refreshToken; // 1c66821e-cf16-4002-ab9a-9ff7ebefc10b
-        var expires = token.expires; // Thu Aug 29 2019 13:50:45 GMT-0400 (EDT)
-        var expiresMs = moment(token.expires).valueOf();
-
-        // console.log("Built credentials - accessToken=" + token.accessToken + ", refreshToken=" + token.refreshToken);
-
-        return {
-            "accessToken": accessToken,
-            "refreshToken": refreshToken,
-            "tokenType": tokenType,
-            "expires": expires,
-            "expiresMs": expiresMs,
-            "sign": function(reqObj) {
-                return token.sign(reqObj);
-            },
-            "refresh": function(callback) {
-                //console.log("Refreshing credentials");
-                token.refresh().then(function(token) {
-                    var newCredentials = buildCredentials(token);
-                    callback(null, newCredentials);
-                }, function(err) {
-                    callback(new Error(JSON.stringify(err)));
-                });
-            }
-        };
-    };
-
-    var ClientOAuth2 = require("client-oauth2");
-    var auth = new ClientOAuth2(authConfig, request);
-
-    auth.owner.getToken(config.username, config.password).then(function(token) {
-
-        var credentials = function(token) {
-            return buildCredentials(token);
-        }(token);
-
-        callback(null, credentials);
-    }).catch(function(err) {
-        callback(err);
-    });
-};
 
 var factory = function()
 {
@@ -219,12 +129,18 @@ var factory = function()
     };
 
     // connect method
-    exports.connect = function(connectConfig, callback)
+    exports.connect = function(connectConfig, driverOptions, callback)
     {
         if (typeof(connectConfig) === "function")
         {
             callback = connectConfig;
             connectConfig = {};
+            driverOptions = {};
+        }
+        else if (typeof(driverOptions) === "function")
+        {
+            callback = driverOptions;
+            driverOptions = {};
         }
 
         var fn = function(connectConfig)
@@ -233,7 +149,7 @@ var factory = function()
 
                 var config = Helper.mergeConfigs(DEFAULT_CONFIG, LOADED_CONFIG, connectConfig);
 
-                _connect(config, _storageClass, _driverClass, _sessionClass, function(err, session) {
+                _connect(config, _storageClass, _driverClass, driverOptions, _sessionClass, function(err, session) {
 
                     if (err) {
                         return done(err);
