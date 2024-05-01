@@ -3,10 +3,10 @@ var Helper = require("../../helper");
 // define base class
 class DefaultSession
 {
-    constructor(config, driver, storage)
+    constructor(config, engine, storage)
     {
         this.config = Helper.cleanKeys(config);
-        this.driver = driver;
+        this.engine = engine;
         this.storage = storage;
 
         this.defaults = {
@@ -108,7 +108,7 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.driver.get(uri, qs, callback);
+            return this.engine.get(uri, qs, callback);
         };
 
         this.post = function(uri, qs, payload, callback)
@@ -117,7 +117,7 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.driver.post(uri, qs, payload, callback);
+            return this.engine.post(uri, qs, payload, callback);
         };
 
         this.put = function(uri, qs, payload, callback)
@@ -126,7 +126,7 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.driver.put(uri, qs, payload, callback);
+            return this.engine.put(uri, qs, payload, callback);
         };
 
         this.del = function(uri, qs, callback)
@@ -135,7 +135,7 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.driver.del(uri, qs, callback);
+            return this.engine.del(uri, qs, callback);
         };
 
         this.patch = function(uri, qs, payload, callback)
@@ -144,14 +144,14 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.driver.patch(uri, qs, payload, callback);
+            return this.engine.patch(uri, qs, payload, callback);
         };
 
         this.multipartPost = function(uri, qs, formData, callback)
         {
             var self = this;
 
-            return this.driver.multipartPost(uri, qs, formData, callback);
+            return this.engine.multipartPost(uri, qs, formData, callback);
         };
 
         this.download = function(uri, qs, callback)
@@ -160,7 +160,7 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.driver.download(uri, qs, callback);
+            return this.engine.download(uri, qs, callback);
         };
     }
 
@@ -210,15 +210,15 @@ class DefaultSession
 
     refresh(callback)
     {
-        var driver = this.driver;
+        var engine = this.engine;
 
         var fn = function(done) {
-            driver.credentials.refresh(function(err, newCredentials) {
+            engine.credentials.refresh(function(err, newCredentials) {
                 if (err) {
                     return done(err);
                 }
 
-                driver.credentials = newCredentials;
+                engine.credentials = newCredentials;
 
                 done(err);
             });
@@ -246,10 +246,10 @@ class DefaultSession
 
     disconnect(callback)
     {
-        var driver = this.driver;
+        var engine = this.engine;
 
         var fn = function(done) {
-            driver.disconnect(function(err) {
+            engine.disconnect(function(err) {
                 done(err);
             });
         };
@@ -276,7 +276,7 @@ class DefaultSession
 
     reauthenticate(reauthenticateFn)
     {
-        this.driver.reauthenticate(reauthenticateFn);
+        this.engine.reauthenticate(reauthenticateFn);
     }
 
     // ALL OTHER METHODS ARE PULLED IN BELOW

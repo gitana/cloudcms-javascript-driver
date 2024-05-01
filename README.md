@@ -1,6 +1,6 @@
 # cloudcms-javascript-driver
 
-Updated Cloud CMS JS Driver using modern ECMAScript and Promises
+Updated Cloud CMS JS Engine using modern ECMAScript and Promises
 
 ## Installation
 
@@ -210,19 +210,6 @@ class CustomSession extends DefaultSession
 module.exports = CustomSession;
 ```
 
-
-## Custom Storage
-
-TODO: how to configure Memory vs Redis
-
-## Custom Driver
-
-TODO: how to configure a custom driver (XHR, etc)
-
-## Custom Cache
-
-TODO: how to configure custom caching for JSON responses
-
 ## Session
 
 When a session connects, it maintains an Access Token and a Refresh Token.  The Access Token is passed as a bearer
@@ -269,11 +256,11 @@ The `cloudcms-javascript-driver` includes a TypeScript type interface to improve
 Here's a quick example usage:
 
 ```typescript
-import { DriverConfig, DefaultSession, PlatformObject, Rows } from 'cloudcms';
+import { GitanaConfig, DefaultSession, PlatformObject, Rows } from 'cloudcms';
 import * as CloudCMS from 'cloudcms';
 
 async function myRequest(): Promise<void> {
-    var config: DriverConfig = {
+    var config: GitanaConfig = {
         // ...
     };
 
@@ -320,3 +307,93 @@ To run a single test (`node`):
 ```
 npm run test node
 ```
+
+## Proxy
+
+Configure the driver to use an HTTP or HTTPS proxy using the following environment variables to specify
+the location of your proxy endpoint:
+
+- `HTTP_PROXY`
+- `HTTPS_PROXY`
+
+If these environment variables are present when connecting to your Session, they will be incorporated 
+into the underlying engine's configuration to enable routing through your proxy.
+
+Example:
+
+```javascript
+const cloudcms = require("cloudcms");
+
+process.env.HTTPS_PROXY = "http://localhost:9090";
+    
+(async function() {
+    var session = await cloudcms.connect();
+    console.log("Connected!");
+})();
+```
+
+## Custom Engine
+
+Use the `engine()` method to select the underlying HTTP client engine to use for connectivity to the API.
+The following engines are supported:
+
+- `axios`
+- `fetch`
+
+You can either pass in text (`axios` or `fetch`) to identify the engine you wish to use.  Or you can pass in
+a reference to the class for the engine you wish to use.
+
+Example #1:
+
+```javascript
+const cloudcms = require("cloudcms");
+
+(async function() {
+
+    cloudcms.engine("fetch");
+
+    var session = await cloudcms.connect();
+    console.log("Connected!");
+})();
+```
+
+Example #2:
+
+```javascript
+const cloudcms = require("cloudcms");
+
+(async function() {
+
+    cloudcms.engine(cloudcms.FetchEngine);
+
+    var session = await cloudcms.connect();
+    console.log("Connected!");
+})();
+```
+
+You can also customize the configuration options for a given engine.  For example, you could configure
+the Axios engine's options as shown below to provide your own custom HTTPS agent:
+
+```javascript
+const cloudcms = require("cloudcms");
+const { HttpsProxyAgent} = require("https-proxy-agent");
+
+(async function() {
+
+    cloudcms.engine("axios", {
+        proxy: false,
+        httpsAgent: new HttpsProxyAgent("http://localhost:9090")
+    });
+
+    var session = await cloudcms.connect(apiKeys);
+    console.log("Connected!");
+})();
+```
+
+## Custom Storage
+
+TODO: how to configure Memory vs Redis
+
+## Custom Cache
+
+TODO: how to configure custom caching for JSON responses

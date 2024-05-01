@@ -4,9 +4,9 @@ module.exports = function(Session)
     
     class TrackerSession extends Session
     {
-        constructor(config, driver, storage)
+        constructor(config, engine, storage)
         {
-            super(config, driver, storage);
+            super(config, engine, storage);
 
             let trackerConfig = { ...this.config };
 

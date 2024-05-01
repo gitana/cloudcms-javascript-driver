@@ -5,11 +5,11 @@
 // Driver 
 
 export declare function session(sessionClass: ObjectConstructor): void
-export declare function driver(driverClass: ObjectConstructor): void
+export declare function engine(engineClass: ObjectConstructor, engineOptions: ObjectConstructor): void
 export declare function storage(storageClass: ObjectConstructor): void
-export declare function connect(connectConfig?: DriverConfig, callback?: ResultCb<DefaultSession>): Promise<DefaultSession>
+export declare function connect(connectConfig?: GitanaConfig, callback?: ResultCb<DefaultSession>): Promise<DefaultSession>
 export declare function connect(callback?: ResultCb<DefaultSession>): Promise<DefaultSession>
-export declare function connect<T extends Session>(connectConfig: DriverConfig, callback?: ResultCb<T>): Promise<T>
+export declare function connect<T extends Session>(connectConfig: GitanaConfig, callback?: ResultCb<T>): Promise<T>
 export declare function connect<T extends Session>(callback?: ResultCb<T>): Promise<T>
 
 
@@ -19,17 +19,16 @@ export declare interface params {
 
 export declare type ResultCb<T=Object> = (err: Error, result: T) => void
 
-export declare interface DriverConfig {
+export declare interface GitanaConfig {
     clientKey?: string
     clientSecret?: string
     username?: string
     password?: string
     baseURL?: string
-    application?: string,
-    fetch?: Function
+    application?: string
 }
 
-export declare interface Driver {
+export declare interface Engine {
     get(url: string, qs?: params, callback?: ResultCb): Promise<Object>
     post(url: string, qs?: params, payload?: Object, callback?: ResultCb): Promise<Object>
     put(url: string, qs?: params, payload?: Object, callback?: ResultCb): Promise<Object>
@@ -389,8 +388,8 @@ export declare interface SyncNodesConfig {
 // Sessions
 
 export declare interface Session {
-    config: DriverConfig
-    driver: Driver
+    config: GitanaConfig
+    engine: Engine
 
     sleep(ms: Number, callback?: ResultCb<void>): Promise<void>
     stringify(obj: Object, pretty: boolean): string
@@ -572,7 +571,7 @@ export declare interface PlatformSession extends Session {
 }
 
 export declare interface UtilitySession extends DefaultSession {
-    new(config: DriverConfig, driver: Driver, storage: Object): UtilitySession
+    new(config: GitanaConfig, engine: Engine, storage: Object): UtilitySession
     application(): Promise<Application>
     project(): Promise<PlatformObject>
     stack(): Promise<Stack>

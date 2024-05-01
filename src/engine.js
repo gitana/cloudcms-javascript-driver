@@ -4,7 +4,7 @@ const {refreshToken, ownerCredentials} = require("axios-oauth-client");
 
 var ONE_HOUR_MS = 1000 * 60 * 60;
 
-class Driver
+class Engine
 {
     constructor(config, credentials, storage)
     {
@@ -76,7 +76,10 @@ class Driver
             }
 
             // sign the request
-            requestObject = self.credentials.sign(requestObject);
+            if (self.credentials)
+            {
+                requestObject = self.credentials.sign(requestObject);
+            }
 
             // hand it back
             return requestObject;
@@ -192,7 +195,7 @@ class Driver
                 }
 
                 // assign new credentials
-                self.credentials = newSession.driver.credentials;
+                self.credentials = newSession.engine.credentials;
 
                 callback();
             });
@@ -543,18 +546,22 @@ class Driver
 
         var buildCredentials = function(result)
         {
+            //console.log("R: " + JSON.stringify(result, null, 2));
+
             var accessToken = result["access_token"];
             var tokenType = result["token_type"];
             var refreshToken = result["refresh_token"];
-            var expires = result["expires"];
-            var expiresMs = moment(expires).valueOf();
+            var expires_in = result["expires_in"];
+            var _scope = result["scope"];
+            var expiresMs = moment().add(expires_in, "seconds").valueOf();
 
             return {
                 "accessToken": accessToken,
                 "refreshToken": refreshToken,
                 "tokenType": tokenType,
-                "expires": expires,
+                "expires_in": expires_in,
                 "expiresMs": expiresMs,
+                "scope": _scope,
                 "sign": function(requestObject) {
 
                     // Sign a standardised request object with user authentication information.
@@ -611,7 +618,7 @@ class Driver
             {
                 // authenticate
                 getOwnerCredentials(config.username, config.password, optionalScopes).then(function(result) {
-                    var credentials = buildCredentials(result);
+                    var credentials = self.credentials = buildCredentials(result);
                     return done(null, credentials);
                 }).catch(function(err) {
                     return done(err);
@@ -643,4 +650,4 @@ class Driver
     }
 }
 
-module.exports = Driver;
+module.exports = Engine;

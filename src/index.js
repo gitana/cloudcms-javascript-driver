@@ -18,20 +18,20 @@ var DEFAULT_CONFIG = {
     "baseURL": "https://api.cloudcms.com"
 };
 
-var _connect = function(config, _storageClass, _driverClass, _driverOptions, _sessionClass, callback)
+var _connect = function(config, _storageClass, _engineClass, _engineOptions, _sessionClass, callback)
 {
-    // assume axios driver class
-    if (!_driverClass)
+    // assume axios engine class
+    if (!_engineClass)
     {
-        _driverClass = require("./drivers/axios/driver");
+        _engineClass = require("./engines/axios/engine");
     }
-    else if (_driverClass === "axios")
+    else if (_engineClass === "axios")
     {
-        _driverClass = require("./drivers/axios/driver");
+        _engineClass = require("./engines/axios/engine");
     }
-    else if (_driverClass === "fetch")
+    else if (_engineClass === "fetch")
     {
-        _driverClass = require("./drivers/fetch/driver");
+        _engineClass = require("./engines/fetch/engine");
     }
 
     // assume memory storage
@@ -43,9 +43,9 @@ var _connect = function(config, _storageClass, _driverClass, _driverOptions, _se
     // instantiate the storage
     var storage = new _storageClass(config);
 
-    // instantiate the driver
-    var driver = new _driverClass(config, null, storage, _driverOptions);
-    driver.connect(function(err) {
+    // instantiate the engine
+    var engine = new _engineClass(config, null, storage, _engineOptions);
+    engine.connect(function(err) {
 
         if (err) {
             return callback(err);
@@ -57,7 +57,7 @@ var _connect = function(config, _storageClass, _driverClass, _driverOptions, _se
         }
 
         // instantiate the session
-        var session = new _sessionClass(config, driver, storage);
+        var session = new _sessionClass(config, engine, storage);
 
         // hand it back
         callback(null, session);
@@ -124,12 +124,12 @@ var factory = function()
         _sessionClass = sessionClass;
     };
 
-    var _driverClass = null;
-    var _driverOptions = null;
-    exports.driver = function(driverClass, driverOptions)
+    var _engineClass = null;
+    var _engineOptions = null;
+    exports.engine = function(engineClass, engineOptions)
     {
-        _driverClass = driverClass;
-        _driverOptions = driverOptions;
+        _engineClass = engineClass;
+        _engineOptions = engineOptions;
     };
 
     var _storageClass = null;
@@ -153,7 +153,7 @@ var factory = function()
 
                 var config = Helper.mergeConfigs(DEFAULT_CONFIG, LOADED_CONFIG, connectConfig);
 
-                _connect(config, _storageClass, _driverClass, _driverOptions, _sessionClass, function(err, session) {
+                _connect(config, _storageClass, _engineClass, _engineOptions, _sessionClass, function(err, session) {
 
                     if (err) {
                         return done(err);
@@ -189,8 +189,8 @@ var factory = function()
         return promise;
     };
 
-    exports.AxiosDriver = require("./drivers/axios/driver");
-    exports.FetchDriver = require("./drivers/fetch/driver");
+    exports.AxiosEngine = require("./engines/axios/engine");
+    exports.FetchEngine = require("./engines/fetch/engine");
 
     exports.DefaultSession = require("./session/default/session");
     exports.UtilitySession = require("./session/utility/session");

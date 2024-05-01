@@ -1,52 +1,14 @@
-var Driver = require("../../driver");
+var Engine = require("../../engine");
 var Helper = require("../../helper");
+var fetch = require("node-fetch");
 
-var axios = require('axios');
-
-const { HttpsProxyAgent} = require("https-proxy-agent");
-const { HttpProxyAgent} = require("http-proxy-agent");
-
-var { ownerCredentials, refreshToken } = require("axios-oauth-client");
-
-class AxiosDriver extends Driver
+class FetchEngine extends Engine
 {
     constructor(config, credentials, storage, options)
     {
         super(config, credentials, storage, options);
 
-        var self = this;
-
-
-        //////////////////////////////////////////////////////////////////
-        //
-        // AXIOS CLIENT CONFIG
-        //
-        var axiosClientConfig = {};
-
-        // copy (optional) options into client config
-        if (options) {
-            for (var k in options) {
-                axiosClientConfig[k] = options[k];
-            }
-        }
-
-        if (process.env.HTTP_PROXY) {
-            axiosClientConfig.proxy = false;
-            axiosClientConfig.httpAgent = new HttpProxyAgent(process.env.HTTP_PROXY);
-        }
-
-        if (process.env.HTTPS_PROXY) {
-            axiosClientConfig.proxy = false;
-            axiosClientConfig.httpsAgent = new HttpsProxyAgent(process.env.HTTPS_PROXY);
-        }
-
-        // build axios client
-        var client = self.client = axios.create(axiosClientConfig);
-
-
-        ////
-
-        this.doRequest = function(options, callback)
+        this.doRequest = (options, callback) =>
         {
             var stats = {};
             stats.startTime = Helper.now();
@@ -54,50 +16,78 @@ class AxiosDriver extends Driver
             var response = null;
             var err = null;
 
-            var signedOptions = self.incoming(options);
-            return client.request(signedOptions)
-                .then(function(_response) {
+            // parse params
+            var params = new URLSearchParams(options.params);
+            options.url += "?" + params.toString();
+
+            var signedOptions = this.incoming(options);
+
+            // fetch
+            fetch(options.url, signedOptions)
+                .then(async function(_response) {
+                    // pass back result in correct format (json or stream, plaintext?) responseType
                     response = _response;
+
+                    var data;
+                    if (options.responseType === "stream")
+                    {
+                        if (response.body)
+                        {
+                            data = response.body;
+                        }
+                        else
+                        {
+                            data = null;
+                        }
+                    }
+                    else
+                    {
+                        data = await response.text();
+                        try {
+                            data = JSON.parse(data);
+                        }
+                        catch (e) {
+                            // not json, swallow
+                        }
+                    }
+                    
+
+                    if (!response.ok)
+                    {
+                        err = {
+                            "status": response.status,
+                            "response": data
+                        }
+                    }
+
+                    return data;
                 })
                 .catch(function(_err) {
                     err = _err;
                 })
-                .then(async function() {
+                .then(function(data) {
                     // Always executed
                     stats.endTime = Helper.now();
                     stats.executionTime = stats.endTime - stats.startTime;
 
-                    var data = (response && response.data) ? response.data : null;
                     callback(err, response, data, stats);
                 });
         };
 
+        this.isNotFound = function(err, response) {
+            return err ? (err.status === 404) : false;
+        }
+
         this.isInvalidAccessToken = function(err, response, body)
         {
-            var self = this;
-
             // {"error":"invalid_token","error_description":"Invalid access token: 06ef574a-d177-4ba9-ac4b-5a57555a3a8d"}
-            if (err) {
-                response = err.response;
-                body = response.data;
-            }
-
-            if (response && response.status === 401)
+            if (err && err.status === 401)
             {
-                var json = self.outgoing(body);
-                return (json.error === "invalid_token");
+                return (err.response ? err.response.error === "invalid_token" : false);
             }
 
             return false;
         };
-
-        this.isNotFound = function(err, response) {
-            if (err) {
-                response = err.response;
-            }
-
-            return response ? (response.status === 404) : false;
-        }
 
         // @abstract
         this.buildGetHandler = function(uri, params)
@@ -122,6 +112,7 @@ class AxiosDriver extends Driver
                 }
 
                 self.request(options, function(err, response, data, stats) {
+
                     if (self.isNotFound(err, response))
                     {
                         return done(null, null);
@@ -173,14 +164,19 @@ class AxiosDriver extends Driver
                 if (payload)
                 {
                     options.headers["Content-Type"] = "application/json";
-                    //options.body = JSON.stringify(payload);
-                    options.data = payload;
+                    options.body = JSON.stringify(payload);
+                    // options.body = payload;
                 }
 
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
                         return done(err);
+                    }
+
+                    if (self.isInvalidAccessToken(err, response, data))
+                    {
+                        return self.handleRefreshAccessToken.call(self, err, response, data, done);
                     }
 
                     done(null, self.outgoing(data));
@@ -213,13 +209,18 @@ class AxiosDriver extends Driver
                 if (payload)
                 {
                     options.headers["Content-Type"] = "application/json";
-                    options.data = JSON.stringify(payload);
+                    options.body = JSON.stringify(payload);
                 }
 
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
                         return done(err);
+                    }
+
+                    if (self.isInvalidAccessToken(err, response, data))
+                    {
+                        return self.handleRefreshAccessToken.call(self, err, response, data, done);
                     }
 
                     done(null, self.outgoing(data));
@@ -255,6 +256,10 @@ class AxiosDriver extends Driver
                         return done(err);
                     }
 
+                    if (self.isInvalidAccessToken(err, response, data))
+                    {
+                        return self.handleRefreshAccessToken.call(self, err, response, data, done);
+                    }
 
                     done(null, self.outgoing(data));
                 });
@@ -286,7 +291,7 @@ class AxiosDriver extends Driver
                 if (payload)
                 {
                     options.headers["Content-Type"] = "application/json";
-                    options.data = JSON.stringify(data);
+                    options.body = JSON.stringify(data);
                 }
 
                 self.request(options, function(err, response, data, stats) {
@@ -295,11 +300,18 @@ class AxiosDriver extends Driver
                         return done(err);
                     }
 
+                    if (self.isInvalidAccessToken(err, response, data))
+                    {
+                        return self.handleRefreshAccessToken.call(self, err, response, data, done);
+                    }
+
                     done(null, self.outgoing(data));
                 });
             }
         };
 
+
+        // This is the bit that still isn't working!
         this.buildMultipartPostHandler = function(uri, params, payload)
         {
             var self = this;
@@ -312,8 +324,7 @@ class AxiosDriver extends Driver
                     "method": "POST",
                     "url": uri,
                     "headers": {
-                        'Content-Type': 'multipart/form-data',
-                        ...formHeaders // need to add headers from form
+                        // 'Content-Type': 'multipart/form-data',
                     },
                     "params": {}
                 };
@@ -335,15 +346,18 @@ class AxiosDriver extends Driver
 
                 if (payload)
                 {
-                    options.data = payload;
+                    options.body = payload;
                 }
-
-                options.maxBodyLength = 1000000000;
 
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
                         return done(err);
+                    }
+
+                    if (self.isInvalidAccessToken(err, response, data))
+                    {
+                        return self.handleRefreshAccessToken.call(self, err, response, data, done);
                     }
 
                     done(null, self.outgoing(data));
@@ -392,18 +406,101 @@ class AxiosDriver extends Driver
                     });
                 });
             }
-        }
-
-        this.buildGetRefreshToken = function()
-        {
-            return refreshToken(client, [config.baseURL, "oauth/token"].join("/"), config.clientKey, config.clientSecret);
         };
 
+        // Not Implemented
+        this.buildGetRefreshToken = function()
+        {
+            var self = this;
+
+            return function(refreshToken, optionalScopes)
+            {
+                return new Promise(function(resolve, reject) {
+
+                    var url = [config.baseURL, "oauth/token"].join("/");
+                    var clientKey = config.clientKey;
+                    var clientSecret = config.clientSecret;
+
+                    var scopes = "api";
+                    if (optionalScopes && optionalScopes.length && optionalScopes.length > 0)
+                    {
+                        scopes += "," + optionalScopes.join(",");
+                    }
+
+                    var params = {
+                        "grant_type": "refresh_token",
+                        "refresh_token": refreshToken,
+                        "scope": scopes
+                    };
+
+                    var headers = {
+                        "Authorization": "Basic " + Buffer.from(clientKey + ":" + clientSecret, "utf-8").toString("base64")
+                    };
+
+                    self.doRequest({
+                        "url": url,
+                        "method": "POST",
+                        "params": params,
+                        "headers": headers
+                    }, function(err, response, data, stats) {
+
+                        if (err) {
+                            return reject(err);
+                        }
+
+                        resolve(data);
+                    });
+                });
+            };
+        };
+
+        // Not Implemented
         this.buildGetOwnerCredentials = function()
         {
-            return ownerCredentials(client, [config.baseURL, "oauth/token"].join("/"), config.clientKey, config.clientSecret);
+            var self = this;
+
+            return function(username, password, optionalScopes)
+            {
+                return new Promise(function(resolve, reject) {
+
+                    var url = [config.baseURL, "oauth/token"].join("/");
+                    var clientKey = config.clientKey;
+                    var clientSecret = config.clientSecret;
+
+                    var scopes = "api";
+                    if (optionalScopes && optionalScopes.length && optionalScopes.length > 0)
+                    {
+                        scopes += "," + optionalScopes.join(",");
+                    }
+
+                    var params = {
+                        "grant_type": "password",
+                        "username": username,
+                        "password": password,
+                        "scope": scopes
+                    };
+
+                    var headers = {
+                        "Authorization": "Basic " + Buffer.from(clientKey + ":" + clientSecret, "utf-8").toString("base64")
+                    };
+
+                    self.doRequest({
+                        "url": url,
+                        "method": "POST",
+                        "params": params,
+                        "headers": headers
+                    }, function(err, response, data, stats) {
+
+                        if (err) {
+                            return reject(err);
+                        }
+
+                        resolve(data);
+                    });
+                });
+            };
         };
     }
 }
 
-module.exports = AxiosDriver;
+module.exports = FetchEngine;
