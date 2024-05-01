@@ -25,6 +25,14 @@ var _connect = function(config, _storageClass, _driverClass, _driverOptions, _se
     {
         _driverClass = require("./drivers/axios/driver");
     }
+    else if (_driverClass === "axios")
+    {
+        _driverClass = require("./drivers/axios/driver");
+    }
+    else if (_driverClass === "fetch")
+    {
+        _driverClass = require("./drivers/fetch/driver");
+    }
 
     // assume memory storage
     if (!_storageClass)
@@ -117,9 +125,11 @@ var factory = function()
     };
 
     var _driverClass = null;
-    exports.driver = function(driverClass)
+    var _driverOptions = null;
+    exports.driver = function(driverClass, driverOptions)
     {
         _driverClass = driverClass;
+        _driverOptions = driverOptions;
     };
 
     var _storageClass = null;
@@ -129,18 +139,12 @@ var factory = function()
     };
 
     // connect method
-    exports.connect = function(connectConfig, driverOptions, callback)
+    exports.connect = function(connectConfig, callback)
     {
         if (typeof(connectConfig) === "function")
         {
             callback = connectConfig;
             connectConfig = {};
-            driverOptions = {};
-        }
-        else if (typeof(driverOptions) === "function")
-        {
-            callback = driverOptions;
-            driverOptions = {};
         }
 
         var fn = function(connectConfig)
@@ -149,7 +153,7 @@ var factory = function()
 
                 var config = Helper.mergeConfigs(DEFAULT_CONFIG, LOADED_CONFIG, connectConfig);
 
-                _connect(config, _storageClass, _driverClass, driverOptions, _sessionClass, function(err, session) {
+                _connect(config, _storageClass, _driverClass, _driverOptions, _sessionClass, function(err, session) {
 
                     if (err) {
                         return done(err);

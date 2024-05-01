@@ -15,21 +15,20 @@
   "contributors": [
     {
       "name": "Cloud CMS",
-      "email": "info@cloudcms.com",
-      "url": "https://www.cloudcms.com"
+      "email": "info@gitana.io",
+      "url": "https://gitana.io"
     }
   ],
   "main": "src/index.js",
   "devDependencies": {
-    "@types/chai": "^4.2.18",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^15.12.2",
+    "@types/chai": "^4.3.14",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.12.7",
     "browserify": "^17.0.0",
-    "chai": "^4.3.4",
-    "mocha": "^10.2.0",
-    "node-fetch": "^2.6.9",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.3.2"
+    "chai": "^5.1.0",
+    "mocha": "^10.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   },
   "dependencies": {
     "axios": "^1.6.8",
@@ -38,7 +37,8 @@
     "form-data": "^4.0.0",
     "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.4",
-    "moment": "^2.30.1"
+    "moment": "^2.30.1",
+    "node-fetch": "^2.7.0"
   },
   "scripts": {
     "alltests": "mocha 'test/**/*.ts' --recursive --timeout 120000 --require ts-node/register --watch-extensions ts,js",

@@ -1,14 +1,13 @@
 var Driver = require("../../driver");
 var Helper = require("../../helper");
-const {refreshToken, ownerCredentials} = require("axios-oauth-client");
+var fetch = require("node-fetch");
+const {refreshToken} = require("axios-oauth-client");
 
 class FetchDriver extends Driver
 {
     constructor(config, credentials, storage, options)
     {
         super(config, credentials, storage, options);
-
-        this.fetch = config.fetch;
 
         this.doRequest = (options, callback) =>
         {
@@ -25,7 +24,7 @@ class FetchDriver extends Driver
             var signedOptions = this.incoming(options);
 
             // fetch
-            this.fetch(options.url, signedOptions)
+            fetch(options.url, signedOptions)
                 .then(async function(_response) {
                     // pass back result in correct format (json or stream, plaintext?) responseType
                     response = _response;
@@ -413,18 +412,89 @@ class FetchDriver extends Driver
         // Not Implemented
         this.buildGetRefreshToken = function()
         {
-            return function(refreshToken, scopes)
+            return function(refreshToken, optionalScopes)
             {
-                // TODO
+                return new Promise(function(resolve, reject) {
+
+                    var url = [config.baseURL, "oauth/token"].join("/");
+                    var clientKey = config.clientKey;
+                    var clientSecret = config.clientSecret;
+
+                    var scopes = "api";
+                    if (optionalScopes && optionalScopes.length && optionalScopes.length > 0)
+                    {
+                        scopes += "," + scopes.join(",");
+                    }
+
+                    var params = {
+                        "grant_type": "refresh_token",
+                        "refresh_token": refreshToken,
+                        "scope": scopes
+                    };
+
+                    var headers = {
+                        "Authorization": "Basic " + Buffer.from(clientKey + ":" + clientSecret, "utf-8").toString("base64")
+                    };
+
+                    this.doRequest({
+                        "url": url,
+                        "method": "POST",
+                        "params": params,
+                        "headers": headers
+                    }, function(err, response) {
+
+                        if (err) {
+                            return reject(err);
+                        }
+
+                        resolve(response);
+                    });
+                });
             };
         };
 
         // Not Implemented
         this.buildGetOwnerCredentials = function()
         {
-            return function(username, password)
+            return function(username, password, optionalScopes)
             {
-                // TODO
+                return new Promise(function(resolve, reject) {
+
+                    var url = [config.baseURL, "oauth/token"].join("/");
+                    var clientKey = config.clientKey;
+                    var clientSecret = config.clientSecret;
+
+                    var scopes = "api";
+                    if (optionalScopes && optionalScopes.length && optionalScopes.length > 0)
+                    {
+                        scopes += "," + scopes.join(",");
+                    }
+
+                    var params = {
+                        "grant_type": "password",
+                        "username": username,
+                        "password": password,
+                        "scope": scopes
+                    };
+
+                    var headers = {
+                        "Authorization": "Basic " + Buffer.from(clientKey + ":" + clientSecret, "utf-8").toString("base64")
+                    };
+
+                    this.doRequest({
+                        "url": url,
+                        "method": "POST",
+                        "params": params,
+                        "headers": headers
+                    }, function(err, response) {
+
+                        if (err) {
+                            return reject(err);
+                        }
+
+                        resolve(response);
+                    });
+                });
             };
         };
     }

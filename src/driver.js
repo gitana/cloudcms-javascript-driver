@@ -255,7 +255,7 @@ class Driver
         // @abstract
         this.buildGetRefreshToken = function()
         {
-            return function(refreshToken, scopes)
+            return function(refreshToken, optionalScopes)
             {
                 // TODO
             };
@@ -264,7 +264,7 @@ class Driver
         // @abstract
         this.buildGetOwnerCredentials = function()
         {
-            return function(username, password)
+            return function(username, password, optionalScopes)
             {
                 // TODO
             };
@@ -555,6 +555,34 @@ class Driver
                 "tokenType": tokenType,
                 "expires": expires,
                 "expiresMs": expiresMs,
+                "sign": function(requestObject) {
+
+                    // Sign a standardised request object with user authentication information.
+                    if (!accessToken) {
+                        throw new Error('Unable to sign without access token')
+                    }
+
+                    requestObject.headers = requestObject.headers || {}
+
+                    if (tokenType === 'bearer') {
+                        requestObject.headers.Authorization = 'Bearer ' + this.accessToken
+                    } else {
+                        var parts = requestObject.url.split('#');
+                        var token = 'access_token=' + accessToken;
+                        var url = parts[0].replace(/[?&]access_token=[^&#]/, '');
+                        var fragment = parts[1] ? '#' + parts[1] : '';
+
+                        // Prepend the correct query string parameter to the url.
+                        requestObject.url = url + (url.indexOf('?') > -1 ? '&' : '?') + token + fragment;
+
+                        // Attempt to avoid storing the url in proxies, since the access token
+                        // is exposed in the query parameters.
+                        requestObject.headers.Pragma = 'no-store';
+                        requestObject.headers['Cache-Control'] = 'no-store';
+                    }
+
+                    return requestObject;
+                },
                 "refresh": function(refreshToken, optionalScopes) {
                     return function (callback) {
 
