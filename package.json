@@ -42,7 +42,7 @@
   },
   "scripts": {
     "alltests": "mocha 'test/**/*.ts' --recursive --timeout 120000 --watch-extensions ts,js",
-    "test": "mocha 'test/**/*.ts' --recursive --timeout 120000 --watch-extensions ts,js -- --grep "
+    "test": "mocha 'test/**/*.ts' --verbose --debug --recursive --timeout 120000 --watch-extensions ts,js -- --grep "
   },
   "types": "@types/index.d.ts"
 }

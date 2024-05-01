@@ -572,7 +572,7 @@ class Engine
                     requestObject.headers = requestObject.headers || {}
 
                     if (tokenType === 'bearer') {
-                        requestObject.headers.Authorization = 'Bearer ' + this.accessToken
+                        requestObject.headers.Authorization = 'Bearer ' + accessToken
                     } else {
                         var parts = requestObject.url.split('#');
                         var token = 'access_token=' + accessToken;

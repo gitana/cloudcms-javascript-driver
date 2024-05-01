@@ -1,5 +1,6 @@
 import * as cloudcms from "../..";
-import * as UtilitySession from '../../src/session/utility/session';
+//import * as UtilitySession from '../../src/session/utility/session';
+import UtilitySession from '../../src/session/utility/session';
 var assert = require('chai').assert;
 
 describe('utility_1', function() {

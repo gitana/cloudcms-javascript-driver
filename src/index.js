@@ -29,7 +29,7 @@ var _connect = function(config, _storageClass, _engineClass, _engineOptions, _se
     {
         _engineClass = require("./engines/axios/engine");
     }
-    else if (_engineClass === "fetch")
+    else if (_engineClass === "fetch" || _engineClass === "node-fetch")
     {
         _engineClass = require("./engines/fetch/engine");
     }

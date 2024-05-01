@@ -1,5 +1,6 @@
 import * as CloudCMS from "../..";
-import * as CustomSession from './custom-session';
+//import * as CustomSession from './custom-session';
+import CustomSession from './custom-session.js';
 var assert = require('chai').assert;
 
 describe('custom_session_3', function() {

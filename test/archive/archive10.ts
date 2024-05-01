@@ -32,7 +32,9 @@ describe('archive10', function () {
         var res = await session.uploadArchive({}, archiveFile, archiveName);
         var archiveId = res._doc;
 
-        await session.sleep(1000);
+        // wait an unreasonable amount of time to ensure the archive has uploaded, has been processed and registered
+        // (after uploaded to S3, etc, this can sometimes take awhile, so just play it safe here)
+        await session.sleep(20000);
 
         var archive = await session.readArchive(archiveId);
         assert.isNotNull(archive);

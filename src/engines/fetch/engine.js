@@ -421,11 +421,10 @@ class FetchEngine extends Engine
                     var clientKey = config.clientKey;
                     var clientSecret = config.clientSecret;
 
-                    var scopes = "api";
-                    if (optionalScopes && optionalScopes.length && optionalScopes.length > 0)
-                    {
-                        scopes += "," + optionalScopes.join(",");
+                    if (!optionalScopes || optionalScopes.length === 0) {
+                        optionalScopes = "api";
                     }
+                    var scopes = optionalScopes.join(",");
 
                     var params = {
                         "grant_type": "refresh_token",
@@ -467,11 +466,10 @@ class FetchEngine extends Engine
                     var clientKey = config.clientKey;
                     var clientSecret = config.clientSecret;
 
-                    var scopes = "api";
-                    if (optionalScopes && optionalScopes.length && optionalScopes.length > 0)
-                    {
-                        scopes += "," + optionalScopes.join(",");
+                    if (!optionalScopes || optionalScopes.length === 0) {
+                        optionalScopes = "api";
                     }
+                    var scopes = optionalScopes.join(",");
 
                     var params = {
                         "grant_type": "password",

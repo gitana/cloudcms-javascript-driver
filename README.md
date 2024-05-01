@@ -296,6 +296,8 @@ const results: Rows<CustomType> = await session.queryNodes(repositoryId, branchI
 
 This library uses Mocha and Chai for testing.
 
+To test, first add `gitana.json` to the project root.
+
 To run all tests:
 
 ```
