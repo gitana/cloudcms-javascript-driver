@@ -27,7 +27,7 @@
     "browserify": "^17.0.0",
     "chai": "^5.1.0",
     "mocha": "^10.4.0",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.8.2",
     "typescript": "^5.4.5"
   },
   "dependencies": {
@@ -41,8 +41,8 @@
     "node-fetch": "^2.7.0"
   },
   "scripts": {
-    "alltests": "mocha 'test/**/*.ts' --recursive --timeout 120000 --require ts-node/register --watch-extensions ts,js",
-    "test": "mocha 'test/**/*.ts' --recursive --timeout 120000 --require ts-node/register --watch-extensions ts,js -- --grep "
+    "alltests": "mocha 'test/**/*.ts' --recursive --timeout 120000 --watch-extensions ts,js",
+    "test": "mocha 'test/**/*.ts' --recursive --timeout 120000 --watch-extensions ts,js -- --grep "
   },
   "types": "@types/index.d.ts"
 }
