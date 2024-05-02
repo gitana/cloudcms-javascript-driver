@@ -19,13 +19,11 @@ describe('node12', function() {
 
             // read the node back
             setTimeout(async function() {
-                console.log("m1");
                 var node2 = await session.readNode(repository, branchId, node._doc);
 
                 // verify it has the right "f:filename"
                 var filename = node2._features["f:filename"].filename;
                 assert.equal("woo", filename);
-                console.log("m2: " + filename);
 
                 done();
             }, 3000);
