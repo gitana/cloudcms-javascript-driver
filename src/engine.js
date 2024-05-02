@@ -571,7 +571,7 @@ class Engine
 
                     requestObject.headers = requestObject.headers || {}
 
-                    if (tokenType === 'bearer') {
+                    if (tokenType === 'bearer' && !requestObject.headers.Authorization) {
                         requestObject.headers.Authorization = 'Bearer ' + accessToken
                     } else {
                         var parts = requestObject.url.split('#');
@@ -602,11 +602,16 @@ class Engine
                         }
                         catch (e)
                         {
-                            return done(e);
+                            return callback(e);
                         }
 
-                        var newCredentials = buildCredentials(result);
-                        callback(null, newCredentials);
+                        result.then(result => {
+                            var newCredentials = buildCredentials(result);
+                            callback(null, newCredentials);
+                        })
+                        .catch(err => {
+                            callback(err);
+                        });
                     }
                 }(refreshToken, optionalScopes)
             };

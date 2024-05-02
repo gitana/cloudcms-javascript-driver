@@ -1,12 +1,24 @@
 var Engine = require("../../engine");
 var Helper = require("../../helper");
-var fetch = require("node-fetch");
+var nodeFetch = require("node-fetch");
+
+const { HttpsProxyAgent} = require("https-proxy-agent");
+const { HttpProxyAgent} = require("http-proxy-agent");
 
 class FetchEngine extends Engine
 {
     constructor(config, credentials, storage, options)
     {
         super(config, credentials, storage, options);
+
+        if (options && options.fetch)
+        {
+            this.fetch = options.fetch
+        }
+        else
+        {
+            this.fetch = nodeFetch;
+        }
 
         this.doRequest = (options, callback) =>
         {
@@ -20,10 +32,19 @@ class FetchEngine extends Engine
             var params = new URLSearchParams(options.params);
             options.url += "?" + params.toString();
 
+            // Proxy
+            if (process.env.HTTP_PROXY) {
+                options.agent = new HttpProxyAgent(process.env.HTTP_PROXY);
+            }
+    
+            if (process.env.HTTPS_PROXY) {
+                options.agent = new HttpsProxyAgent(process.env.HTTPS_PROXY);
+            }
+
             var signedOptions = this.incoming(options);
 
             // fetch
-            fetch(options.url, signedOptions)
+            this.fetch(options.url, signedOptions)
                 .then(async function(_response) {
                     // pass back result in correct format (json or stream, plaintext?) responseType
                     response = _response;
