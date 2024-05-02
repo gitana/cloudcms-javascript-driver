@@ -1,3 +1,10 @@
+// dns fix for Node 17 +
+// see: https://nodejs.org/api/dns.html#dnssetdefaultresultorderorder
+var dns = require("dns");
+if (typeof(dns.setDefaultResultOrder) !== "undefined") {
+    dns.setDefaultResultOrder("ipv4first");
+}
+
 let fs = null;
 try {
     fs = require("fs");
