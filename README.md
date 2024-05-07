@@ -334,6 +334,31 @@ process.env.HTTPS_PROXY = "http://localhost:9090";
 })();
 ```
 
+In addition, the following environment variables are supported to prevent certain domains from routing
+through the HTTP/HTTPS PROXY endpoints.
+
+- `NO_PROXY`
+- `*_PROXY`
+
+For more information, see:
+https://github.com/Rob--W/proxy-from-env?tab=readme-ov-file#environment-variables
+
+Example:
+
+```javascript
+const cloudcms = require("cloudcms");
+
+process.env.HTTPS_PROXY = "http://localhost:9090";
+
+// route everything through "localhost:9090" except connections to https://api.cloudcms.com
+process.env.NO_PROXY = "api.cloudcms.com";
+    
+(async function() {
+    var session = await cloudcms.connect();
+    console.log("Connected!");
+})();
+```
+
 ## Custom Engine
 
 Use the `engine()` method to select the underlying HTTP client engine to use for connectivity to the API.
