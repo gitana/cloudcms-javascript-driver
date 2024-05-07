@@ -1,6 +1,6 @@
 var Engine = require("../../engine");
 var Helper = require("../../helper");
-var fetch = require("node-fetch");
+var nodeFetch = require("node-fetch");
 
 class FetchEngine extends Engine
 {
@@ -9,6 +9,15 @@ class FetchEngine extends Engine
         super(config, credentials, storage, options);
 
         var self = this;
+
+        if (options && options.fetch)
+        {
+            this.fetch = options.fetch
+        }
+        else
+        {
+            this.fetch = nodeFetch;
+        }
 
         this.doRequest = (options, callback) =>
         {
@@ -34,7 +43,7 @@ class FetchEngine extends Engine
             });
 
             // fetch
-            fetch(options.url, signedOptions)
+            this.fetch(options.url, signedOptions)
                 .then(async function(_response) {
                     // pass back result in correct format (json or stream, plaintext?) responseType
                     response = _response;

@@ -4,8 +4,22 @@
 
 // Driver 
 
+export declare type EngineType = "axios" | "fetch";
+
+export declare interface EngineOptions {
+
+}
+
+export declare interface AxiosOptions extends EngineOptions {
+
+}
+
+export declare interface FetchOptions extends EngineOptions {
+    fetch?: Function
+}
+
 export declare function session(sessionClass: ObjectConstructor): void
-export declare function engine(engineClass: ObjectConstructor, engineOptions: ObjectConstructor): void
+export declare function engine(engineClass: EngineType, engineOptions: EngineOptions): void
 export declare function storage(storageClass: ObjectConstructor): void
 export declare function connect(connectConfig?: GitanaConfig, callback?: ResultCb<DefaultSession>): Promise<DefaultSession>
 export declare function connect(callback?: ResultCb<DefaultSession>): Promise<DefaultSession>
