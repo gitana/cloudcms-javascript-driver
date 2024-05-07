@@ -3,9 +3,6 @@ var Helper = require("../../helper");
 
 var axios = require('axios');
 
-const { HttpsProxyAgent} = require("https-proxy-agent");
-const { HttpProxyAgent} = require("http-proxy-agent");
-
 var { ownerCredentials, refreshToken } = require("axios-oauth-client");
 
 class AxiosEngine extends Engine
@@ -30,19 +27,19 @@ class AxiosEngine extends Engine
             }
         }
 
-        if (process.env.HTTP_PROXY) {
-            axiosClientConfig.proxy = false;
-            axiosClientConfig.httpAgent = new HttpProxyAgent(process.env.HTTP_PROXY);
-        }
+        self.applyAgent(config.baseURL, function(httpProxyAgent, httpsProxyAgent) {
 
-        if (process.env.HTTPS_PROXY) {
-            axiosClientConfig.proxy = false;
-            axiosClientConfig.httpsAgent = new HttpsProxyAgent(process.env.HTTPS_PROXY);
-        }
+            if (httpProxyAgent) {
+                axiosClientConfig.proxy = false;
+                axiosClientConfig.httpAgent = httpProxyAgent;
+            } else if (httpsProxyAgent) {
+                axiosClientConfig.proxy = false;
+                axiosClientConfig.httpsAgent = httpsProxyAgent;
+            }
+        });
 
         // build axios client
         var client = self.client = axios.create(axiosClientConfig);
-
 
         ////
 
@@ -55,6 +52,7 @@ class AxiosEngine extends Engine
             var err = null;
 
             var signedOptions = self.incoming(options);
+
             return client.request(signedOptions)
                 .then(function(_response) {
                     response = _response;

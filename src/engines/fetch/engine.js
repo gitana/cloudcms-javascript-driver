@@ -8,6 +8,8 @@ class FetchEngine extends Engine
     {
         super(config, credentials, storage, options);
 
+        var self = this;
+
         this.doRequest = (options, callback) =>
         {
             var stats = {};
@@ -21,6 +23,15 @@ class FetchEngine extends Engine
             options.url += "?" + params.toString();
 
             var signedOptions = this.incoming(options);
+
+            self.applyAgent(signedOptions.url, function(httpProxyAgent, httpsProxyAgent) {
+
+                if (httpProxyAgent) {
+                    signedOptions.agent = httpProxyAgent;
+                } else if (httpsProxyAgent) {
+                    signedOptions.agent = httpsProxyAgent;
+                }
+            });
 
             // fetch
             fetch(options.url, signedOptions)

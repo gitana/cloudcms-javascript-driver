@@ -1,6 +1,9 @@
 var Helper = require("./helper");
 const moment = require("moment/moment");
-const {refreshToken, ownerCredentials} = require("axios-oauth-client");
+
+const { HttpsProxyAgent } = require("https-proxy-agent");
+const { HttpProxyAgent } = require("http-proxy-agent");
+const { getProxyForUrl } = require("proxy-from-env");
 
 var ONE_HOUR_MS = 1000 * 60 * 60;
 
@@ -199,6 +202,28 @@ class Engine
 
                 callback();
             });
+        };
+
+        // checks HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables
+        // determines whether a proxy should be configured (otherwise null)
+        // sets proxy settings onto options
+        this.applyAgent = function(url, fn)
+        {
+            // checks HTTP_PROXY, HTTPS_PROXY and NO_PROXY environment variables
+            // determines whether a proxy should be configured (otherwise null)
+            var proxy = getProxyForUrl(url);
+            if (proxy)
+            {
+                // bind in http proxy
+                if (url.startsWith("https:"))
+                {
+                    fn(null, new HttpsProxyAgent(proxy));
+                }
+                else if (config.baseURL.startsWith("http:"))
+                {
+                    fn(new HttpProxyAgent(proxy));
+                }
+            }
         };
 
         // @abstract
