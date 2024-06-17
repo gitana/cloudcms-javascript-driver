@@ -219,7 +219,7 @@ class Engine
                 {
                     fn(null, new HttpsProxyAgent(proxy));
                 }
-                else if (config.baseURL.startsWith("http:"))
+                else if (url.startsWith("http:"))
                 {
                     fn(new HttpProxyAgent(proxy));
                 }
