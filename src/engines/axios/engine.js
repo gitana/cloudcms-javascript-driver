@@ -3,8 +3,6 @@ var Helper = require("../../helper");
 
 var axios = require('axios');
 
-var { ownerCredentials, refreshToken } = require("axios-oauth-client");
-
 class AxiosEngine extends Engine
 {
     constructor(config, credentials, storage, options)
@@ -394,12 +392,91 @@ class AxiosEngine extends Engine
 
         this.buildGetRefreshToken = function()
         {
-            return refreshToken(client, [config.baseURL, "oauth/token"].join("/"), config.clientKey, config.clientSecret);
+            var self = this;
+
+            return function(refreshToken, optionalScopes)
+            {
+                return new Promise(function(resolve, reject) {
+
+                    var url = [config.baseURL, "oauth/token"].join("/");
+                    var clientKey = config.clientKey;
+                    var clientSecret = config.clientSecret;
+
+                    if (!optionalScopes || optionalScopes.length === 0) {
+                        optionalScopes = "api";
+                    }
+                    var scopes = optionalScopes.join(",");
+
+                    var params = {
+                        "grant_type": "refresh_token",
+                        "refresh_token": refreshToken,
+                        "scope": scopes
+                    };
+
+                    var headers = {
+                        "Authorization": "Basic " + Buffer.from(clientKey + ":" + clientSecret, "utf-8").toString("base64")
+                    };
+
+                    self.doRequest({
+                        "url": url,
+                        "method": "POST",
+                        "params": params,
+                        "headers": headers
+                    }, function(err, response, data, stats) {
+
+                        if (err) {
+                            return reject(err);
+                        }
+
+                        resolve(data);
+                    });
+                });
+            };
         };
 
         this.buildGetOwnerCredentials = function()
         {
-            return ownerCredentials(client, [config.baseURL, "oauth/token"].join("/"), config.clientKey, config.clientSecret);
+            var self = this;
+
+            return function(username, password, optionalScopes)
+            {
+                return new Promise(function(resolve, reject) {
+
+                    var url = [config.baseURL, "oauth/token"].join("/");
+                    var clientKey = config.clientKey;
+                    var clientSecret = config.clientSecret;
+
+                    if (!optionalScopes || optionalScopes.length === 0) {
+                        optionalScopes = "api";
+                    }
+                    var scopes = optionalScopes.join(",");
+
+                    var params = {
+                        "grant_type": "password",
+                        "username": username,
+                        "password": password,
+                        "scope": scopes
+                    };
+
+                    var headers = {
+                        "Authorization": "Basic " + Buffer.from(clientKey + ":" + clientSecret, "utf-8").toString("base64")
+                    };
+
+                    self.doRequest({
+                        "url": url,
+                        "method": "POST",
+                        "params": params,
+                        "headers": headers
+                    }, function(err, response, data, stats) {
+
+                        if (err) {
+                            return reject(err);
+                        }
+
+                        resolve(data);
+                    });
+                });
+            };
         };
     }
 }

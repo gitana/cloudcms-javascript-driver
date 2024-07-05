@@ -428,7 +428,6 @@ class FetchEngine extends Engine
             }
         };
 
-        // Not Implemented
         this.buildGetRefreshToken = function()
         {
             var self = this;
@@ -473,7 +472,6 @@ class FetchEngine extends Engine
             };
         };
 
-        // Not Implemented
         this.buildGetOwnerCredentials = function()
         {
             var self = this;
