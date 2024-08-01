@@ -411,6 +411,7 @@ export declare interface Session {
     refresh(callback?: (err: Error) => void): Promise<void>
     disconnect(callback?: (err: Error) => void): Promise<void>
     reauthenticate(reauthenticateFn: Function): void
+    useBand(bandId: string): void
 }
 
 export declare interface ApplicationSession extends Session {
