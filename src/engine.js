@@ -227,7 +227,7 @@ class Engine
         };
 
         // @abstract
-        this.buildGetHandler = function(uri, qs)
+        this.buildGetHandler = function(uri, qs, headers)
         {
             return function(done)
             {
@@ -236,7 +236,7 @@ class Engine
         };
 
         // @abstract
-        this.buildPostHandler = function(uri, qs, payload)
+        this.buildPostHandler = function(uri, qs, payload, headers)
         {
             return function(done)
             {
@@ -245,7 +245,7 @@ class Engine
         };
 
         // @abstract
-        this.buildPutHandler = function(uri, qs, payload)
+        this.buildPutHandler = function(uri, qs, payload, headers)
         {
             return function(done)
             {
@@ -254,7 +254,7 @@ class Engine
         };
 
         // @abstract
-        this.buildDeleteHandler = function(uri, qs)
+        this.buildDeleteHandler = function(uri, qs, headers)
         {
             return function(done)
             {
@@ -263,7 +263,7 @@ class Engine
         };
 
         // @abstract
-        this.buildPatchHandler = function(uri, qs, payload)
+        this.buildPatchHandler = function(uri, qs, payload, headers)
         {
             return function(done)
             {
@@ -272,7 +272,16 @@ class Engine
         };
 
         // @abstract
-        this.buildMultipartPostHandler = function(uri, qs, payload)
+        this.buildMultipartPostHandler = function(uri, qs, payload, headers)
+        {
+            return function(done)
+            {
+                // TODO
+            }
+        }
+
+        // @abstract
+        this.buildDownloadHandler = function(uri, params, headers)
         {
             return function(done)
             {
@@ -306,10 +315,11 @@ class Engine
      *
      * @param uri
      * @param qs
+     * @param headers
      */
-    get(uri, qs, callback)
+    get(uri, qs, headers, callback)
     {
-        var fn = this.buildGetHandler(uri, qs);
+        var fn = this.buildGetHandler(uri, qs, headers);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))
@@ -340,10 +350,11 @@ class Engine
      * @param uri
      * @param qs
      * @param payload
+     * @param headers
      */
-    post(uri, qs, payload, callback)
+    post(uri, qs, payload, headers, callback)
     {
-        var fn = this.buildPostHandler(uri, qs, payload);
+        var fn = this.buildPostHandler(uri, qs, payload, headers);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))
@@ -374,10 +385,11 @@ class Engine
      * @param uri
      * @param qs
      * @param payload
+     * @param headers
      */
-    put(uri, qs, payload, callback)
+    put(uri, qs, payload, headers, callback)
     {
-        var fn = this.buildPutHandler(uri, qs, payload);
+        var fn = this.buildPutHandler(uri, qs, payload, headers);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))
@@ -407,10 +419,11 @@ class Engine
      *
      * @param uri
      * @param qs
+     * @param headers
      */
-    del(uri, qs, callback)
+    del(uri, qs, headers, callback)
     {
-        var fn = this.buildDelHandler(uri, qs);
+        var fn = this.buildDeleteHandler(uri, qs, headers);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))
@@ -441,10 +454,11 @@ class Engine
      * @param uri
      * @param qs
      * @param payload
+     * @param headers
      */
-    patch(uri, qs, payload, callback)
+    patch(uri, qs, payload, headers, callback)
     {
-        var fn = this.buildPatchHandler(uri, qs, payload);
+        var fn = this.buildPatchHandler(uri, qs, payload, headers);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))
@@ -474,11 +488,13 @@ class Engine
      * requestObject
      *
      * @param uri
-     * @param parts
+     * @param qs
+     * @param payload
+     * @param headers
      */
-    multipartPost(uri, qs, formData, callback)
+    multipartPost(uri, qs, payload, headers, callback)
     {
-        var fn = this.buildMultipartPostHandler(uri, qs, formData);
+        var fn = this.buildMultipartPostHandler(uri, qs, payload, headers);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))
@@ -506,14 +522,13 @@ class Engine
     /**
      * @extension_point
      *
-     *
-     *
      * @param uri
      * @param qs
+     * @param headesr
      */
-    download(uri, qs, callback)
+    download(uri, qs, headers, callback)
     {
-        var fn = this.buildDownloadHandler(uri, qs);
+        var fn = this.buildDownloadHandler(uri, qs, headers);
 
         // support for callback approach
         if (callback && Helper.isFunction(callback))

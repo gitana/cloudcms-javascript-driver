@@ -15,6 +15,9 @@ class DefaultSession
             }
         };
 
+        // band is assumed null (default)
+        this.band = null;
+
         // helper method
         this.acquireId = function(objOrId)
         {
@@ -83,7 +86,26 @@ class DefaultSession
                 qs[k] = this.defaults.qs[k];
             }
 
+            // pass band via query string?
+            // if (this.band)
+            // {
+            //     qs["band"] = this.band;
+            // }
+
             return qs;
+        };
+
+        this.generateHeaders = function()
+        {
+            var headers = {};
+
+            // pass band via headers?
+            if (this.band)
+            {
+                headers["x-cloudcms-band-id"] = this.band;
+            }
+
+            return headers;
         };
 
         this.extractOptionalCallback = function(_arguments)
@@ -108,7 +130,9 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.engine.get(uri, qs, callback);
+            var headers = this.generateHeaders();
+
+            return this.engine.get(uri, qs, headers, callback);
         };
 
         this.post = function(uri, qs, payload, callback)
@@ -117,7 +141,9 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.engine.post(uri, qs, payload, callback);
+            var headers = this.generateHeaders();
+
+            return this.engine.post(uri, qs, payload, headers, callback);
         };
 
         this.put = function(uri, qs, payload, callback)
@@ -126,7 +152,9 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.engine.put(uri, qs, payload, callback);
+            var headers = this.generateHeaders();
+
+            return this.engine.put(uri, qs, payload, headers, callback);
         };
 
         this.del = function(uri, qs, callback)
@@ -135,7 +163,9 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.engine.del(uri, qs, callback);
+            var headers = this.generateHeaders();
+
+            return this.engine.del(uri, qs, headers, callback);
         };
 
         this.patch = function(uri, qs, payload, callback)
@@ -144,14 +174,18 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.engine.patch(uri, qs, payload, callback);
+            var headers = this.generateHeaders();
+
+            return this.engine.patch(uri, qs, payload, headers, callback);
         };
 
         this.multipartPost = function(uri, qs, formData, callback)
         {
             var self = this;
 
-            return this.engine.multipartPost(uri, qs, formData, callback);
+            var headers = this.generateHeaders();
+
+            return this.engine.multipartPost(uri, qs, formData, headers, callback);
         };
 
         this.download = function(uri, qs, callback)
@@ -160,8 +194,20 @@ class DefaultSession
 
             qs = this.populateDefaultQs(qs);
 
-            return this.engine.download(uri, qs, callback);
+            var headers = this.generateHeaders();
+
+            return this.engine.download(uri, qs, headers, callback);
         };
+    }
+
+    /**
+     * Configures the session to use a specific band.
+     *
+     * @param bandId
+     */
+    useBand(bandId)
+    {
+        this.band = bandId;
     }
 
     // HELPER FUNCTIONS

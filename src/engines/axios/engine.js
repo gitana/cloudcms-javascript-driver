@@ -96,7 +96,7 @@ class AxiosEngine extends Engine
         }
 
         // @abstract
-        this.buildGetHandler = function(uri, params)
+        this.buildGetHandler = function(uri, params, headers)
         {
             var self = this;
 
@@ -114,6 +114,14 @@ class AxiosEngine extends Engine
                     for (var k in params)
                     {
                         options.params[k] = params[k];
+                    }
+                }
+
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
                     }
                 }
 
@@ -138,7 +146,7 @@ class AxiosEngine extends Engine
         };
 
         // @abstract
-        this.buildPostHandler = function(uri, params, payload)
+        this.buildPostHandler = function(uri, params, payload, headers)
         {
             var self = this;
 
@@ -173,6 +181,14 @@ class AxiosEngine extends Engine
                     options.data = payload;
                 }
 
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
+
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
@@ -185,7 +201,7 @@ class AxiosEngine extends Engine
         };
 
         // @abstract
-        this.buildPutHandler = function(uri, params, payload)
+        this.buildPutHandler = function(uri, params, payload, headers)
         {
             var self = this;
 
@@ -212,6 +228,14 @@ class AxiosEngine extends Engine
                     options.data = JSON.stringify(payload);
                 }
 
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
+
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
@@ -224,7 +248,7 @@ class AxiosEngine extends Engine
         };
 
         // @abstract
-        this.buildDelHandler = function(uri, params)
+        this.buildDeleteHandler = function(uri, params, headers)
         {
             var self = this;
 
@@ -245,6 +269,14 @@ class AxiosEngine extends Engine
                     }
                 }
 
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
+
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
@@ -258,7 +290,7 @@ class AxiosEngine extends Engine
         };
 
         // @abstract
-        this.buildPatchHandler = function(uri, params, payload)
+        this.buildPatchHandler = function(uri, params, payload, headers)
         {
             var self = this;
 
@@ -285,6 +317,14 @@ class AxiosEngine extends Engine
                     options.data = JSON.stringify(data);
                 }
 
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
+
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
@@ -296,7 +336,7 @@ class AxiosEngine extends Engine
             }
         };
 
-        this.buildMultipartPostHandler = function(uri, params, payload)
+        this.buildMultipartPostHandler = function(uri, params, payload, headers)
         {
             var self = this;
 
@@ -334,6 +374,14 @@ class AxiosEngine extends Engine
                     options.data = payload;
                 }
 
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
+
                 options.maxBodyLength = 1000000000;
 
                 self.request(options, function(err, response, data, stats) {
@@ -348,7 +396,7 @@ class AxiosEngine extends Engine
         },
 
         // @abstract
-        this.buildDownloadHandler = function(uri, params)
+        this.buildDownloadHandler = function(uri, params, headers)
         {
             var self = this;
 
@@ -367,6 +415,14 @@ class AxiosEngine extends Engine
                     for (var k in params)
                     {
                         options.params[k] = params[k];
+                    }
+                }
+
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
                     }
                 }
 

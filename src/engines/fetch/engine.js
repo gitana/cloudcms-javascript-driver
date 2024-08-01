@@ -110,7 +110,7 @@ class FetchEngine extends Engine
         };
 
         // @abstract
-        this.buildGetHandler = function(uri, params)
+        this.buildGetHandler = function(uri, params, headers)
         {
             var self = this;
 
@@ -128,6 +128,14 @@ class FetchEngine extends Engine
                     for (var k in params)
                     {
                         options.params[k] = params[k];
+                    }
+                }
+
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
                     }
                 }
 
@@ -153,7 +161,7 @@ class FetchEngine extends Engine
         };
 
         // @abstract
-        this.buildPostHandler = function(uri, params, payload)
+        this.buildPostHandler = function(uri, params, payload, headers)
         {
             var self = this;
 
@@ -188,6 +196,13 @@ class FetchEngine extends Engine
                     // options.body = payload;
                 }
 
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
@@ -232,41 +247,11 @@ class FetchEngine extends Engine
                     options.body = JSON.stringify(payload);
                 }
 
-                self.request(options, function(err, response, data, stats) {
-
-                    if (err) {
-                        return done(err);
-                    }
-
-                    if (self.isInvalidAccessToken(err, response, data))
-                    {
-                        return self.handleRefreshAccessToken.call(self, err, response, data, done);
-                    }
-
-                    done(null, self.outgoing(data));
-                });
-            }
-        };
-
-        // @abstract
-        this.buildDelHandler = function(uri, params)
-        {
-            var self = this;
-
-            return function(done)
-            {
-                var options = {
-                    "method": "DELETE",
-                    "url": uri,
-                    "headers": {},
-                    "params": {}
-                };
-
-                if (params)
+                if (headers)
                 {
-                    for (var k in params)
+                    for (var k in headers)
                     {
-                        options.params[k] = params[k];
+                        options.headers[k] = headers[k];
                     }
                 }
 
@@ -287,7 +272,53 @@ class FetchEngine extends Engine
         };
 
         // @abstract
-        this.buildPatchHandler = function(uri, params, payload)
+        this.buildDeleteHandler = function(uri, params, headers)
+        {
+            var self = this;
+
+            return function(done)
+            {
+                var options = {
+                    "method": "DELETE",
+                    "url": uri,
+                    "headers": {},
+                    "params": {}
+                };
+
+                if (params)
+                {
+                    for (var k in params)
+                    {
+                        options.params[k] = params[k];
+                    }
+                }
+
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
+
+                self.request(options, function(err, response, data, stats) {
+
+                    if (err) {
+                        return done(err);
+                    }
+
+                    if (self.isInvalidAccessToken(err, response, data))
+                    {
+                        return self.handleRefreshAccessToken.call(self, err, response, data, done);
+                    }
+
+                    done(null, self.outgoing(data));
+                });
+            }
+        };
+
+        // @abstract
+        this.buildPatchHandler = function(uri, params, payload, headers)
         {
             var self = this;
 
@@ -314,6 +345,14 @@ class FetchEngine extends Engine
                     options.body = JSON.stringify(data);
                 }
 
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
+
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
@@ -330,9 +369,8 @@ class FetchEngine extends Engine
             }
         };
 
-
         // This is the bit that still isn't working!
-        this.buildMultipartPostHandler = function(uri, params, payload)
+        this.buildMultipartPostHandler = function(uri, params, payload, headers)
         {
             var self = this;
 
@@ -369,6 +407,14 @@ class FetchEngine extends Engine
                     options.body = payload;
                 }
 
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
+                    }
+                }
+
                 self.request(options, function(err, response, data, stats) {
 
                     if (err) {
@@ -386,7 +432,7 @@ class FetchEngine extends Engine
         },
 
         // @abstract
-        this.buildDownloadHandler = function(uri, params)
+        this.buildDownloadHandler = function(uri, params, headers)
         {
             var self = this;
 
@@ -405,6 +451,14 @@ class FetchEngine extends Engine
                     for (var k in params)
                     {
                         options.params[k] = params[k];
+                    }
+                }
+
+                if (headers)
+                {
+                    for (var k in headers)
+                    {
+                        options.headers[k] = headers[k];
                     }
                 }
 

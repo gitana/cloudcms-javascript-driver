@@ -250,6 +250,22 @@ You can also manually expire the issued Access and Refresh Token, like this:
 await session.disconnect();
 ```
 
+### Band
+
+If you have multiple bands configured, you can configure your Session to perform all of its API calls
+against a designated band, like this:
+
+```javascript
+session = await cloudcms.connect();
+session.useBand("production");
+```
+
+To revert back to the default band:
+
+```javascript
+session.useBand(null);
+```
+
 ### TypeScript
 
 The `cloudcms-javascript-driver` includes a TypeScript type interface to improve your editing experience and allow better integration in your TypeScript apps.
