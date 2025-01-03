@@ -1,6 +1,5 @@
 var Engine = require("../../engine");
 var Helper = require("../../helper");
-var nodeFetch = require("node-fetch");
 
 class FetchEngine extends Engine
 {
@@ -9,14 +8,21 @@ class FetchEngine extends Engine
         super(config, credentials, storage, options);
 
         var self = this;
-
         if (options && options.fetch)
         {
             this.fetch = options.fetch
         }
         else
         {
-            this.fetch = nodeFetch;
+            const [major, minor, patch] = process.versions.node.split('.').map(Number)
+            if (major < 21)
+            {
+                this.fetch = require("node-fetch");;
+            }
+            else
+            {
+                this.fetch = fetch;
+            }
         }
 
         this.doRequest = (options, callback) =>
