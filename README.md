@@ -440,3 +440,14 @@ TODO: how to configure Memory vs Redis
 ## Custom Cache
 
 TODO: how to configure custom caching for JSON responses
+
+## Documentation
+
+Please visit:
+
+https://gitana.io/documentation/gitana/4.0/developers/cookbooks/javascript2.html
+https://gitana.io/documentation/gitana/4.0/developers/drivers/javascript.html
+
+## Support
+
+For support, please visit https://gitana.io
