@@ -1,6 +1,8 @@
 # cloudcms-javascript-driver
 
-Updated Cloud CMS JS Engine using modern ECMAScript and Promises
+Cloud CMS JavaScript Driver with support for ECMAScript Async, Promises and Callbacks.
+
+For formal support and assistance, please visit <a href="https://gitana.io" title="Gitana Software">https://gitana.io</a>.
 
 ## Installation
 
