@@ -15,6 +15,7 @@ const NODE_FNS = [
     "removeNodeFeature",
     "refreshNode",
     "changeNodeQName",
+    "changeNodeTypeQName",
     "nodeTree",
     "resolveNodePath",
     "resolveNodePaths",
@@ -25,7 +26,9 @@ const NODE_FNS = [
     "deleteAttachment",
     "listVersions",
     "readVersion",
-    "restoreVersion"
+    "restoreVersion",
+    "publishNodes",
+    "unpublishNodes"
 ];
 class Node extends AbstractObject
 {

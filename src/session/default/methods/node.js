@@ -420,7 +420,7 @@ module.exports = function(Session)
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/refresh", {}, callback);
         }
 
-        changeNodeQName(repository, branch, node, newQName)
+        changeNodeTypeQName(repository, branch, node, newQName)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -432,6 +432,20 @@ module.exports = function(Session)
             };
 
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/change_qname", params, callback);
+        }
+
+        changeNodeType(repository, branch, node, newTypeQName)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var nodeId = this.acquireId(node);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var params = {
+                "type": newTypeQName
+            };
+
+            return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/change_type", params, callback);
         }
 
         /*
@@ -777,6 +791,35 @@ module.exports = function(Session)
 
             return this.post(`/repositories/${repositoryId}/branches/${targetBranchId}/copyfrom/start`, params, body, callback);
         }
+
+        publishNodes(repository, branch, nodeIds)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var params = {};
+            var body = {
+                "nodes": nodeIds
+            };
+
+            return this.post(`/repositories/${repositoryId}/branches/${branchId}/publish`, params, body, callback);
+        }
+
+        unpublishNodes(repository, branch, nodeIds)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var params = {};
+            var body = {
+                "nodes": nodeIds
+            };
+
+            return this.post(`/repositories/${repositoryId}/branches/${branchId}/unpublish`, params, body, callback);
+        }
+
     }
 
     return NodeSession;
