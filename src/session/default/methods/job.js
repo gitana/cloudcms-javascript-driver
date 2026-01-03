@@ -81,14 +81,14 @@ module.exports = function(Session)
             return job;
         }
 
-        async waitForJobCompletion(job)
+        async pollForJobCompletion(job)
         {
             const jobId = this.acquireId(job);
             var callback = this.extractOptionalCallback(arguments);
             var self = this;
 
             const _wait = async () => {
-                job = await this.readJob(jobId);
+                job = await this.pollJob(jobId);
                 if (job.state === "FINISHED") {
                     return;
                 }

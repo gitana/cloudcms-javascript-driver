@@ -12,8 +12,8 @@ describe('transfer20', function () {
 
             var now = `${Date.now()}`;
             var startResult = await session.startCreateProject({title: `test-${now}`});
-            var projectJob = await session.waitForJobCompletion(startResult._doc);
-            var projectId = projectJob["created-project-id"];
+            var projectJob = await session.pollForJobCompletion(startResult._doc);
+            var projectId = projectJob._result["created-project-id"];
             var project = await session.readProject(projectId);
             var repository = await session.readDataStore(project.stackId, "content");
 
@@ -53,8 +53,8 @@ describe('transfer20', function () {
             var startResult2 = await session.startCreateProject({
                 title: `test2-${now}`,
             });
-            var projectJob2 = await session.waitForJobCompletion(startResult2._doc);
-            var project2Id = projectJob2["created-project-id"];
+            var projectJob2 = await session.pollForJobCompletion(startResult2._doc);
+            var project2Id = projectJob2._result["created-project-id"];
             var project2 = await session.readProject(project2Id);
             var repository2 = await session.readDataStore(project2.stackId, "content");
 

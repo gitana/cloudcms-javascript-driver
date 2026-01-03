@@ -9,9 +9,9 @@ describe('release10', function() {
         var repository = await session.createRepository();
         
         // Create release
-        let createJob1 = await session.startCreateRelease(repository, { title: 'Test' });
-        createJob1 = await session.waitForJobCompletion(createJob1);
-        const releaseId1 = createJob1["created-release-id"];
+        let createJob1:any = await session.startCreateRelease(repository, { title: 'Test' });
+        createJob1 = await session.pollForJobCompletion(createJob1);
+        const releaseId1 = createJob1._result["created-release-id"];
 
         let release = await session.readRelease(repository, releaseId1);
         assert.isNotNull(release);

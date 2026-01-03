@@ -540,6 +540,7 @@ export declare interface JobSession extends Session {
     killJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
     downloadJobAttachment(jobId: string|TypedID, attachmentId?: string, opts?: DownloadJobOptions, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
     waitForJobCompletion(job: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
+    pollForJobCompletion(job: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
     pollJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
 }
 
@@ -568,6 +569,13 @@ export declare interface ArchiveSession extends Session {
     downloadArchiveById(archive: string|TypedID, vault?: string|TypedID, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
     downloadArchive(group: string, artifact: string, version: string, vault?: string|TypedID, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
 }
+
+export declare interface EditorialSession extends Session {
+    startEditorialFlow(repository: TypedID|string, rootBranch: TypedID|string, operation: string, flowKey: string, properties?: Object, workflowData?: Object, swimlanesObject?: Object, nodeRefArray?:Array<Object>): Promise<Object>
+    readCurrentTaskForEditorialFlow(workflowId: string): Promise<Object>
+    transitionEditorialFlow(workflowId: string, route: string): Promise<Object>
+}
+
 
 export declare interface TrackerSession extends Session {
     trackPage(repositoryId: string, branchId: string, page: PageRendition): void
@@ -603,7 +611,7 @@ export declare interface UtilitySession extends DefaultSession {
 }
 
 
-export declare type DefaultSession = ApplicationSession & ArchiveSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession & PlatformSession;
+export declare type DefaultSession = ApplicationSession & ArchiveSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession & PlatformSession & EditorialSession;
 
 
 

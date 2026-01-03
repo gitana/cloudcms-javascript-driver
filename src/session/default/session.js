@@ -345,7 +345,8 @@ var modules = [
     require("./methods/tracker"),
     require("./methods/release"),
     require("./methods/platform"),
-    require("./methods/archive")
+    require("./methods/archive"),
+    require("./methods/editorial")
 ];
 for (var i = 0; i < modules.length; i++)
 {

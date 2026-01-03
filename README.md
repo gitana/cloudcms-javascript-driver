@@ -315,6 +315,11 @@ const results: Rows<CustomType> = await session.queryNodes(repositoryId, branchI
 This library uses Mocha and Chai for testing.
 
 To test, first add `gitana.json` to the project root.
+This file's `baseURL` should point to a local Gitana API instance running Gitana 4.1 or higher.
+Typically, the `baseURL` is set to `http://localhost:8080` for testing.
+
+Within the Gitana API source, you can run the `DriverTest` test to install driver credentials (which
+should be put into `gitana.json`).
 
 To run all tests:
 
@@ -322,10 +327,10 @@ To run all tests:
 npm run alltests
 ```
 
-To run a single test (`node`):
+To run a single test (`transfer10`):
 
 ```
-npm run test node
+npx mocha 'test/**/transfer10.ts' --recursive --timeout 120000 --watch-extensions ts,js
 ```
 
 ## Proxy
@@ -442,6 +447,35 @@ TODO: how to configure Memory vs Redis
 ## Custom Cache
 
 TODO: how to configure custom caching for JSON responses
+
+## Jobs
+
+Jobs are long-running tasks that are loaded onto Gitana's distributed job engine.  They run within
+queues and execute in the background.  When you send a request to start a job, the request will
+return right away with a Job ID that you can use to poll for completion.
+
+In Gitana 3.2 and before, your code can be written like this:
+
+```
+var startedJob = await session.startCreateProject({
+    title: "My Test Project"
+});
+var completedJob = await session.waitForJobCompletion(startedJob._doc);
+var projectId = completedJob["created-project-id"];
+```
+
+In Gitana 4.0 and beyond, there is a slight difference.  You must ues the `pollForJobCompletion` method,
+like this:
+
+```
+var startedJob = await session.startCreateProject({
+    title: "My Test Project"
+});
+var completedJob = await session.pollForJobCompletion(startedJob._doc);
+var projectId = completedJob._result["created-project-id"];
+```
+
+The unit tests assume a 4.0 compatible API server.
 
 ## Documentation
 
