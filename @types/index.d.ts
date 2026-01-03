@@ -540,6 +540,7 @@ export declare interface JobSession extends Session {
     killJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
     downloadJobAttachment(jobId: string|TypedID, attachmentId?: string, opts?: DownloadJobOptions, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
     waitForJobCompletion(job: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
+    pollJob(jobId: string|TypedID, callback?: ResultCb<Job>): Promise<Job>
 }
 
 export declare interface TransferSession extends Session {
