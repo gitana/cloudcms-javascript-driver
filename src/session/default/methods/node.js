@@ -420,7 +420,7 @@ module.exports = function(Session)
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/refresh", {}, callback);
         }
 
-        changeNodeTypeQName(repository, branch, node, newQName)
+        changeNodeQName(repository, branch, node, newQName)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -434,7 +434,7 @@ module.exports = function(Session)
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId + "/change_qname", params, callback);
         }
 
-        changeNodeType(repository, branch, node, newTypeQName)
+        changeNodeTypeQName(repository, branch, node, newTypeQName)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -792,7 +792,7 @@ module.exports = function(Session)
             return this.post(`/repositories/${repositoryId}/branches/${targetBranchId}/copyfrom/start`, params, body, callback);
         }
 
-        publishNodes(repository, branch, nodeIds)
+        publishNodes(repository, branch, nodeIds, options)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
@@ -802,6 +802,17 @@ module.exports = function(Session)
             var body = {
                 "nodes": nodeIds
             };
+
+            // copy in any options as parameters
+            if (options)
+            {
+                for (var k in options)
+                {
+                    if (options[k]) {
+                        params[k] = options[k];
+                    }
+                }
+            }
 
             return this.post(`/repositories/${repositoryId}/branches/${branchId}/publish`, params, body, callback);
         }

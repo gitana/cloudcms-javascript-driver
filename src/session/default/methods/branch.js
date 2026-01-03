@@ -211,6 +211,51 @@ module.exports = function(Session)
 
             return this.download(`/repositories/${repositoryId}/branches/${targetBranchId}/changes/export`, params, callback);
         }
+
+        // merge
+
+        mergeBranch(repository, sourceBranch, targetBranch, options)
+        {
+            var repositoryId = this.acquireId(repository);
+            var sourceBranchId = this.acquireId(sourceBranch);
+            var targetBranchId = this.acquireId(targetBranch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var params = {
+                "id": sourceBranchId
+            };
+
+            var payload = {};
+            if (typeof(options) === "object")
+            {
+                payload = JSON.parse(JSON.stringify(options));
+            }
+
+            return this.post(`/repositories/${repositoryId}/branches/${targetBranchId}/merge`, params, payload, callback);
+        }
+
+        startMergeBranch(repository, sourceBranch, targetBranch, dryRun)
+        {
+            var repositoryId = this.acquireId(repository);
+            var sourceBranchId = this.acquireId(sourceBranch);
+            var targetBranchId = this.acquireId(targetBranch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            if (typeof(dryRun) !== "boolean")
+            {
+                dryRun = false;
+            }
+
+            var params = {
+                "id": sourceBranchId,
+                "dryRun": dryRun
+            };
+
+            var payload = {};
+
+            return this.post(`/repositories/${repositoryId}/branches/${targetBranchId}/merge/start`, params, payload, callback);
+        }
+
     }
 
     return BranchSession;
