@@ -349,7 +349,8 @@ var modules = [
     require("./methods/release"),
     require("./methods/platform"),
     require("./methods/archive"),
-    require("./methods/editorial")
+    require("./methods/editorial"),
+    //require("./methods/sidekick")
 ];
 for (var i = 0; i < modules.length; i++)
 {

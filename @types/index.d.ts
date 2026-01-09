@@ -295,6 +295,18 @@ export declare interface Domain extends DataStore {
     // queryPrincipals(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
 }
 
+export declare interface Assistant extends PlatformObject
+{
+}
+
+export declare interface AssistantSession extends PlatformObject
+{
+}
+
+export declare interface AssistantMessage extends PlatformObject
+{
+}
+
 export declare interface Branch extends RepositoryObject {
     root: string
     tip: string
@@ -475,7 +487,7 @@ export declare interface NodeSession extends Session {
     unassociateChild(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, childNode: TypedID|string, callback?: ResultCb<void>): Promise<void>
     deleteNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<void>): Promise<void>
     updateNode<T = Node>(repository: TypedID|string, branch: TypedID|string, node: T & TypedID, callback?: ResultCb<T & Node>): Promise<T & Node>
-    patchNode<T = Node>(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, patchObject: Object, callback?: ResultCb<T & Node>): Promise<T & Node>
+    patchNode<T = Node>(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, patchArray: Array<Object>, callback?: ResultCb<T & Node>): Promise<T & Node>
     addNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string, config?: Object, callback?: ResultCb<void>): Promise<void>
     removeNodeFeature(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, featureId: string, callback?: ResultCb<void>): Promise<void>
     refreshNode(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, callback?: ResultCb<void>): Promise<void>
@@ -493,6 +505,18 @@ export declare interface NodeSession extends Session {
     readVersion<T = Node>(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, changesetId: string, options?: NodeVersionOptions, callback?: ResultCb<T & Node>): Promise<T & Node>
     restoreVersion<T = Node>(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, changesetId: string, callback?: ResultCb<T & Node>): Promise<T & Node>
     startCopyNodes(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, nodeIds: Array<string>, config?: SyncNodesConfig, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
+}
+
+export declare interface SidekickSession extends Session {
+    readAssistant<T = Assistant>(assistant: TypedID|string, callback?: ResultCb<T & Assistant>): Promise<T & Assistant>
+    queryAssistants<T = Assistant>(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<T & Assistant>>): Promise<Rows<T & Assistant>>
+    createAssistant(obj?: Object, callback?: ResultCb<Assistant>): Promise<Assistant>
+    deleteAssistant(assistant: TypedID|string, callback?: ResultCb<void>): Promise<void>
+    updateAssistant(assistant: Assistant, callback?: ResultCb<void>): Promise<void>
+
+    openAssistantSession(obj: object): Promise<AssistantSession>
+    startAssistantSessionRequest(assistant: AssistantSession, obj: string, callback?: ResultCb<void>): Promise<void>
+    readAssistantSessionMessage(assistant: AssistantSession, assistantMessageId: string, callback?: ResultCb<void>): Promise<AssistantMessage>
 }
 
 export declare interface PrincipalSession extends Session {

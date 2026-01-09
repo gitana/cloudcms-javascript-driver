@@ -380,14 +380,14 @@ module.exports = function(Session)
             return this.put(`/repositories/${repositoryId}/branches/${branchId}/nodes`, {}, payload, callback);
         }
 
-        patchNode(repository, branch, node, patchObject)
+        patchNode(repository, branch, node, patchArray)
         {
             var repositoryId = this.acquireId(repository);
             var branchId = this.acquireId(branch);
             var nodeId = this.acquireId(node);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.patch("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, patchObject, callback);
+            return this.patch("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/" + nodeId, {}, patchArray, callback);
         }
 
         addNodeFeature(repository, branch, node, featureId, config)
