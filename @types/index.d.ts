@@ -422,6 +422,8 @@ export declare interface RepositorySession extends Session {
     buildRepositoryReference(repository: TypedID|string, callback?: ResultCb<string>): Promise<string>
     createRepository(obj?: Object, callback?: ResultCb<Repository>): Promise<Repository>
     queryRepositories(query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<Repository>>): Promise<Rows<Repository>>
+    readRepository(repository: TypedID|string, callback?: ResultCb<Repository>): Promise<Repository>
+    updateRepository(repository: TypedID|string, obj: Object, callback?: ResultCb<Repository>): Promise<Repository>
 }
 
 export declare interface BranchSession extends Session {
@@ -437,8 +439,8 @@ export declare interface BranchSession extends Session {
     startBranchChanges(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, pagination?: Pagination, opts?: BranchChangesOptions, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
     invalidateBranchChanges(repository: TypedID|string, branch: TypedID|string, callback?: ResultCb<void>): Promise<void>
     exportBranchChanges(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, view?: BranchChangesView, callback?: ResultCb<NodeJS.ReadStream>): Promise<NodeJS.ReadStream>
-    mergeBranch(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, options?: Object)
-    startMergeBranch(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, dryRun?: boolean)
+    mergeBranch(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, options?: Object, callback?: ResultCb<Object>): Promise<Object>
+    startMergeBranch(repository: TypedID|string, sourceBranch: TypedID|string, targetBranch: TypedID|string, dryRun?: boolean, callback?: ResultCb<StartJobResult>): Promise<StartJobResult>
 }
 
 export declare interface DomainSession extends Session {

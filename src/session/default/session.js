@@ -83,7 +83,10 @@ class DefaultSession
 
             for (var k in this.defaults.qs)
             {
-                qs[k] = this.defaults.qs[k];
+                if (!(k in qs))
+                {
+                    qs[k] = this.defaults.qs[k];
+                }
             }
 
             // pass band via query string?

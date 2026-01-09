@@ -29,6 +29,38 @@ module.exports = function(Session)
             return this.post("/repositories/query", pagination, query, callback);
         };
 
+        /**
+         * Read a repository.
+         *
+         * @param repository
+         *
+         * @returns {*}
+         */
+        readRepository(repository)
+        {
+            var repositoryId = this.acquireId(repository);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.get("/repositories/" + repositoryId, {}, callback);
+        };
+
+        /**
+         * Updates a repository.
+         *
+         * @param repository
+         * @param obj
+         * 
+         * @returns {*}
+         *
+         */
+        updateRepository(repository, obj)
+        {
+            var repositoryId = this.acquireId(repository);
+            var callback = this.extractOptionalCallback(arguments);
+
+            return this.put("/repositories/" + repositoryId, {}, obj, callback);
+        }
+
     }
 
     return RepositorySession;
