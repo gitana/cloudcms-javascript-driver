@@ -350,7 +350,7 @@ var modules = [
     require("./methods/platform"),
     require("./methods/archive"),
     require("./methods/editorial"),
-    //require("./methods/sidekick")
+    require("./methods/sidekick")
 ];
 for (var i = 0; i < modules.length; i++)
 {

@@ -295,15 +295,15 @@ export declare interface Domain extends DataStore {
     // queryPrincipals(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<Principal>>): Promise<Rows<Principal>>
 }
 
-export declare interface Assistant extends PlatformObject
+export declare interface Agent extends PlatformObject
 {
 }
 
-export declare interface AssistantSession extends PlatformObject
+export declare interface AgentSession extends PlatformObject
 {
 }
 
-export declare interface AssistantMessage extends PlatformObject
+export declare interface AgentMessage extends PlatformObject
 {
 }
 
@@ -508,15 +508,15 @@ export declare interface NodeSession extends Session {
 }
 
 export declare interface SidekickSession extends Session {
-    readAssistant<T = Assistant>(assistant: TypedID|string, callback?: ResultCb<T & Assistant>): Promise<T & Assistant>
-    queryAssistants<T = Assistant>(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<T & Assistant>>): Promise<Rows<T & Assistant>>
-    createAssistant(obj?: Object, callback?: ResultCb<Assistant>): Promise<Assistant>
-    deleteAssistant(assistant: TypedID|string, callback?: ResultCb<void>): Promise<void>
-    updateAssistant(assistant: Assistant, callback?: ResultCb<void>): Promise<void>
+    readAgent<T = Agent>(agent: TypedID|string, callback?: ResultCb<T & Agent>): Promise<T & Agent>
+    queryAgents<T = Agent>(query: Object, pagination?: Pagination, callback?: ResultCb<Rows<T & Agent>>): Promise<Rows<T & Agent>>
+    createAgent(obj?: Object, callback?: ResultCb<Agent>): Promise<Agent>
+    deleteAgent(agent: TypedID|string, callback?: ResultCb<void>): Promise<void>
+    updateAgent(agent: Agent, callback?: ResultCb<void>): Promise<void>
 
-    openAssistantSession(obj: object): Promise<AssistantSession>
-    startAssistantSessionRequest(assistant: AssistantSession, obj: string, callback?: ResultCb<void>): Promise<void>
-    readAssistantSessionMessage(assistant: AssistantSession, assistantMessageId: string, callback?: ResultCb<void>): Promise<AssistantMessage>
+    openAgentSession(obj: object, callback?: ResultCb<AgentSession>): Promise<AgentSession>
+    startAgentSessionRequest(agent: AgentSession, obj: string, callback?: ResultCb<void>): Promise<void>
+    readAgentSessionMessage(agent: AgentSession, agentMessageId: string, callback?: ResultCb<AgentMessage>): Promise<AgentMessage>
 }
 
 export declare interface PrincipalSession extends Session {
@@ -637,7 +637,7 @@ export declare interface UtilitySession extends DefaultSession {
 }
 
 
-export declare type DefaultSession = ApplicationSession & ArchiveSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession & PlatformSession & EditorialSession;
+export declare type DefaultSession = ApplicationSession & ArchiveSession & RepositorySession & BranchSession & DomainSession & GraphQLSession & NodeSession & PrincipalSession & ProjectSession & StackSession & WorkflowSession & ChangesetSession & JobSession & TransferSession & TrackerSession & ReleaseSession & PlatformSession & EditorialSession & SidekickSession;
 
 
 

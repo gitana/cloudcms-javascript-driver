@@ -333,6 +333,10 @@ To run a single test (`transfer10`):
 npx mocha 'test/**/transfer10.ts' --recursive --timeout 120000 --watch-extensions ts,js
 ```
 
+The unit tests assume a 4.0 compatible API server.  
+Drop your `gitana.json` file into the project root folder.
+
+
 ## Proxy
 
 Configure the driver to use an HTTP or HTTPS proxy using the following environment variables to specify
@@ -474,8 +478,6 @@ var startedJob = await session.startCreateProject({
 var completedJob = await session.pollForJobCompletion(startedJob._doc);
 var projectId = completedJob._result["created-project-id"];
 ```
-
-The unit tests assume a 4.0 compatible API server.
 
 ## Documentation
 

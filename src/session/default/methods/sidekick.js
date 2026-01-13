@@ -18,29 +18,29 @@ module.exports = function(Session)
         // }
 
         /**
-         * Reads an assistant (sidekick).
+         * Reads an agent (sidekick).
          *
-         * @param assistant
+         * @param agent
          * @returns {*}
          */
-        readAssistant(assistant)
+        readAgent(agent)
         {
-            var sidekickId = this.acquireId(assistant);
+            var agentId = this.acquireId(agent);
             var callback = this.extractOptionalCallback(arguments);
 
             var qs = {};
 
-            return this.get("/sidekicks/" + sidekickId, qs, callback);
+            return this.get("/sidekicks/" + agentId, qs, callback);
         }
 
         /**
-         * Queries for assistants (sidekicks).
+         * Queries for agents (sidekicks).
          *
          * @param query
          * @param pagination
          * @returns {*}
          */
-        queryAssistants(query, pagination)
+        queryAgents(query, pagination)
         {
             var callback = this.extractOptionalCallback(arguments);
 
@@ -48,12 +48,12 @@ module.exports = function(Session)
         }
 
         /**
-         * Creates an assistant (sidekick).
+         * Creates an agent (sidekick).
          *
          * @param obj
          * @returns {*}
          */
-        createAssistant(obj)
+        createAgent(obj)
         {
             var callback = this.extractOptionalCallback(arguments);
 
@@ -63,31 +63,31 @@ module.exports = function(Session)
         }
 
         /**
-         * Deletes an assistant (sidekick).
+         * Deletes an agent (sidekick).
          *
-         * @param assistant
+         * @param agent
          * @returns {*}
          */
-        deleteAssistant(assistant)
+        deleteAgent(agent)
         {
-            var sidekickId = this.acquireId(assistant);
+            var agentId = this.acquireId(agent);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.del("/sidekicks/" + sidekickId, {}, callback);
+            return this.del("/sidekicks/" + agentId, {}, callback);
         }
 
         /**
-         * Updates an assistant.
+         * Updates an agent.
          *
-         * @param assistant
+         * @param agent
          * @returns {*}
          */
-        updateAssistant(assistant)
+        updateAgent(agent)
         {
-            var sidekickId = this.acquireId(assistant);
+            var agentId = this.acquireId(agent);
             var callback = this.extractOptionalCallback(arguments);
 
-            return this.put("/sidekicks/" + sidekickId, {}, assistant, callback);
+            return this.put("/sidekicks/" + agentId, {}, agent, callback);
         }
 
 
@@ -95,12 +95,12 @@ module.exports = function(Session)
         ////////////////////
 
         /**
-         * Opens an assistant session
+         * Opens an agent session
          *
          * @param obj
          * @returns {*}
          */
-        openAssistantSession(obj)
+        openAgentSession(obj)
         {
             var callback = this.extractOptionalCallback(arguments);
 
@@ -110,38 +110,38 @@ module.exports = function(Session)
         }
 
         /**
-         * Sends a request to an assistant session.
+         * Sends a request to an agent session.
          *
-         * @param assistantSession
+         * @param agentSession
          * @param obj
          * @returns {*}
          */
-        startAssistantSessionRequest(assistantSession, obj)
+        startAgentSessionRequest(agentSession, obj)
         {
-            var assistantSessionId = this.acquireId(assistantSession);
+            var agentSessionId = this.acquireId(agentSession);
             var callback = this.extractOptionalCallback(arguments);
 
             var qs = {};
 
-            return this.post("/oneteam/sidekicks/sessions/" + assistantSessionId + "/request", qs, obj, callback);
+            return this.post("/oneteam/sidekicks/sessions/" + agentSessionId + "/request", qs, obj, callback);
         }
 
         /**
-         * Reads an assistant session message
+         * Reads an agent session message
          *
-         * @param assistantSession
-         * @param assistantMessageId
+         * @param agentSession
+         * @param agentMessageId
          *
          * @returns {*}
          */
-        readAssistantSessionMessage(assistantSession, assistantMessageId)
+        readAgentSessionMessage(agentSession, agentMessageId)
         {
-            var assistantSessionId = this.acquireId(assistantSession);
+            var agentSessionId = this.acquireId(agentSession);
             var callback = this.extractOptionalCallback(arguments);
 
             var qs = {};
 
-            return this.get("/oneteam/sidekicks/sessions/" + assistantSessionId + "/messages/" + assistantMessageId, qs, callback);
+            return this.get("/oneteam/sidekicks/sessions/" + agentSessionId + "/messages/" + agentMessageId, qs, callback);
         }
     }
 
