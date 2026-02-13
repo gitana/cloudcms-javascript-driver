@@ -81,6 +81,8 @@ module.exports = function(Session)
 
         async exportProject(project, opts, configuration, callback)
         {
+            var self = this;
+
             var callback = this.extractOptionalCallback(arguments);
             var projectRef = await this.buildProjectReference(project);
 
