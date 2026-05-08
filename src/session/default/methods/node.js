@@ -141,7 +141,6 @@ module.exports = function(Session)
 
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/find", pagination, config, callback);
         }
-        
 
         /**
          * Creates a node.
@@ -191,6 +190,37 @@ module.exports = function(Session)
             }
 
             return this.post("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes", qs, obj, callback);
+        }
+
+        /**
+         * Creates multiple nodes.
+         *
+         * @param repository
+         * @param branch
+         * @param objects
+         * @returns {*}
+         */
+        createNodes(repository, branch, objects)
+        {
+            var repositoryId = this.acquireId(repository);
+            var branchId = this.acquireId(branch);
+            var callback = this.extractOptionalCallback(arguments);
+
+            var formData = new FormData();
+
+            for (var i = 0; i < objects.length; i++)
+            {
+                var obj = objects[i];
+
+                formData.append("node-" + i, obj, {
+                    "contentType": "application/json",
+                    "filename": "node-i" + i
+                });
+            }
+
+            var qs = {};
+
+            return this.multipartPost("/repositories/" + repositoryId + "/branches/" + branchId + "/nodes", qs, formData, callback);
         }
 
         queryNodeRelatives(repository, branch, node, associationTypeQName, associationDirection, query, pagination)

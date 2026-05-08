@@ -475,6 +475,7 @@ export declare interface NodeSession extends Session {
     createNode(repository: TypedID|string, branch: TypedID|string, obj?: Object, options?: Object, callback?: ResultCb<TypedID>): Promise<TypedID>
     deleteNodes(repository: TypedID|string, branch: TypedID|string, nodes: string|Array<string>|Array<TypedID>, callback?: ResultCb<void>): Promise<void>
     updateNodes(repository: TypedID|string, branch: TypedID|string, nodes: Array<TypedID>, callback?: ResultCb<void>): Promise<void>
+    createNodes(repository: TypedID|string, branch: TypedID|string, nodes: Array<Object>, callback?: ResultCb<void>): Promise<void>
 
     queryNodeRelatives<T = Node>(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, associationTypeQName: string, associationDirection: string, query?: Object, pagination?: Pagination, callback?: ResultCb<Rows<T & Node>>): Promise<Rows<T & Node>>
     queryNodeChildren<T = Node>(repository: TypedID|string, branch: TypedID|string, node: TypedID|string, query: Object, pagination?: Pagination, callback?: ResultCb<Rows<T>>): Promise<Rows<T & Node>>
@@ -618,6 +619,7 @@ export declare interface ReleaseSession extends Session {
 
 export declare interface PlatformSession extends Session {
     readPlatform(callback?: ResultCb<TypedID>): Promise<TypedID>
+    readAuthInfo(callback?: ResultCb<Object>): Promise<Object>
     getPlatformId(callback?: ResultCb<string>): Promise<string>
     buildPlatformReference(callback?: ResultCb<string>): Promise<string>
 }

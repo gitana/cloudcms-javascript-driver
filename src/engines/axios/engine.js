@@ -314,7 +314,7 @@ class AxiosEngine extends Engine
                 if (payload)
                 {
                     options.headers["Content-Type"] = "application/json";
-                    options.data = JSON.stringify(data);
+                    options.data = JSON.stringify(payload);
                 }
 
                 if (headers)

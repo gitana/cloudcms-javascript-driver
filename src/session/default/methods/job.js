@@ -38,7 +38,7 @@ module.exports = function(Session)
             return this.download(`/jobs/${jobId}/attachments/${attachmentId}`, opts, callback);
         }
 
-        pollJob(job)
+        async pollJob(job)
         {
             var jobId = this.acquireId(job);
             var callback = this.extractOptionalCallback(arguments);
@@ -83,12 +83,13 @@ module.exports = function(Session)
 
         async pollForJobCompletion(job)
         {
-            const jobId = this.acquireId(job);
-            var callback = this.extractOptionalCallback(arguments);
             var self = this;
 
+            const jobId = this.acquireId(job);
+            var callback = this.extractOptionalCallback(arguments);
+
             const _wait = async () => {
-                job = await this.pollJob(jobId);
+                job = await self.pollJob(jobId);
                 if (job.state === "FINISHED") {
                     return;
                 }

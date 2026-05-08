@@ -611,16 +611,23 @@ class Engine
 
                     requestObject.headers = requestObject.headers || {}
 
-                    if (tokenType === 'bearer' && !requestObject.headers.Authorization) {
+                    if (tokenType && tokenType.toLowerCase() === 'bearer' && !requestObject.headers.Authorization)
+                    {
                         requestObject.headers.Authorization = 'Bearer ' + accessToken
-                    } else {
+                    }
+                    else
+                    {
                         var parts = requestObject.url.split('#');
-                        var token = 'access_token=' + accessToken;
+                        //var token = 'access_token=' + accessToken;
+                        var token = '';
                         var url = parts[0].replace(/[?&]access_token=[^&#]/, '');
                         var fragment = parts[1] ? '#' + parts[1] : '';
 
                         // Prepend the correct query string parameter to the url.
-                        requestObject.url = url + (url.indexOf('?') > -1 ? '&' : '?') + token + fragment;
+                        if (token || fragment)
+                        {
+                            requestObject.url = url + (url.indexOf('?') > -1 ? '&' : '?') + token + fragment;
+                        }
 
                         // Attempt to avoid storing the url in proxies, since the access token
                         // is exposed in the query parameters.

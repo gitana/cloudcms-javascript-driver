@@ -348,7 +348,7 @@ class FetchEngine extends Engine
                 if (payload)
                 {
                     options.headers["Content-Type"] = "application/json";
-                    options.body = JSON.stringify(data);
+                    options.body = JSON.stringify(payload);
                 }
 
                 if (headers)
